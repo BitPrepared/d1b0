@@ -1,0 +1,330 @@
+#%RAML 0.8
+title: Impresa Luna
+version: 1
+baseUri: https://{enviroment}.{domain}/{contextPath}/api/v{version}
+baseUriParameters:
+ domain:
+   displayName: Dominio dedicato
+   type: string
+ enviroment:
+   displayName: Ambiente produzione/staging
+   type: string
+ contextPath:
+   displayName: Contesto
+   type: string
+   pattern: ^[a-zA-Z0-9][-a-zA-Z0-9]*$
+   minLength: 1
+protocols: [ HTTPS ]
+mediaType: application/json
+securitySchemes:
+  - basicSecurityLayer:
+      type: x-{other}
+      description: Layer di sicurezza di base (pensare a JWT)
+      describedBy:
+        headers:
+          Authorization:
+            description: Campo nell'header con HMAC di sicurezza
+            type: string
+          Client:
+            description: identificativo della chiave da usare per la validazione
+            type: string
+        protocols: [ HTTPS ]
+        responses:
+          401:
+              description: |
+                  Bad or expired token. This can happen if the user or Dropbox
+                  revoked or expired an access token. To fix, you should re-
+                  authenticate the user.
+          403:
+              description: |
+                  Bad request (wrong consumer key, bad nonce, expired
+                  timestamp...).
+          404:
+            description: Unauthorized #TO THINK 404 non e' bellissimo da pensare
+      settings:
+        scopes:
+          - "todo/to think"
+  - oauth:
+      description: Supporto a OAuth 2.0 per l'autenticazione delle richieste via API.
+      type: OAuth 2.0
+      settings:
+        accessTokenUri: org/oauth/token
+        authorizationUri: org/oauth/authorize
+        authorizationGrants: [code,token]
+        scopes:
+          - "READ_RESOURCE"
+          - "POST_RESOURCE"
+          - basic
+          - comments
+          - relationships
+          - likes
+documentation:
+ - title: Home
+   content: |
+     Backend Gestionale Imprese
+
+schemas:
+ - Iso8601:      !include schemas/iso8601.json
+ - GelfMessage:  !include schemas/gelfMessage.json
+ - SystemStatus: !include schemas/systemStatus.json
+ - ServiceState: !include schemas/serviceState.json
+ - ClientInfo:   !include schemas/clientInfo.json
+ - Login:        !include schemas/login.json
+
+/status:
+   get:
+     description:
+       stato del sistema
+     responses:
+       200:
+         body:
+           application/json:
+             schema: SystemStatus
+
+/badge:
+   get:
+       description: 'ID: Ottenere elenco dei badge' #TODO assegnare ID
+       queryParameters:
+           filterBy:
+               type: string
+               enum: [specialita,brevetti,events]
+
+
+/security:
+   /login:
+     description: 'ID: 01 Autenticazione'
+     post:
+       description:
+         autenticazione necessaria x poter dialogare con il server
+       body:
+         application/json:
+           schema: Login
+       responses:
+           200:
+             body:
+               application/json:
+                 example: '{ "esito": "ok" }' #FIMXE: da pensare
+           400:
+             body:
+               application/json:
+                 schema: GelfMessage
+           403:
+             body:
+               application/json:
+                 schema: GelfMessage
+
+   /logout:
+       get:
+         description: 'ID: 01 Autenticazione'
+         securedBy:
+           - basicSecurityLayer
+
+   /callback:
+       description: 'ID: 01 Autenticazione'
+       post:
+         description: Per la Oauth2 authentication
+
+/user:
+  /signup:
+      description: ID Registrazione, permette di registrarsi o con mail o con facebook #TODO: id da assegnare
+      get:
+          securedBy:
+            - basicSecurityLayer
+  /{id}:
+      get:
+          description: 'ID: Ottenere la carta di Specialità/Competenza di un utente' #TODO assegnare ID
+          securedBy:
+          - basicSecurityLayer
+          queryParameters:
+              esalt:
+                description: Id impresa, mettere in evidenza il contributo dell'impresa
+                example: 1
+                required: false
+                type: integer
+      /badge:
+          description: Sezione Badge Utente
+          post:
+              description: 'ID aggiungere un badge (specialità/brevetto)'
+              securedBy:
+                - basicSecurityLayer
+          /{id_badge}:
+              get:
+                 description: immagine badge corrente per l'utente
+                 securedBy:
+                   - basicSecurityLayer
+              put:
+                  description: 'ID  segnare completata una specialità o un brevetto o aggiungere uno spicchio' #TODO assegnare ID
+                  securedBy:
+                    - basicSecurityLayer
+              delete:
+                  description: 'ID cancellare una specialità non ancora completata' #TODO assegnare ID
+                  securedBy:
+                    - basicSecurityLayer
+
+/workspace:
+    post:
+        description: 'ID: 02 Aggiungere una impresa'
+        securedBy:
+          - basicSecurityLayer
+        body:
+            application/json:
+                example: !include examples/workspace.post.json
+        responses:
+            201:
+                body:
+                    application/json:
+                        example: '{"id":1}'
+            400:
+                description: Qualcosa manca nel json
+            412:
+                description: Manca qualche precondizione
+            409:
+                description: Conflitto
+    get:
+        description: 'ID: visualizzare elenco imprese' #TODO assegnare ID
+        securedBy:
+          - basicSecurityLayer
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include examples/workspace_list.get.json
+            404:
+                description: non trovato
+            451:
+                description: non disponibile per ragioni legali
+    /join:
+        post:
+            description: 'ID: 03 Aggiungere nuovi membri'
+            securedBy:
+              - basicSecurityLayer
+            body:
+                application/json:
+                  example: !include examples/workspace.id.join.json
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: '{"id":1}'
+    /{id}:
+        get:
+            description: 'ID: 02 Visualizzare una impresa'
+            securedBy:
+              - basicSecurityLayer
+            responses:
+                200:
+                  body:
+                      application/json:
+                          example: !include examples/workspace.get.id.json
+                404:
+                    description: file non trovato
+        put:
+            description: 'ID: 02 Modificare una impresa'
+            securedBy:
+              - basicSecurityLayer
+            body:
+                application/json:
+                    example: !include examples/workspace.post.json
+            responses:
+                204:
+        delete:
+            description: 'ID: 02 Cancellare una impresa'
+            securedBy:
+              - basicSecurityLayer
+            responses:
+                204:
+
+        #Per ottenere il qr-code come png
+        /share:
+            get:
+                description: 'ID: 03 Aggiungere nuovi membri'
+                securedBy:
+                  - basicSecurityLayer
+                responses:
+                    200:
+                        body:
+                            application/json:
+                              example: !include examples/workspace.id.share.json
+
+        /part:
+            post:
+                description: |
+                             ID 04 Aggiunge un momento del racconto
+                             può essere di varie tipologie, testo, foto, video, audio
+                             caricate con un'altra api e referenziate attraverso una ref
+                             gli elementi devono essere prima versati e poi descritti in json della post.
+                securedBy:
+                  - basicSecurityLayer
+                body:
+                    application/json:
+                      example: !include examples/workspace.id.part.json
+                responses:
+                    201:
+                        body:
+                            application/json:
+                              example: '{"id":22}'
+
+            /{id_part}:
+                get:
+                    description: 'ID: 04 Richiedere una parte del racconto specifica'
+                    securedBy:
+                      - basicSecurityLayer
+                    responses:
+                        200:
+                            body:
+                                application/json:
+                                  example: !include examples/workspace.id.part.get.json
+                        404:
+                            description: non trovato
+                put:
+                    description: 'ID: 04 Modifricare una parte del racconto'
+                    securedBy:
+                      - basicSecurityLayer
+                    body:
+                        application/json:
+                            example: !include examples/workspace.id.part.json
+                    responses:
+                        204:
+                delete:
+                    description: 'ID: 04 Cancellare una parte del racconto'
+                    securedBy:
+                      - basicSecurityLayer
+                    responses:
+                        204:
+                /checkin:
+                    post:
+                        description: "ID indicare la presenza ad un evento (Io c'ero)" #TODO assegnare ID
+                        securedBy:
+                          - basicSecurityLayer
+                        responses:
+                            201:
+                                body:
+                                    application/json:
+                                        example: '{"points":50}' #TODO ragionare se notificare un messaggio sull aggiunta di spicchi al profilo
+                    delete:
+                        description: Cancellare la dichiarata presenza di un evento.
+                        securedBy:
+                          - basicSecurityLayer
+                        responses:
+                            204:
+        /export:
+            get:
+                description: "ID: 06 Esportare l'impresa"
+                securedBy:
+                  - basicSecurityLayer
+                queryParameters:
+                    type:
+                        type: string
+                        enum: [pdf,zip,json]
+                responses:
+                    200:
+                        body:
+                            application/json:
+                              #TODO ma in realtà è un pdf O_Os!
+/stream:
+    post:
+        description: |
+                    Permette di caricare una parte del racconto come stream
+                    testo, audio, video, foto.
+        securedBy:
+            - basicSecurityLayer

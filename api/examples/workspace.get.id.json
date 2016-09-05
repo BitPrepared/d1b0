@@ -1,0 +1,11 @@
+{
+    "title":"Sopraelevata",
+    "description":"I Sarchiaponi sono pronti a lanciarsi nella costruzione di una sopraelevata",
+    "environment": 22,
+    "team": {
+        "patrol":"Sarchiaponi",
+        "group":"Bologna 18",
+        "unit": "Marco Polo"
+    },
+    "badges": [ 5, 38, 99]
+}

@@ -1,0 +1,25 @@
+{
+
+    "creation":"2016-01-25T22:00:00Z",
+    "part":[
+        {
+            "type": "image",
+            "ref": "afaifnanabnawnfawba"
+        },
+        {
+            "type": "image",
+            "ref": "awfaowapaegbgepng"
+        },
+        {
+            "type": "text",
+            "ref": "afaafaafafafifnanabnawnfawba"
+        },
+        {
+            "type": "video",
+            "ref": "aaafawafaggagaagegaa"
+        }
+    ],
+    "partecipants":[1,8,9,6],
+    "points":182,
+    "checked":true
+}
