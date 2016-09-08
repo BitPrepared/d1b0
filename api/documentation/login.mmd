@@ -1,0 +1,16 @@
+%% Diagramma di sequenza
+sequenceDiagram
+    participant App
+    participant Server
+    participant hybridauth
+    participant Facebook
+    App->>Server: /user/signup?authMode=Facebook
+    Server-->>App: 302 redirect hybridauth
+    App->>hybridauth: ?hauth.start=Facebook
+    hybridauth-->>App: 302 redirect Facebook
+    App->>Facebook: inserisci dati login
+    Facebook-->>App: 302 redirect hybridauth
+    App->>hybridauth: ?hauth.done=Facebook
+    hybridauth-->>App: 302 redirect Server
+    App->>Server: /security/callback?authMode=facebook
+    Server-->>App: Token/Sessione
