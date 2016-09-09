@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://localhost:8080/schemas/singlePart.json",
+  "type": "object",
+  "properties": {
+    "type": {
+      "id": "type",
+      "type": "string"
+    },
+    "ref": {
+      "id": "ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "ref"
+  ]
+}

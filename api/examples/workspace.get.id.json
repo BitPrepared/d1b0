@@ -7,5 +7,6 @@
         "group":"Bologna 18",
         "unit": "Marco Polo"
     },
+    "parts": [1,2,3,4,5,6],
     "badges": [ 5, 38, 99]
 }
