@@ -2,7 +2,7 @@
 sequenceDiagram
     participant App
     participant Server
-    App->>Server: 1. HTTP POST /workspace
+    App->>Server: 1. HTTP POST /workspace/{id}/part
     alt success
         Server->>App: 2a. HTTP 201 {"id":""}
     else failure

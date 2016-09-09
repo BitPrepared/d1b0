@@ -1,0 +1,28 @@
+%% Diagramma di sequenza
+sequenceDiagram
+    participant App
+    participant Server
+    participant CDN
+    App->>Server: 1. HTTP GET /workspace/1
+    alt success
+        Server-->>App: 1a. HTTP 200 {"title":"","description":"" ..}
+    else failure
+        Server-->>App: 1b. HTTP 404
+    end
+    loop request all part
+        App->>Server: 2. HTTP GET /workspace/1/part/{id}
+        alt success
+            Server-->>App: 2a. HTTP 200 {""creation"":"","part":"[]" ..}
+        else failure
+            Server-->>App: 2b. HTTP 404
+        end
+        loop request all resources
+            App->>CDN: 3. HTTP GET /files/12345.jpg
+            alt success
+                CDN-->>App: 3a. HTTP 200 resources
+            else failure
+                CDN-->>App: 3b. HTTP 404
+            end
+        end
+        App->>Server: 4. HTTP PATCH /workspace/1/part/{id}
+    end

@@ -1,0 +1,20 @@
+%% Diagramma di sequenza
+sequenceDiagram
+    participant App Alice
+    participant App Bob
+    participant Server
+    App Alice->>Server: 1. HTTP GET /workspace/{id}/share
+    alt success
+        Server-->>App Alice: 2a. HTTP 200 {"key":"20d..954"}
+    else failure
+        Server-->>App Alice: 2b. HTTP 4XX
+    end
+    App Bob->>App Alice: let me scan your qr-code
+    App Alice-->>App Bob: qr-code photo
+    App Bob->>Server: 3. HTTP POST /workspace/join {"key":"20d..954"}
+    alt success
+        Server-->>App Bob: 3a. HTTP 200 {"id":"1"}
+    else failure
+        Server-->>App Bob: 3b. HTTP 4XX
+    end
+    Note over App Alice,Server: Now you should download the workspace (getWorkspace.mmd)
