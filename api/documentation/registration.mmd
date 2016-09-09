@@ -1,0 +1,19 @@
+%% Diagramma di sequenza
+sequenceDiagram
+    participant App
+    participant Mail Client
+    participant Server
+    participant MailGun (External)
+    App->>+Server: 1. HTTP POST /user/signup?authMode=Email
+    Server->>MailGun (External): 2. HTTP POST /<domain>/message
+    alt success
+        MailGun (External)--xServer: 3a. HTTP 200 {"message":"","id":""}
+    else failure
+        MailGun (External)--xServer: 3b. HTTP 500
+    end
+    Server-->>App: 4. HTTP 302 redirect Server
+    App->>Server: 5. HTTP GET /security/callback?authMode=Email
+    Server-->>-App: Token/Sessione
+    Note over App,MailGun (External): Email on the way
+    Mail Client->>Server: HTTP GET /security/confirm?confirmKey=..
+    Server-->>Mail Client: Web Page

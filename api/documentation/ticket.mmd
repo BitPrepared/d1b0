@@ -1,0 +1,10 @@
+%% Diagramma di sequenza
+sequenceDiagram
+    participant App
+    participant Server
+    App->>Server: 1. HTTP GET /user/ticket
+    alt success
+        Server->>App: 2a. HTTP 200 [{"id":"","message":"","priority":3}, ... ]
+    else alternative success
+        Server->>App: 2b. HTTP 204
+    end

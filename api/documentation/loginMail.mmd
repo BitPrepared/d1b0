@@ -1,0 +1,14 @@
+%% Diagramma di sequenza
+sequenceDiagram
+    participant App
+    participant Server
+    App->>Server: 1. HTTP POST /security/login
+    alt success
+        Server-->>App: 2a. HTTP 200 CredentialInfo
+    else failure
+        alt non-existent user
+            Server-->>App: 2b. HTTP 400 GelfMssage
+        else wrong password
+            Server-->>App: 2c. HTTP 403 GelfMssage
+        end
+    end
