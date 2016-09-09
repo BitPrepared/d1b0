@@ -76,10 +76,13 @@ resourceTypes:
               How many retry call are made
             type: integer
         responses:
-          403:
+          429:
             description: |
               API retry limit exceeded. See #TODO: url con spiegazione
               for details.
+          423:
+            description: |
+              locked account, please contact customer. #TODO: mail customer
       post?: *common
       patch?: *common #TODO: lo usiamo?
       put?: *common
@@ -112,26 +115,28 @@ schemas:
  - CredentialInfo:  !include schemas/credentialInfo.json
 
 /status:
-   get:
-     description:
-       stato del sistema
-     responses:
-       200:
-         body:
-           application/json:
-             schema: SystemStatus
+  type: base
+  get:
+   description:
+     stato del sistema
+   responses:
+     200:
+       body:
+         application/json:
+           schema: SystemStatus
 
 /badge:
-   get:
-       description: 'ID: Ottenere elenco dei badge' #TODO assegnare ID
-       queryParameters:
-           filterBy:
-               type: string
-               enum: [specialita,brevetti,events]
-
+  type: base
+  get:
+     description: 'ID: Ottenere elenco dei badge' #TODO assegnare ID
+     queryParameters:
+         filterBy:
+             type: string
+             enum: [specialita,brevetti,events]
 
 /security:
    /login:
+     type: base
      description: 'ID: 01 Autenticazione'
      post:
        description:
@@ -143,7 +148,10 @@ schemas:
            200:
              body:
                application/json:
-                 example: '{ "esito": "ok" }' #FIMXE: da pensare
+                 schema: CredentialInfo
+           302:
+             description: |
+              redirect alla /security/callback?authMode=Facebook nel caso Facebook
            400:
              body:
                application/json:
@@ -153,14 +161,33 @@ schemas:
                application/json:
                  schema: GelfMessage
 
+   /confirm:
+     type: base
+     get:
+       description: |
+          conferma ricezione email
+       queryParameters:
+         confirmKey:
+           description: chiave per confermare l'avenuta ricezione email
+           example: a1b2c3
+           required: true
+           type: string
+       responses:
+         200:
+           description: |
+              Welcome page
+
    /logout:
+       type: base
        get:
          description: 'ID: 01 Autenticazione'
          securedBy:
            - basicSecurityLayer
 
    /callback:
-       description: 'ID: 01 Autenticazione'
+       type: base
+       description: |
+         ID: 01 Autenticazione
        get:
           description: Per la Oauth authentication
           queryParameters:
@@ -169,20 +196,41 @@ schemas:
              example: facebook
              required: true
              type: string
-          body:
-            application/json:
-              schema: CredentialInfo
+          responses:
+            201:
+                description: Tutto ok
+                body:
+                    application/json:
+                        schema: CredentialInfo
+            412:
+                description: Qualcosa e' fallito nel giro
+                body:
+                    application/json:
+                        schema: GelfMessage
+
 /user:
   /signup:
-      description: ID Registrazione, permette di registrarsi o con mail o con facebook #TODO: id da assegnare
-      get:
+      type: base
+      description: |
+        ID Registrazione, permette di registrarsi o con mail o con facebook #TODO: id da assegnare
+      post:
           queryParameters:
             authMode:
               description: tipo di oauth
-              example: facebook
+              example: Facebook
               required: true
-              type: string
+              enum:
+                - Facebook
+                - Email
+          body:
+            application/json:
+              schema: Login
+          responses:
+            302:
+              description: redirect a /security/callback?authMode=Email
+
   /{id}:
+      type: base
       get:
           description: 'ID: Ottenere la carta di Specialità/Competenza di un utente' #TODO assegnare ID
           securedBy:
@@ -194,12 +242,14 @@ schemas:
                 required: false
                 type: integer
       /badge:
+          type: base
           description: Sezione Badge Utente
           post:
               description: 'ID aggiungere un badge (specialità/brevetto)'
               securedBy:
                 - basicSecurityLayer
           /{id_badge}:
+              type: base
               get:
                  description: immagine badge corrente per l'utente
                  securedBy:
@@ -212,8 +262,26 @@ schemas:
                   description: 'ID cancellare una specialità non ancora completata' #TODO assegnare ID
                   securedBy:
                     - basicSecurityLayer
+  /ticket:
+    type: base
+    get:
+      description: |
+        ticket attivi per l'utente
+      securedBy:
+        - basicSecurityLayer
+      responses:
+        200:
+          description: |
+            ticket attivi #TODO: inserimento a mano su db
+          body:
+            application/json:
+              example: '[{ "id": "", "message":"HTML MESSAGE", "priority": 3 }]'
+        204:
+          description: |
+            nessun ticket
 
 /workspace:
+    type: base
     post:
         description: |
           ID: 02 Aggiungere una impresa
@@ -249,6 +317,7 @@ schemas:
             451:
                 description: non disponibile per ragioni legali
     /join:
+        type: base
         post:
             description: 'ID: 03 Aggiungere nuovi membri'
             securedBy:
@@ -262,11 +331,11 @@ schemas:
                         application/json:
                             example: '{"id":1}'
     /{id}:
+        type: base
         uriParameters:
           id:
             description: Id of the workspace.
             type: integer
-        type: base
         get:
             description: 'ID: 02 Visualizzare una impresa'
             securedBy:
@@ -296,6 +365,7 @@ schemas:
 
         #Per ottenere il qr-code come png
         /share:
+            type: base
             get:
                 description: 'ID: 03 Aggiungere nuovi membri'
                 securedBy:
@@ -307,6 +377,7 @@ schemas:
                               example: !include examples/workspace.id.share.json
 
         /part:
+            type: base
             post:
                 description: |
                              ID 04 Aggiunge un momento del racconto
@@ -363,6 +434,7 @@ schemas:
                       205:
                         description: Part marked as read.
                 /checkin:
+                    type: base
                     post:
                         description: |
                           ID indicare la presenza ad un evento (Io c'ero) #TODO assegnare ID
@@ -380,6 +452,7 @@ schemas:
                         responses:
                             204:
         /export:
+            type: base
             get:
                 description: "ID: 06 Esportare l'impresa"
                 securedBy:
@@ -394,6 +467,7 @@ schemas:
                             application/json:
                               #TODO ma in realtà è un pdf O_Os!
 /stream:
+    type: base
     post:
         description: |
                     Permette di caricare una parte del racconto come stream
