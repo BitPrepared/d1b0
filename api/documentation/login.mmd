@@ -2,15 +2,17 @@
 sequenceDiagram
     participant App
     participant Server
-    participant hybridauth
-    participant Facebook
-    App->>Server: /user/signup?authMode=Facebook
-    Server-->>App: 302 redirect hybridauth
-    App->>hybridauth: ?hauth.start=Facebook
-    hybridauth-->>App: 302 redirect Facebook
-    App->>Facebook: inserisci dati login
-    Facebook-->>App: 302 redirect hybridauth
-    App->>hybridauth: ?hauth.done=Facebook
-    hybridauth-->>App: 302 redirect Server
-    App->>Server: /security/callback?authMode=facebook
-    Server-->>App: Token/Sessione
+    participant Hybridauth (External)
+    participant Facebook (External)
+    Note over Server,Hybridauth (External): php shared session
+    App->>+Server: 1. HTTP GET /user/signup?authMode=Facebook
+    Server-->>App: HTTP 302 redirect Hybridauth (External)
+    App->>+Hybridauth (External): 2. HTTP GET ?hauth.start=Facebook
+    Hybridauth (External)-->>App: HTTP 302 redirect Facebook
+    App->>+Facebook (External): 3. inserisci dati login
+    Facebook (External)-->>-App: HTTP 302 redirect Hybridauth (External)
+    App->>Hybridauth (External): 4. HTTP GET ?hauth.done=Facebook
+    Hybridauth (External)-->>-App: HTTP 302 redirect Server
+    App->>Server: 5. HTTP GET /security/callback?authMode=facebook
+    Server-->>-App: Token/Sessione
+    Note over Server,Facebook (External): https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension

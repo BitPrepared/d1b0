@@ -4,28 +4,36 @@ version: 1
 baseUri: https://{enviroment}.{domain}/{contextPath}/api/v{version}
 baseUriParameters:
  domain:
-   displayName: Dominio dedicato
-   type: string
+   displayName: domain
+   description: Dominio dedicato
+   example: impresaluna.it
  enviroment:
-   displayName: Ambiente produzione/staging
-   type: string
+   displayName: enviroment
+   description: Ambiente produzione/staging
+   minLength: 3
+   example: dev
  contextPath:
-   displayName: Contesto
+   displayName: context
+   description: Contesto
    type: string
    pattern: ^[a-zA-Z0-9][-a-zA-Z0-9]*$
    minLength: 1
+   example: imprese-eg
+
 protocols: [ HTTPS ]
+
 mediaType: application/json
+
 securitySchemes:
   - basicSecurityLayer:
       type: x-{other}
       description: Layer di sicurezza di base (pensare a JWT)
       describedBy:
         headers:
-          Authorization:
+          X-Authorization:
             description: Campo nell'header con HMAC di sicurezza
             type: string
-          Client:
+          X-Client:
             description: identificativo della chiave da usare per la validazione
             type: string
         protocols: [ HTTPS ]
@@ -58,18 +66,50 @@ securitySchemes:
           - comments
           - relationships
           - likes
+
+resourceTypes:
+  - base:
+      get?: &common
+        headers:
+          X-Retry-Count:
+            description: |
+              How many retry call are made
+            type: integer
+        responses:
+          403:
+            description: |
+              API retry limit exceeded. See #TODO: url con spiegazione
+              for details.
+      post?: *common
+      patch?: *common #TODO: lo usiamo?
+      put?: *common
+      delete?: *common
+
+traits:
+  - filterable:
+      queryParameters:
+        sort:
+          enum:
+            - created
+            - updated
+            - comments
+          default: created
+          required: true
+
 documentation:
- - title: Home
-   content: |
-     Backend Gestionale Imprese
+  - title: Intro
+    content: |
+      Welcome to the Api Example Documentation. The Example API allows you
+      to do stuff. See also [example.com](https://www.example.com). #TODO fix link
 
 schemas:
- - Iso8601:      !include schemas/iso8601.json
- - GelfMessage:  !include schemas/gelfMessage.json
- - SystemStatus: !include schemas/systemStatus.json
- - ServiceState: !include schemas/serviceState.json
- - ClientInfo:   !include schemas/clientInfo.json
- - Login:        !include schemas/login.json
+ - Iso8601:         !include schemas/iso8601.json
+ - GelfMessage:     !include schemas/gelfMessage.json
+ - SystemStatus:    !include schemas/systemStatus.json
+ - ServiceState:    !include schemas/serviceState.json
+ - ClientInfo:      !include schemas/clientInfo.json
+ - Login:           !include schemas/login.json
+ - CredentialInfo:  !include schemas/credentialInfo.json
 
 /status:
    get:
@@ -121,15 +161,27 @@ schemas:
 
    /callback:
        description: 'ID: 01 Autenticazione'
-       post:
-         description: Per la Oauth2 authentication
-
+       get:
+          description: Per la Oauth authentication
+          queryParameters:
+           authMode:
+             description: tipo di oauth
+             example: facebook
+             required: true
+             type: string
+          body:
+            application/json:
+              schema: CredentialInfo
 /user:
   /signup:
       description: ID Registrazione, permette di registrarsi o con mail o con facebook #TODO: id da assegnare
       get:
-          securedBy:
-            - basicSecurityLayer
+          queryParameters:
+            authMode:
+              description: tipo di oauth
+              example: facebook
+              required: true
+              type: string
   /{id}:
       get:
           description: 'ID: Ottenere la carta di Specialità/Competenza di un utente' #TODO assegnare ID
@@ -163,7 +215,8 @@ schemas:
 
 /workspace:
     post:
-        description: 'ID: 02 Aggiungere una impresa'
+        description: |
+          ID: 02 Aggiungere una impresa
         securedBy:
           - basicSecurityLayer
         body:
@@ -181,7 +234,9 @@ schemas:
             409:
                 description: Conflitto
     get:
-        description: 'ID: visualizzare elenco imprese' #TODO assegnare ID
+        is: [ filterable ]
+        description: |
+          ID: visualizzare elenco imprese #TODO assegnare ID
         securedBy:
           - basicSecurityLayer
         responses:
@@ -207,6 +262,11 @@ schemas:
                         application/json:
                             example: '{"id":1}'
     /{id}:
+        uriParameters:
+          id:
+            description: Id of the workspace.
+            type: integer
+        type: base
         get:
             description: 'ID: 02 Visualizzare una impresa'
             securedBy:
@@ -266,7 +326,8 @@ schemas:
 
             /{id_part}:
                 get:
-                    description: 'ID: 04 Richiedere una parte del racconto specifica'
+                    description: |
+                      ID: 04 Richiedere una parte del racconto specifica
                     securedBy:
                       - basicSecurityLayer
                     responses:
@@ -277,7 +338,8 @@ schemas:
                         404:
                             description: non trovato
                 put:
-                    description: 'ID: 04 Modifricare una parte del racconto'
+                    description: |
+                      ID: 04 Modifricare una parte del racconto
                     securedBy:
                       - basicSecurityLayer
                     body:
@@ -286,14 +348,24 @@ schemas:
                     responses:
                         204:
                 delete:
-                    description: 'ID: 04 Cancellare una parte del racconto'
+                    description: |
+                      ID: 04 Cancellare una parte del racconto
                     securedBy:
                       - basicSecurityLayer
                     responses:
                         204:
+                patch:
+                    description: |
+                      Notifica parte letta dall'utente
+                    securedBy:
+                      - basicSecurityLayer
+                    responses:
+                      205:
+                        description: Part marked as read.
                 /checkin:
                     post:
-                        description: "ID indicare la presenza ad un evento (Io c'ero)" #TODO assegnare ID
+                        description: |
+                          ID indicare la presenza ad un evento (Io c'ero) #TODO assegnare ID
                         securedBy:
                           - basicSecurityLayer
                         responses:
