@@ -113,6 +113,8 @@ schemas:
  - ClientInfo:      !include schemas/clientInfo.json
  - Login:           !include schemas/login.json
  - CredentialInfo:  !include schemas/credentialInfo.json
+ - Part:            !include schemas/part.json
+ - SinglePart:      !include schemas/singlePart.json
 
 /status:
   type: base
@@ -337,7 +339,14 @@ schemas:
             description: Id of the workspace.
             type: integer
         get:
-            description: 'ID: 02 Visualizzare una impresa'
+            description: |
+              ID: 02 Visualizzare una impresa
+            queryParameters:
+                lastUpdate:
+                  description: richiesta di verifica aggiornamento, rispetto alla data YYYYMMDD
+                  example: 20160927
+                  required: false
+                  type: string
             securedBy:
               - basicSecurityLayer
             responses:
@@ -345,6 +354,8 @@ schemas:
                   body:
                       application/json:
                           example: !include examples/workspace.get.id.json
+                204:
+                  description: nessuna novita (rispetto al lastUpdate)
                 404:
                     description: file non trovato
         put:
@@ -375,26 +386,30 @@ schemas:
                         body:
                             application/json:
                               example: !include examples/workspace.id.share.json
+                    404:
+                      body:
+                        application/json:
+                          schema: GelfMessage
 
         /part:
             type: base
             post:
                 description: |
-                             ID 04 Aggiunge un momento del racconto
-                             può essere di varie tipologie, testo, foto, video, audio
-                             caricate con un'altra api e referenziate attraverso una ref
-                             gli elementi devono essere prima versati e poi descritti in json della post.
+                   ID 04 Aggiunge un momento del racconto
+                   può essere di varie tipologie, testo, foto, video, audio
+                   caricate con un'altra api e referenziate attraverso una ref
+                   gli elementi devono essere prima versati e poi descritti in json della post.
                 securedBy:
                   - basicSecurityLayer
                 body:
                     application/json:
+                      schema: SinglePart
                       example: !include examples/workspace.id.part.json
                 responses:
                     201:
                         body:
                             application/json:
-                              example: '{"id":22}'
-
+                              schema: Part
             /{id_part}:
                 get:
                     description: |
@@ -405,6 +420,7 @@ schemas:
                         200:
                             body:
                                 application/json:
+                                  schema: Part
                                   example: !include examples/workspace.id.part.get.json
                         404:
                             description: non trovato
