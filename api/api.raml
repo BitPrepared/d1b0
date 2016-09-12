@@ -115,6 +115,8 @@ schemas:
  - CredentialInfo:  !include schemas/credentialInfo.json
  - Part:            !include schemas/part.json
  - SinglePart:      !include schemas/singlePart.json
+ - UserInfo:        !include schemas/userInfo.json
+ - Ticket:          !include schemas/ticket.json
 
 /status:
   type: base
@@ -135,7 +137,24 @@ schemas:
          filterBy:
              type: string
              enum: [specialita,brevetti,events]
-
+  /proposal:
+    post:
+      description: |
+        proposta di un nuovo badge
+      responses:
+        202:
+          description: |
+            dato che richiede un intervento umano di controllo verrà restituito un ticket
+            che verrà preso in carico e processato in maniera asyncrona
+          body:
+            application/json:
+              schema: Ticket #TODO: fare il metodo per i ticket
+        208:
+          description: |
+            il badge esiste gia'
+          body:
+            application/json:
+              schema: GelfMessage
 /security:
    /login:
      type: base
@@ -237,12 +256,13 @@ schemas:
           description: 'ID: Ottenere la carta di Specialità/Competenza di un utente' #TODO assegnare ID
           securedBy:
           - basicSecurityLayer
-          queryParameters:
-              esalt:
-                description: Id impresa, mettere in evidenza il contributo dell'impresa
-                example: 1
-                required: false
-                type: integer
+          responses:
+            200:
+              body:
+                application/json:
+                  # TODO: da trasformare skills in un oggetto!!!
+                  schema: UserInfo
+
       /badge:
           type: base
           description: Sezione Badge Utente
@@ -278,6 +298,7 @@ schemas:
           body:
             application/json:
               example: '[{ "id": "", "message":"HTML MESSAGE", "priority": 3 }]'
+              schema: Ticket
         204:
           description: |
             nessun ticket
@@ -416,14 +437,23 @@ schemas:
                       ID: 04 Richiedere una parte del racconto specifica
                     securedBy:
                       - basicSecurityLayer
+                    queryParameters:
+                        lastUpdate:
+                          description: richiesta di verifica aggiornamento, rispetto alla data YYYYMMDD
+                          example: 20160927
+                          required: false
+                          type: string
                     responses:
                         200:
+                            description: restituisce tutte le risorse correlate
                             body:
                                 application/json:
                                   schema: Part
                                   example: !include examples/workspace.id.part.get.json
+                        204:
+                          description: nessuna modifica (dal lastUpdate)
                         404:
-                            description: non trovato
+                          description: non trovato
                 put:
                     description: |
                       ID: 04 Modifricare una parte del racconto

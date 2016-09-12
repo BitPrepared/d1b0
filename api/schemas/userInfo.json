@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://localhost:8080/schemas/userInfo.json",
+  "type": "object",
+  "properties": {
+    "username": {
+        "id": "username",
+        "type:" : "string"
+    },
+    "authMode": {
+      "id": "authMode",
+      "enum": [ "Email" , "Facebook" ]
+    },
+    "image": {
+      "id": "image",
+      "type": "string"
+    },
+    "skills": {
+      "id": "skills",
+      "type": "string"
+    }
+  },
+  "required": [
+    "username"
+  ]
+}
