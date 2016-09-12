@@ -2,9 +2,17 @@
 sequenceDiagram
     participant App
     participant Server
-    App->>Server: 1. HTTP POST /workspace/{id}/part
+    loop upload resources
+        App->>Server: 1. POST /stream
+        alt success
+            Server-->>App: 2. HTTP 202 {"ref":"https://www.domain.it/cppp..hdd"}
+        else failure
+            Server-->>App: 2. HTTP 412
+        end
+    end
+    App->>Server: 2. HTTP POST /workspace/{id}/part
     alt success
-        Server->>App: 2a. HTTP 201 {"id":""}
+        Server->>App: 3a. HTTP 201 {"id":""}
     else failure
-        Server->>App: 2b. HTTP 4XX
+        Server->>App: 3b. HTTP 4XX
     end
