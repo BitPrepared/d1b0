@@ -3,6 +3,7 @@
   sudo: true
   tasks:
     - authorized_key: user=root key="{{ lookup('file', './ssh/root.key.pub') }}"
+    - user: name=developer shell=/bin/bash groups=admin append=yes createhome=yes
     - authorized_key: user=developer key="{{ lookup('file', './ssh/developer.key.pub') }}"
 
 
