@@ -1,9 +1,13 @@
 ---
-
+# caratteristiche di un webservers
 - name: webservers.yml | All roles
   hosts: webservers
-  sudo: True
+  become: True
 
   roles:
-    - { role: common,                   tags: ["common"] }
-    - { role: ansible-nginx,            tags: ["nginx"] }
+   - { role: base,                      tags: ["base"] }
+   - { role: ansible-role-nginx,        tags: ["nginx"] }
+  #  - { role: ansible-php-fpm,           tags: ["php"] }
+
+  vars:
+    nginx_http_params: ["tcp_nodelay on", "error_log /var/log/nginx/error.log"]

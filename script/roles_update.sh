@@ -1,7 +1,6 @@
 #!/bin/bash
 cd server
 
-
 set -e
 #TODO: Support python virtual environments for now global
 
@@ -9,8 +8,7 @@ COLOR_END='\e[0m'
 COLOR_RED='\e[0;31m'
 
 # This current directory.
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-ROOT_DIR=$(cd "$DIR/../../" && pwd)
+ROOT_DIR=$(pwd)
 EXTERNAL_ROLE_DIR="$ROOT_DIR/roles/external"
 ROLES_REQUIREMNTS_FILE="$ROOT_DIR/roles/roles_requirements.yml"
 

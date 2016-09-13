@@ -1,9 +1,5 @@
-- src: git+https://github.com/yetu/ansible-apt.git
-  version: "v0.1.4"
-  name: ansible-apt
-
-- src: git+https://github.com/yetu/ansible-hostname.git
-  version: "v0.1.2"
+- src: git+https://github.com/ANXS/hostname.git
+  version: "v1.0.4"
   name: ansible-hostname
 
 - src: git+https://github.com/Stouts/Stouts.sudo.git
@@ -17,10 +13,10 @@
   version: "v1.0.3"
   name: knopki.locale
 
-- src: git+https://github.com/ANXS/postgresql.git
-  version: "v1.1.1"
-  name: ANXS.postgresql
+- src: git+https://github.com/Servers-for-Hackers/ansible-php-fpm.git
+  version: master
+  name: ansible-php-fpm
 
-- src: git+https://github.com/AutomationWithAnsible/ansible-nginx.git
-  version: "v1.0.3"
-  name: ansible-nginx
+- src: git+https://github.com/jdauphant/ansible-role-nginx.git
+  version: "v2.3.1"
+  name: ansible-role-nginx

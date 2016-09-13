@@ -1,0 +1,21 @@
+---
+# file: site.yml
+- hosts: all
+
+  roles:
+    - base
+    - Stouts.sudo
+    - knopki.locale
+    - ANXS.openssh
+    - ansible-hostname
+
+  vars:
+    sudo_users: [yoghi,danger]
+    sudo_passwordless: [yoghi,danger]
+    openssh_server_settings:
+      Banner: "Welcome to ..."
+      ClientAliveInterval: "10"
+    locale: en_US.UTF-8
+    hostname_avahi: no
+
+- include: plays/webservers.yml

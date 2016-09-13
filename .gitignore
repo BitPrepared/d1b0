@@ -1,2 +1,8 @@
 .DS_Store
+.pub
+
+api/api-generated.html
+
 vendor/
+
+server/roles/external/
