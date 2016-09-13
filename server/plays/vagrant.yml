@@ -2,7 +2,8 @@
   remote_user: vagrant
   sudo: true
   tasks:
-    - authorized_key: user=root key="{{ lookup('file', './ssh/root.pub') }}"
+    - authorized_key: user=root key="{{ lookup('file', './ssh/root.key.pub') }}"
+    - authorized_key: user=developer key="{{ lookup('file', './ssh/developer.key.pub') }}"
 
 
 # deb http://httpredir.debian.org/debian jessie-backports main contrib non-free
