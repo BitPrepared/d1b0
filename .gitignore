@@ -1,6 +1,8 @@
 .DS_Store
 .pub
 
+.vagrant
+
 api/api-generated.html
 
 vendor/
