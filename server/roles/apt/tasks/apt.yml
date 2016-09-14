@@ -79,3 +79,11 @@
   apt:
     pkg: "{{apt_default_packages|join(',')}}"
     state: present
+
+- name: APT | Priority preferences
+  template:
+    src: deb_source_node.pref.j2
+    dest: /etc/apt/preferences.d/deb_source_node.pref
+    owner: root
+    group: root
+    mode: 0644

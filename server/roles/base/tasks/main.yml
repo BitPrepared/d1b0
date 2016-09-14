@@ -1,19 +1,11 @@
-# DEBIAN SPECIFIC
-# - name: remove cdrom
-#   apt_repository: repo='deb cdrom:[Debian GNU/Linux 8.3.0 _Jessie_ - Official amd64 DVD Binary-1 20160123-19:03]/ jessie contrib main' state=absent
-#
-# - name: remove netinst
-#   apt_repository: repo='deb cdrom:[Debian GNU/Linux 8.3.0 _Jessie_ - Official amd64 NETINST Binary-1 20160123-18:59]/ jessie main' state=absent
-
 # APPLICAZIONI
-
 
 - name: repository setup for unstable version
   apt_repository: repo='deb http://ftp.de.debian.org/debian sid main' state=present
-- name: repository setup for jessie-backport version
-  apt_repository: repo='deb http://httpredir.debian.org/debian jessie-backports main' state=present
-- name: priority preferences
-  template: src=deb_source_node.pref.j2 dest=/etc/apt/preferences.d/deb_source_node.pref
+
+# - name: repository setup for jessie-backport version
+#   apt_repository: repo='deb http://httpredir.debian.org/debian jessie-backports main' state=present
+
 
 - name: install base application
   apt: name={{item}} update_cache=yes cache_valid_time=3600
