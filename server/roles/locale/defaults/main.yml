@@ -1,0 +1,5 @@
+---
+# defaults file for locale
+locale_lang: en_US.UTF-8
+installed_locale:
+  - en_US.UTF-8

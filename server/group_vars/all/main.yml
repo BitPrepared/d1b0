@@ -1,4 +1,52 @@
 ---
-# file: group_vars/atlanta
-ntp: ntp-atlanta.example.com
-backup: backup-atlanta.example.com
+# file: group_vars/all
+locale_lang: en_US.UTF-8
+installed_locale:
+  - en_US.UTF-8
+  - it_IT.UTF-8
+
+base_sysctl:
+  - { name: kernel.core_uses_pid, value: 1 }
+  - { name: kernel.kptr_restrict, value: 1 }
+  - { name: kernel.sysrq, value: 0 }
+  - { name: net.ipv4.conf.all.log_martians, value: 1 }
+  - { name: net.ipv4.conf.all.accept_redirects, value: 0}
+  - { name: net.ipv4.conf.all.forwarding, value: 0 }
+  - { name: net.ipv4.conf.default.log_martians, value: 1 }
+
+base_application:
+  - supervisor
+  - less
+  - vim
+  - net-tools
+  - nano
+  - htop
+  - curl
+  - rsync
+  - screen
+  - ack-grep
+  - vnstat
+  - ntpdate
+  - unzip
+  - cron
+  - wget
+  - ntop
+  - iptraf
+  - dstat
+  - sudo
+  - python-pip
+  - apt-rdepends
+
+sudoers_sudoers:
+  defaults:
+    - env_reset
+    - exempt_group=sudo
+    - mail_badpass=false
+    - secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  privileges:
+    - name: "root"
+      entry: "ALL=(ALL:ALL) ALL"
+    - name: "%admin"
+      entry: "ALL = (ALL) NOPASSWD:ALL"
+    - name: "developer"
+      entry: "ALL = (ALL) NOPASSWD:ALL"

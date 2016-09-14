@@ -1,5 +1,6 @@
 [local-webservers]
-test-virtualbox ansible_ssh_host=127.0.0.1 ansible_ssh_user=developer ansible_ssh_private_key_file=plays/ssh/developer.key.pub ansible_ssh_port=2222
+#test-virtualbox ansible_ssh_host=127.0.0.1 ansible_ssh_user=developer ansible_ssh_private_key_file=./plays/ssh/developer.key ansible_ssh_port=2222
+test-virtualbox ansible_ssh_host=127.0.0.1 ansible_ssh_user=root ansible_ssh_private_key_file=./plays/ssh/root.key ansible_ssh_port=2222
 
 [webservers:children]
 local-webservers

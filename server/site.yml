@@ -3,19 +3,27 @@
 - hosts: all
 
   roles:
-    - base
-    - Stouts.sudo
-    - knopki.locale
-    - ANXS.openssh
-    - ansible-hostname
+    - { role: tersmitten.sudoers, tags: ["base"] }
+    - { role: locale, tags: ["base"] }
+    - { role: ANXS.openssh, tags: ["base"] }
+    - { role: ansible-hostname, tags: ["base"] }
+    - { role: base, tags: ["base"] }
 
   vars:
-    sudo_users: [yoghi,danger]
-    sudo_passwordless: [yoghi,danger]
+    interface: "{{ansible_default_ipv4.interface}}"
     openssh_server_settings:
       Banner: "Welcome to ..."
       ClientAliveInterval: "10"
-    locale: en_US.UTF-8
+
     hostname_avahi: no
+
+    no_root_user: developer
+
+    service_list:
+     - { port: 443, proto: 'tcp' }
+     - { port: 80, proto: 'tcp' }
+
+    base_scripts:
+      - apt-check-security.sh
 
 - include: plays/webservers.yml
