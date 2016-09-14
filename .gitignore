@@ -1,7 +1,9 @@
 # files
 .DS_Store
-.pub
+*.pub
+*.key
 npm-debug.log*
+vagrant.retry
 
 # directory
 node_modules

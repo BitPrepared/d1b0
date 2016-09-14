@@ -10,10 +10,8 @@
     - { role: base, tags: ["base"] }
 
   vars:
+    apt_version_name: jessie
     interface: "{{ansible_default_ipv4.interface}}"
-    openssh_server_settings:
-      Banner: "Welcome to ..."
-      ClientAliveInterval: "10"
 
     hostname_avahi: no
 

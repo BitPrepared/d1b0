@@ -1,15 +1,32 @@
 ---
 ## Deploy Apt source custom template
-apt_update_source_list         : "template"
+apt_update_source_list: "template"
 
-## use netherland mirror
-apt_update_source_list_mirror  : "http://nl.archive.ubuntu.com/ubuntu/"
+## use localization mirror
+#  apt_update_source_list_mirror: ftp://mirror.hetzner.de/debian/packages
+apt_update_source_list_mirror: "http://httpredir.debian.org/debian"
+apt_update_source_list_security_mirror: "http://security.debian.org"
 
 ## Install unattended package
-unattended_install             : True
+unattended_install: True
 
-apt_default_packages           :
-                                  - python-apt
-                                  - unattended-upgrades
-                                  - language-pack-en-base
-                                  - unzip
+apt_default_packages:
+  - python-apt
+  - unattended-upgrades
+  - unzip
+
+
+##: rimane il problema di usare security!
+
+## FIXME: questi vanno messi con i role di nginx e non con apt
+
+apt_default_repositories:
+  - "deb http://haproxy.debian.net {{apt_version_name}}-backports-1.6 main"
+  - "deb http://nginx.org/packages/debian/ {{apt_version_name}} nginx"
+  - "deb-src http://nginx.org/packages/debian/ {{apt_version_name}} nginx"
+
+apt_default_key_urls_webservers:
+  - "https://haproxy.debian.net/bernat.debian.org.gpg"
+  - "http://nginx.org/keys/nginx_signing.key"
+
+# - "nginx-full=1.9.10-1~bpo8+3"

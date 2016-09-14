@@ -1,0 +1,62 @@
+{
+  "name": "impresa-luna",
+  "version": "1.0.0",
+  "homepage": "https://github.com/BitPrepared/d1b0#readme",
+  "private": true,
+  "url": "https://github.com/BitPrepared/d1b0/issues",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BitPrepared/d1b0.git"
+  },
+  "author": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "favicons": "^4.8.1",
+    "jshint": "^2.9.3",
+    "mkdirp": "^0.5.1",
+    "opener": "^1.4.2",
+    "parallelshell": "^2.0.0",
+    "rimraf": "^2.5.4",
+    "tidy-html5": "^0.1.1"
+  },
+  "config": {
+    "reporter": "xunit",
+    "enviroment": "dev"
+  },
+  "scripts": {
+    "init": "npm run clean; npm install",
+    "lint": "jshint **.js",
+    "build": "parallelshell 'npm run build:favicon' 'npm run build:css' 'npm run build:html' './scripts/generatekey.sh'",
+    "build:favicon": "rimraf applications/assets/icons/* && node scripts/js/favicon.js",
+    "build:css": "echo css",
+    "build:html": "echo html",
+    "preinstall": "scripts/preinstall.sh && npm run build && cd server && vagrant up",
+    "install": "npm run install:server",
+    "install:server": "cd server && ansible-playbook -i $npm_package_config_enviroment.hosts site.yml",
+    "postinstall": "echo postinstall",
+    "clean": "npm run clean:dist && npm run clean:server && npm run clean:key",
+    "clean:key": "rimraf server/plays/ssh/*.key && rimraf server/plays/ssh/*.pub",
+    "clean:server": "cd server && vagrant destroy -f",
+    "clean:dist": "echo dist clean",
+    "ssh:vagrant": "cd server && vagrant ssh",
+    "ssh:developer": "ssh -p 2222 developer@127.0.0.1 -i server/plays/ssh/developer.key",
+    "ssh:root": "ssh -p 2222 root@127.0.0.1 -i server/plays/ssh/root.key",
+    "start": "cd server && vagrant up",
+    "test": "echo test",
+    "dist": "mkdirp dist/ && echo dist",
+    "release": "",
+    "deploy:prod": "s3-cli sync ./dist/ s3://example-com/prod-site/",
+    "deploy:stage": "s3-cli sync ./dist/ s3://example-com/stage-site/",
+    "open:dev": "opener http://localhost:8080"
+  },
+  "devEngines": {
+    "node": "6.x",
+    "npm": "3.x"
+  },
+  "description": "Progetto Segreto",
+  "bugs": {
+    "url": "https://github.com/BitPrepared/d1b0/issues"
+  }
+}
