@@ -14,14 +14,14 @@ apt_default_packages:
   - python-apt
   - unattended-upgrades
   - unzip
-
+  - python-selinux
 
 ##: rimane il problema di usare security!
 
 ## FIXME: questi vanno messi con i role di nginx e non con apt
 
 apt_default_repositories:
-  - "deb http://httpredir.debian.org/debian jessie-backports main"
+   - "deb http://httpredir.debian.org/debian jessie-backports main"
   # - "deb http://haproxy.debian.net {{apt_version_name}}-backports-1.6 main"
   # - "deb http://nginx.org/packages/debian/ {{apt_version_name}} nginx"
   # - "deb-src http://nginx.org/packages/debian/ {{apt_version_name}} nginx"

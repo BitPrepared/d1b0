@@ -3,3 +3,4 @@ dependencies:
   - apt
   - locale
   - sysctl
+  - firewall

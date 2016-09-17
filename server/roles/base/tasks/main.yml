@@ -1,3 +1,54 @@
+# NTP
+- name: make sure the time is correct
+  shell: "ntpdate -u {{ntp_server}}"
+
+# FIXME: setup ntp auto update
+
+# SSH BANNER
+- name: SSH banner
+  template:
+    src: ssh.banner.j2
+    dest: /etc/ssh/sshd-banner
+    owner: root
+    group: root
+    mode: 0644
+
+- name: SSH FireMotD
+  template:
+    src: motd.j2
+    dest: /etc/profile.d/motd.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Git requirement
+  apt: name={{item}} update_cache=yes cache_valid_time=3600
+  with_items:
+    - git
+    - make
+    - sysstat
+
+- name: FireMotD download
+  git:
+    repo: https://github.com/willemdh/FireMotD.git
+    dest: /tmp/FireMotD
+    version: "v5.14.160701"
+
+- name: FireMotD install
+  shell: make
+  args:
+    chdir: /tmp/FireMotD
+
+- name: FireMotD cron
+  cron:
+    name: "firefmotd update"
+    minute: 3
+    hour: 3
+    user: "root"
+    job: "/usr/local/bin/FireMotD -S > /dev/null"
+    cron_file: "firefmotd-update"
+    state: present
+
 # APPLICAZIONI
 
 - name: repository setup for unstable version
@@ -6,6 +57,8 @@
 # - name: repository setup for jessie-backport version
 #   apt_repository: repo='deb http://httpredir.debian.org/debian jessie-backports main' state=present
 
+- name: validate ssh
+  shell: "sshd -t"
 
 - name: install base application
   apt: name={{item}} update_cache=yes cache_valid_time=3600

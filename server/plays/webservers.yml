@@ -4,9 +4,19 @@
   hosts: webservers
 
   roles:
+    - { role: geerlingguy.mysql, tags: ["database"] }
+    - { role: geerlingguy.redis, tags: ["database"] }
+    - { role: geerlingguy.nginx, tags: ["internalserver"] }
+
+    - { role: haproxy, tags: ["frontend"] }
+
+    # FIXME: php7 NO BUONO!
+    #- { role: geerlingguy.php, tags: ["application"] }
+    #- { role: geerlingguy.composer, tags: ["application"] }
+
   #  - { role: ansible-role-nginx,        tags: ["nginx"] }
   #  - { role: ansible-php-fpm,           tags: ["php"] }
   #  - { role: base,                      tags: ["base"] }
 
   vars:
-    nginx_http_params: ["tcp_nodelay on", "error_log /var/log/nginx/error.log"]
+    param_generico: prova

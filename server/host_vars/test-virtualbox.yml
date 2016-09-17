@@ -1,7 +1,0 @@
----
-descr_group: gruppo macchine di test
-ntp_server: it.pool.ntp.org
-
-apt_unwanted_repositories:
-  - 'deb cdrom:[Debian GNU/Linux 8.3.0 _Jessie_ - Official amd64 DVD Binary-1 20160123-19:03]/ jessie contrib main'
-  - 'deb cdrom:[Debian GNU/Linux 8.3.0 _Jessie_ - Official amd64 NETINST Binary-1 20160123-18:59]/ jessie main'

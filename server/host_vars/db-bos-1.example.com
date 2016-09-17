@@ -1,4 +1,4 @@
 ---
 # file: host_vars/db-bos-1.example.com
-foo_agent_port: 86
-bar_agent_port: 99
+descr_group: gruppo macchine di test
+ntp_server: it.pool.ntp.org

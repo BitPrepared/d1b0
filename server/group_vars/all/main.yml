@@ -20,7 +20,6 @@ base_application:
   - vim
   - net-tools
   - nano
-  - htop
   - curl
   - rsync
   - screen
@@ -30,18 +29,18 @@ base_application:
   - unzip
   - cron
   - wget
-  - ntop
   - iptraf
   - dstat
   - sudo
   - python-pip
   - apt-rdepends
+  - zip
 
 sudoers_sudoers:
   defaults:
     - env_reset
     - exempt_group=sudo
-    - mail_badpass=false
+    - mail_badpass
     - secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
   privileges:
     - name: "root"
@@ -50,3 +49,17 @@ sudoers_sudoers:
       entry: "ALL = (ALL) NOPASSWD:ALL"
     - name: "developer"
       entry: "ALL = (ALL) NOPASSWD:ALL"
+
+  apt_version_name: jessie
+  interface: "{{ansible_default_ipv4.interface}}"
+
+  hostname_avahi: no
+
+  no_root_user: developer
+
+  service_list:
+   - { port: 443, proto: 'tcp' }
+   - { port: 80, proto: 'tcp' }
+
+  base_scripts:
+    - apt-check-security.sh
