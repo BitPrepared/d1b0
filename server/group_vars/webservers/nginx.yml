@@ -1,27 +1,50 @@
 ---
-# The user to run nginx
+# # The user to run nginx
+#
+# nginx_user: www-data
+#
+# # A list of directives for the events section.
+# nginx_events_params:
+#  - worker_connections 512
+#  - debug_connection 127.0.0.1
+#  - use epoll
+#  - multi_accept on
+#
+# # A list of hashs that define the servers for nginx,
+# # as with http parameters. Any valid server parameters
+# # can be defined here.
+# nginx_sites:
+#  default:
+#       - listen 8080
+#       - server_name _
+#       - root "/usr/share/nginx/html"
+#       - index index.html
+#
+# # A list of hashs that define additional configuration
+# nginx_configs:
+#     gzip:
+#       - gzip on
+#       - gzip_disable msie6
 
-nginx_user: www-data
+nginx_remove_default_vhost: true
+nginx_vhosts_filename: "vhosts.conf"
 
-# A list of directives for the events section.
-nginx_events_params:
- - worker_connections 512
- - debug_connection 127.0.0.1
- - use epoll
- - multi_accept on
+nginx_extra_http_options: |
+  proxy_buffering    off;
 
-# A list of hashs that define the servers for nginx,
-# as with http parameters. Any valid server parameters
-# can be defined here.
-nginx_sites:
- default:
-      - listen 8080
-      - server_name _
-      - root "/usr/share/nginx/html"
-      - index index.html
-
-# A list of hashs that define additional configuration
-nginx_configs:
-    gzip:
-      - gzip on
-      - gzip_disable msie6
+nginx_vhosts:
+  - listen: "8081 default_server"
+    server_name: "example.com"
+    root: "/var/www/example.com/public"
+    index: "index.php index.html index.htm"
+    #error_page: ""
+    access_log: "/var/www/example.com/log/access.log"
+    error_log: "/var/www/example.com/log/error.log"
+    extra_parameters: |
+      location ~ \.php$ {
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              fastcgi_pass unix:/var/run/php5-fpm.sock;
+              fastcgi_index index.php;
+              fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+              include fastcgi_params;
+          }

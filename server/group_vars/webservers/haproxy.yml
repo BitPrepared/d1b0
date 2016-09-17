@@ -1,0 +1,16 @@
+# listen ft_web
+#  option http-server-close
+#  mode http
+#  bind 127.0.0.1:8090 name http
+#  default_backend bk_web
+#
+# backend bk_web
+#  option http-server-close
+#  mode http
+#  compression algo gzip
+#  compression type text/html text/plain text/css
+#  server localhost 127.0.0.1:80
+
+# Test
+#curl -o/dev/null -D - "http://127.0.0.1:8090/style.css"
+#curl -o/dev/null -D - "http://127.0.0.1:8090/style.css" -H "Accept-Encoding: gzip"
