@@ -11,7 +11,6 @@
     - { role: locale, tags: ["base"] }
     - { role: ansible-hostname, tags: ["base"] }
     # - { role: ANXS.openssh, tags: ["base"] }
-    - { role: matrail, tags: ["base"] }
 
     #- { role: ansible-no-apparmor, tags: ["hardening"] }
     - { role: apparmor, tags: ["hardening"] }
@@ -23,12 +22,13 @@
 
     - { role: base, tags: ["comodity"] }
 
-
-
-
 # Testing (da valutare se usarlo o meno, locale o remoto)
 - hosts: local-webservers
   roles:
     - { role: goaccess, tags: ["log"] }
 
 - include: plays/webservers.yml
+
+
+# post_tasks:
+# notifica a qualcuno?

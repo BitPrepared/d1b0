@@ -1,6 +1,6 @@
 - hosts: all
   remote_user: vagrant
-  #bud sudo
+  #bug sudo
   sudo: true
   tasks:
     - authorized_key: user=root key="{{ lookup('file', './ssh/root.key.pub') }}" exclusive=yes

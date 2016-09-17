@@ -1,8 +1,0 @@
-- name: install dependency
-  apt: name={{item}}
-  with_items:
-    - python-pcapy
-- name: clone repository
-  git: repo=https://github.com/stamparm/maltrail.git dest=/var/www/maltrail
-  #cd maltrail
-  #sudo python sensor.py
