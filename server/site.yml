@@ -11,15 +11,19 @@
     - { role: locale, tags: ["base"] }
     - { role: ansible-hostname, tags: ["base"] }
     # - { role: ANXS.openssh, tags: ["base"] }
+    - { role: matrail, tags: ["base"] }
 
     #- { role: ansible-no-apparmor, tags: ["hardening"] }
     - { role: apparmor, tags: ["hardening"] }
     - { role: dev-sec.os-hardening, tags: ["hardening"] }
     - { role: dev-sec.ssh-hardening, tags: ["hardening"] }
 
+    # https://github.com/lyrasis/ansible-linux-security-role
     - { role: linux-security-check, tags: ["hardening"] }
 
     - { role: base, tags: ["comodity"] }
+
+
 
 
 # Testing (da valutare se usarlo o meno, locale o remoto)

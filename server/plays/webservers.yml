@@ -8,7 +8,8 @@
     - { role: geerlingguy.redis, tags: ["database"] }
     - { role: geerlingguy.nginx, tags: ["internalserver"] }
 
-    - { role: haproxy, tags: ["frontend"] }
+    # da fixare
+    #- { role: haproxy, tags: ["frontend"] }
 
     # FIXME: php7 NO BUONO!
     #- { role: geerlingguy.php, tags: ["application"] }
