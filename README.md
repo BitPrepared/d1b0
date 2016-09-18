@@ -16,6 +16,7 @@ Progetto Segreto
 [ ] log rotation
 [ ] in test: mail catcher !!!! come config di base , in prod settare ssmtp o qualcosa per l'invio serio di mail! (mailgun??) MATRAIL?
 [ ] apt-check-security.sh forse e da mettere in un cron anche di root va bene
+[ ] delete nei vari elementi
 
 ## COMANDI
 
