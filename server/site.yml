@@ -23,9 +23,9 @@
     - { role: base, tags: ["comodity"] }
 
 # Testing (da valutare se usarlo o meno, locale o remoto)
-- hosts: local-webservers
-  roles:
-    - { role: goaccess, tags: ["log"] }
+# - hosts: local-webservers
+#   roles:
+#     - { role: goaccess, tags: ["log"] }
 
 - include: plays/webservers.yml
 
