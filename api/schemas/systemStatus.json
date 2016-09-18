@@ -3,17 +3,19 @@
   "id": "http://localhost:8080/schemas/systemStatus.json",
   "type": "object",
   "properties": {
-    "websocket": {
+    "workspace": {
         "$ref": "serviceState.json"
     },
-    "clientsInfo": {
-    	"type": "array",
-    	"items": {
-    		"$ref": "clientInfo.json"
-    	}
+    "fileManager": {
+        "$ref": "serviceState.json"
+    },
+    "externalLogin": {
+        "$ref": "serviceState.json"
     }
   },
   "required": [
-    "websocket"
+    "workspace",
+    "fileManager",
+    "externalLogin"
   ]
 }
