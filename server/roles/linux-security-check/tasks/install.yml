@@ -13,7 +13,6 @@
       - nmap
       - cron
       - wget
-      - ntpdate
     tags: bootstrap
 
   - name: install packages
