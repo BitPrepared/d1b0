@@ -17,6 +17,7 @@
     - { role: dev-sec.os-hardening, tags: ["hardening"] }
     - { role: dev-sec.ssh-hardening, tags: ["hardening"] }
 
+    # fa anche ntpudate!
     # https://github.com/lyrasis/ansible-linux-security-role
     # - { role: linux-security-check, tags: ["hardening"] }
 

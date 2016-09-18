@@ -1,7 +1,3 @@
-# NTP
-- name: make sure the time is correct
-  shell: "ntpdate -u {{ntp_server}}"
-
 # FIXME: setup ntp auto update
 
 # SSH BANNER
