@@ -3,6 +3,8 @@
         "mailgun/mailgun-php": "^2.1",
         "silex/silex": "~2.0",
         "monolog/monolog": "^1.21",
-        "nesbot/carbon": "^1.21"
+        "nesbot/carbon": "^1.21",
+        "gabordemooij/redbean": "^4.3",
+        "ivoba/redbean-service-provider": "^3.0"
     }
 }

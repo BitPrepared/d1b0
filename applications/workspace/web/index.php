@@ -7,15 +7,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Silex\Provider\MonologServiceProvider;
+use Ivoba\Silex\RedBeanServiceProvider;
 use Carbon\Carbon;
 use Monolog\Logger;
+use RedBean_Facade as R;
 
 // TRAITS
 // use Silex\Application\MonologTrait;
 
 // FIXME va messo nel php.ini
 date_default_timezone_set('Europe/Rome');
-
 
 $app = new Silex\Application();
 
@@ -36,6 +37,10 @@ $app->register(new MonologServiceProvider(), array(
     "monolog.level" => $app["log.level"],
     "monolog.name" => "application"
 ));
+
+// @see: https://github.com/ivoba/redbean-service-provider
+//'mysql:host=localhost;dbname=mydatabase', 'user', 'password'
+$app->register(new RedBeanServiceProvider(), array('db.options' => array( 'dsn' => 'sqlite:/tmp/db.sqlite' )));
 
 // production (X-Forwarded-For*)
 //Request::setTrustedProxies(array($ip));
@@ -95,6 +100,10 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
 
 $blogPosts = [];
 $app->get('/sample/{id}', function ($id) use ($blogPosts) {
+
+    $app['db']; //attivo il facade R
+    $e = R::findAll('table', ' ORDER BY date DESC LIMIT 2');
+
     // ...
     // per ricordarsi di validare anche lo User-Agent in caso
     // ...

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c7fc990d046548b00306b5b1574aefa8",
-    "content-hash": "f3cf135d2109c0d7d8608bdf52f59e84",
+    "hash": "61cd888b19ce6ebd00ccd2bd56f79ad3",
+    "content-hash": "8da440e8186fdcaea341bbe280ecd1b1",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -55,6 +55,92 @@
                 "stream_filter_register"
             ],
             "time": "2015-11-08 23:41:30"
+        },
+        {
+            "name": "gabordemooij/redbean",
+            "version": "v4.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gabordemooij/redbean.git",
+                "reference": "72368f15cedfa7990c7fb228e47d2f00c7f49d4f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gabordemooij/redbean/zipball/72368f15cedfa7990c7fb228e47d2f00c7f49d4f",
+                "reference": "72368f15cedfa7990c7fb228e47d2f00c7f49d4f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedBeanPHP\\": "RedBeanPHP"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "New BSD and GPLv2"
+            ],
+            "authors": [
+                {
+                    "name": "Gabor de Mooij",
+                    "email": "gabor@redbeanphp.com",
+                    "homepage": "http://redbeanphp.com"
+                }
+            ],
+            "description": "RedBeanPHP ORM",
+            "homepage": "http://redbeanphp.com/",
+            "keywords": [
+                "orm"
+            ],
+            "time": "2016-05-01 10:27:43"
+        },
+        {
+            "name": "ivoba/redbean-service-provider",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ivoba/redbean-service-provider.git",
+                "reference": "da1f45b6ff214f7ed6037562c3844c6edffc149c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ivoba/redbean-service-provider/zipball/da1f45b6ff214f7ed6037562c3844c6edffc149c",
+                "reference": "da1f45b6ff214f7ed6037562c3844c6edffc149c",
+                "shasum": ""
+            },
+            "require": {
+                "gabordemooij/redbean": "^4.0",
+                "php": ">=5.5.9",
+                "silex/silex": "^2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ivoba\\Silex\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ivo Bathke",
+                    "email": "ivo.bathke@gmail.com"
+                }
+            ],
+            "description": "A RedBean ORM ServiceProvider for Silex.",
+            "keywords": [
+                "redbean",
+                "silex"
+            ],
+            "time": "2016-05-24 08:34:57"
         },
         {
             "name": "mailgun/mailgun-php",
