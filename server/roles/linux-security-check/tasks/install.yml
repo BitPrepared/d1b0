@@ -13,6 +13,7 @@
       - nmap
       - cron
       - wget
+      - ntpdate
     tags: bootstrap
 
   - name: install packages
@@ -62,7 +63,7 @@
   - name: Maldet | Add maldet to crontab at a random hour
     cron: name="Run Maldet" hour="{{ 3|random}}" minute="{{ 57 |random}}" job="{{ maldet_cron }}" state=present
     changed_when: False
-    tags: 
+    tags:
        - maldet
        - cron
        - scanners
@@ -99,7 +100,7 @@
   - name: Lynis | Add Lynis to crontab at a random hour
     cron: name="Run Lynis" hour="{{ 4|random}}" minute="{{ 59 |random}}" job="{{ lynis_cron }}" state=present
     changed_when: False
-    tags: 
+    tags:
        - lynis
        - cron
        - scanners
