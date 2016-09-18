@@ -28,7 +28,7 @@
   "scripts": {
     "init": "npm run clean; npm install",
     "lint": "jshint **.js",
-    "build": "parallelshell 'npm run build:favicon' 'npm run build:css' 'npm run build:html' './scripts/generatekey.sh'",
+    "build": "parallelshell 'npm run build:favicon' 'npm run build:css' 'npm run build:html' './scripts/generatekey.sh' './scripts/roles_update.sh'",
     "build:favicon": "rimraf applications/assets/icons/* && node scripts/js/favicon.js",
     "build:css": "echo css",
     "build:html": "echo html",
