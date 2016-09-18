@@ -2,20 +2,33 @@
 # file: site.yml
 - hosts: all
 
-  roles:
-    - base
-    - Stouts.sudo
-    - knopki.locale
-    - ANXS.openssh
-    - ansible-hostname
+  tasks:
+    # SE USI SELINUX
+    # - shell: check-selinux-installation
 
-  vars:
-    sudo_users: [yoghi,danger]
-    sudo_passwordless: [yoghi,danger]
-    openssh_server_settings:
-      Banner: "Welcome to ..."
-      ClientAliveInterval: "10"
-    locale: en_US.UTF-8
-    hostname_avahi: no
+  roles:
+    - { role: tersmitten.sudoers, tags: ["base"] }
+    - { role: locale, tags: ["base"] }
+    - { role: ansible-hostname, tags: ["base"] }
+    # - { role: ANXS.openssh, tags: ["base"] }
+
+    #- { role: ansible-no-apparmor, tags: ["hardening"] }
+    - { role: apparmor, tags: ["hardening"] }
+    - { role: dev-sec.os-hardening, tags: ["hardening"] }
+    - { role: dev-sec.ssh-hardening, tags: ["hardening"] }
+
+    # https://github.com/lyrasis/ansible-linux-security-role
+    - { role: linux-security-check, tags: ["hardening"] }
+
+    - { role: base, tags: ["comodity"] }
+
+# Testing (da valutare se usarlo o meno, locale o remoto)
+- hosts: local-webservers
+  roles:
+    - { role: goaccess, tags: ["log"] }
 
 - include: plays/webservers.yml
+
+
+# post_tasks:
+# notifica a qualcuno?

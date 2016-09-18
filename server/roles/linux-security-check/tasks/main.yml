@@ -1,0 +1,14 @@
+---
+# tasks file for ansible-linux-security-role
+
+  - name: make sure the time is correct
+    shell: "ntpdate -u {{ntp_server}}"
+
+  # - name: Update APT package cache
+  #   action: apt update_cache=yes
+  #   changed_when: False
+
+  - include: install.yml
+
+  #- include: tasks.yml
+

@@ -1,2 +1,6 @@
 ---
-dependencies: []
+dependencies:
+  - apt
+  - locale
+  - sysctl
+  - firewall

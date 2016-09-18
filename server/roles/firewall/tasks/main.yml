@@ -1,14 +1,22 @@
----
-- name: Install Iptables Persistent
-  apt: pkg=iptables-persistent state=installed update_cache=true
-  notify:
-    - Start Iptables Persistent
+##
+## http://docs.ansible.com/ansible/ufw_module.html
+##
 
-- name: Set Firewall Rules
-# controllare il copy come funziona per sistemare il v1 cablato
-  copy: src={{ iptables_file }} dest=/etc/iptables/rules.v1 owner=root group=root mode=644
-  notify:
-    - Restart Iptables Persistent
-
-- name: Ensure Iptables Persistent Restarted
-  service: name=iptables-persistent state=restarted
+- name: install ufw
+  apt: name={{item}}
+  with_items:
+    - iptables
+    - ufw
+- name: disable ipv6
+  copy: src=ufw.yml dest=/etc/default/ufw #ci vorrebbe un sed!
+- name: ufw reset
+  ufw: state=reset
+- name: ssh enable
+  ufw: rule=allow name=OpenSSH #per non chiudersi fuori
+- name: ufw start
+  ufw: state=enabled policy=allow
+- name: ufw enable service
+  ufw: rule=allow port={{ item.port }}  proto={{ item.proto }}
+  with_items: "{{service_list}}"
+- name: ufw deny all
+  ufw: policy=deny #means the packet is discarded

@@ -1,0 +1,19 @@
+---
+descr_group: gruppo macchine di test (???)
+ntp_server: it.pool.ntp.org
+
+# non serve in test
+apparmor__mail_to: []
+
+apt_unwanted_repositories:
+  - 'deb cdrom:[Debian GNU/Linux 8.3.0 _Jessie_ - Official amd64 DVD Binary-1 20160123-19:03]/ jessie contrib main'
+  - 'deb cdrom:[Debian GNU/Linux 8.3.0 _Jessie_ - Official amd64 NETINST Binary-1 20160123-18:59]/ jessie main'
+
+ssh_listen_to: ['0.0.0.0']    # sare da mettere il vero IP e quello della VPN
+ssh_allow_root_with_key: true  # finche ansible non risolve il bug su sudo!
+ssh_allow_users: 'root developer vagrant' #vagrant per via dei test
+ssh_print_last_log: true
+ssh_print_motd: true #disabilitabile in produzione?
+ssh_use_pam: true #bug altrimenti
+
+# LoginGraceTime -> tempo per fare un login

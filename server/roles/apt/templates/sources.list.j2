@@ -1,0 +1,11 @@
+# {{ansible_managed}}
+
+deb {{apt_update_source_list_mirror}} {{apt_version_name}} main contrib non-free
+deb-src {{apt_update_source_list_mirror}} {{apt_version_name}} main contrib non-free
+
+deb {{apt_update_source_list_mirror}} {{apt_version_name}}-updates main contrib non-free
+deb-src {{apt_update_source_list_mirror}} {{apt_version_name}}-updates main contrib non-free
+
+## Security
+deb {{apt_update_source_list_security_mirror}} {{apt_version_name}}/updates main contrib non-free
+deb-src {{apt_update_source_list_security_mirror}} {{apt_version_name}}/updates main contrib non-free

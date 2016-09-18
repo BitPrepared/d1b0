@@ -1,0 +1,102 @@
+# NTP
+- name: make sure the time is correct
+  shell: "ntpdate -u {{ntp_server}}"
+
+# FIXME: setup ntp auto update
+
+# SSH BANNER
+- name: SSH banner
+  template:
+    src: ssh.banner.j2
+    dest: /etc/ssh/sshd-banner
+    owner: root
+    group: root
+    mode: 0644
+
+- name: SSH FireMotD
+  template:
+    src: motd.j2
+    dest: /etc/profile.d/motd.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Git requirement
+  apt: name={{item}} update_cache=yes cache_valid_time=3600
+  with_items:
+    - git
+    - make
+    - sysstat
+
+- name: FireMotD download
+  git:
+    repo: https://github.com/willemdh/FireMotD.git
+    dest: /tmp/FireMotD
+    version: "v5.14.160701"
+
+- name: FireMotD install
+  shell: make
+  args:
+    chdir: /tmp/FireMotD
+
+- name: FireMotD cron
+  cron:
+    name: "firefmotd update"
+    minute: 3
+    hour: 3
+    user: "root"
+    job: "/usr/local/bin/FireMotD -S > /dev/null"
+    cron_file: "firefmotd-update"
+    state: present
+
+# APPLICAZIONI
+
+- name: repository setup for unstable version
+  apt_repository: repo='deb http://ftp.de.debian.org/debian sid main' state=present
+
+# - name: repository setup for jessie-backport version
+#   apt_repository: repo='deb http://httpredir.debian.org/debian jessie-backports main' state=present
+
+- name: validate ssh
+  shell: "sshd -t"
+
+- name: install base application
+  apt: name={{item}} update_cache=yes cache_valid_time=3600
+  with_items: "{{base_application}}"
+
+- name: Set up vnstat config file
+  template: src=vnstat.conf.j2 dest=/etc/vnstat.conf mode=0755 owner=root group=root backup=yes
+  notify: restart vnstat
+- name: Ininitalize vnstat
+  command: vnstat -u -i {{interface}}
+
+# UTENZE e PERMESSI
+
+- name: presenza gruppo admin
+  group: name=admin state=present
+
+- name: fix root ssh permission
+  file: path=/root/.ssh owner=root group=root mode=0700
+- name: bashrc
+  copy: src=bashrc dest=~/.bashrc mode=0644
+
+- name: scripts dir
+  file: path=~/scripts state=directory owner=root group=root mode=0700
+
+- name: copy root scripts
+  copy: src=scripts/{{item}} dest=/root/scripts/ mode=0700
+  with_items: "{{base_scripts}}"
+
+# - name: fix {{no_root_user}} ssh permission
+#   file: path=/home/{{no_root_user}}/.ssh owner={{no_root_user}} group=admin mode=0700
+# - name: bashrc
+#   copy: src=bashrc dest=/home/{{no_root_user}}/.bashrc mode=0644 group=admin owner={{no_root_user}}
+#
+# - name: scripts {{no_root_user}} dir
+#   file: path=/home/{{no_root_user}}/scripts state=directory owner={{no_root_user}} group=admin mode=0700
+# - name: copy scripts
+#   copy: src=scripts/{{item}} dest=/home/{{no_root_user}}/scripts/ owner={{no_root_user}} group=admin mode=0700
+#   with_items: "{{base_scripts}}"
+
+# https://fitzcarraldoblog.wordpress.com/2014/09/20/change-systemds-binary-logging-to-text-logging-in-sabayon-linux/
+# LOGGING

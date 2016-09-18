@@ -1,0 +1,8 @@
+- name: install haproxy
+  apt: name=liblua5.3-0=5.3.1-1,haproxy=1.6.3-1
+- name: setup haproxy
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes #templates/ non va messo nei roles
+  notify: restart haproxy
+#http://docs.ansible.com/ansible/haproxy_module.html  
+
+

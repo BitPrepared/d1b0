@@ -1,0 +1,7 @@
+redis_port: 6379
+redis_bind_interface: 127.0.0.1
+redis_timeout: 300
+# aggiustare i livelli di log (debug, verbose, notice, and warning)
+redis_loglevel: "warning"
+redis_logfile: /var/log/redis/redis-server.log
+redis_rdbcompression: "yes"

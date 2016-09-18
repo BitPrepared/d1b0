@@ -1,0 +1,41 @@
+php_enable_webserver: true
+php_webserver_daemon: "nginx"
+php_enable_php_fpm: true
+
+php_date_timezone: "Europe/Rome"
+
+php_memory_limit: "128M"
+php_max_execution_time: "90"
+php_upload_max_filesize: "1M"
+
+php_opcache_enable: "1"
+php_opcache_enable_cli: "0"
+php_opcache_memory_consumption: "96"
+php_opcache_interned_strings_buffer: "16"
+php_opcache_max_accelerated_files: "4096"
+php_opcache_max_wasted_percentage: "5"
+php_opcache_validate_timestamps: "1"
+php_opcache_revalidate_path: "0"
+php_opcache_revalidate_freq: "2"
+php_opcache_max_file_size: "0"
+
+php_packages:
+  - php5-common
+  - php5-fpm
+  - php5-dev
+  - php5-curl
+  - php5-gd
+  - php5-intl
+  - php5-imagick
+  - php5-mcrypt
+  - php5-memcache
+  - php5-sqlite
+  - php5-tidy
+  - php5-xsl
+  - php5-mysqlnd
+  # scegliere bene quali usare
+  #- php5-mysql
+  - php5-redis
+
+composer_path: /usr/local/bin/composer
+composer_github_oauth_token: ''

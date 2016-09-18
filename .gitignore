@@ -1,10 +1,14 @@
+# files
 .DS_Store
-.pub
+*.pub
+*.key
+npm-debug.log*
+vagrant.retry
 
+# directory
+node_modules
+applications/assets/
 .vagrant
-
 api/api-generated.html
-
 vendor/
-
 server/roles/external/
