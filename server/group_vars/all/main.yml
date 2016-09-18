@@ -50,16 +50,16 @@ sudoers_sudoers:
     - name: "developer"
       entry: "ALL = (ALL) NOPASSWD:ALL"
 
-  apt_version_name: jessie
-  interface: "{{ansible_default_ipv4.interface}}"
+apt_version_name: jessie
+interface: "{{ansible_default_ipv4.interface}}"
 
-  hostname_avahi: no
+hostname_avahi: no
 
-  no_root_user: developer
+no_root_user: developer
 
-  service_list:
-   - { port: 443, proto: 'tcp' }
-   - { port: 80, proto: 'tcp' }
+service_list:
+ - { port: 443, proto: 'tcp' }
+ - { port: 80, proto: 'tcp' }
 
-  base_scripts:
-    - apt-check-security.sh
+base_scripts:
+  - apt-check-security.sh

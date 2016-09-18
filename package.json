@@ -36,7 +36,7 @@
     "install": "npm run install:server",
     "install:server": "cd server && ansible-playbook -i $npm_package_config_enviroment.hosts site.yml",
     "postinstall": "echo postinstall",
-    "clean": "npm run clean:dist && npm run clean:server && npm run clean:key",
+    "clean": "npm run clean:dist && npm run clean:server && npm run clean:key && rimraf server/roles/external/*",
     "clean:key": "rimraf server/plays/ssh/*.key && rimraf server/plays/ssh/*.pub",
     "clean:server": "cd server && vagrant destroy -f",
     "clean:dist": "echo dist clean",
