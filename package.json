@@ -13,9 +13,10 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "favicons": "^4.8.1",
+    "favicons": "^4.8.2",
     "jshint": "^2.9.3",
     "mkdirp": "^0.5.1",
+    "npm-check": "^5.2.3",
     "opener": "^1.4.2",
     "parallelshell": "^2.0.0",
     "rimraf": "^2.5.4",
