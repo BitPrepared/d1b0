@@ -11,12 +11,20 @@
       "id": "email",
       "type": "string"
     },
+    "name": {
+      "id": "name",
+      "type": "string"
+    },
+    "surname": {
+      "id": "surname",
+      "type": "string"
+    },
     "password": {
       "id": "password",
       "type": "string"
     }
   },
   "required": [
-    "authmome"
+    "authmode"
   ]
 }
