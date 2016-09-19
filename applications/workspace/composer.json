@@ -1,4 +1,9 @@
 {
+    "autoload": {
+        "psr-4": {
+            "BitPrepared\\": "src/BitPrepared/"
+        }
+    },
     "require": {
         "mailgun/mailgun-php": "^2.1",
         "silex/silex": "~2.0",

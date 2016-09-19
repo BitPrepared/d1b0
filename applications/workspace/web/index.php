@@ -2,6 +2,10 @@
 // web/index.php
 require_once __DIR__.'/../vendor/autoload.php';
 
+use BitPrepared\Bundle\D1b0Workspace\Application\D1b0Application;
+use BitPrepared\Bundle\D1b0Workspace\Controller\V1\D1b0Controller;
+use BitPrepared\Bundle\D1b0Workspace\Controller\V1\StatusController;
+use BitPrepared\Bundle\D1b0Workspace\Controller\V1\UserController;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,13 +16,10 @@ use Carbon\Carbon;
 use Monolog\Logger;
 use RedBean_Facade as R;
 
-// TRAITS
-// use Silex\Application\MonologTrait;
-
 // FIXME va messo nel php.ini
 date_default_timezone_set('Europe/Rome');
 
-$app = new Silex\Application();
+$app = new D1b0Application();
 
 // config developing (da portare fuori!)
 $app['debug'] = true;
@@ -64,32 +65,6 @@ $app->after(function (Request $request, Response $response) {
     $response->headers->set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
 });
 
-
-
-// ... definitions
-
-
-// @SERVER: php -S 127.0.0.1:8080 -t web/
-// @TEST:  http://127.0.0.1:8080/api/v1/status
-
-$app->get($baseUrl.'/status', function (Request $request) use ($app) {
-
-
-    // sample sintatticamente anche errato
-    $app['monolog']->addInfo(sprintf("Required '%s'.", 'status'));
-    // $app->log('log info', null, Logger::INFO); //grazie al traits <- da trasformare prima in app
-
-    $data = array(
-      "workspace" => "OK",
-      "fileManager" => "OK",
-      "externalLogin" => "OK"
-    );
-
-    $headers = [];
-
-    return JsonResponse::create($data, 200, $headers)->setSharedMaxAge(300);
-});
-
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     // this handler will handle \Exception
     $app['monolog']->addError($e->getMessage());
@@ -98,20 +73,31 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
 });
 
 
-$blogPosts = [];
-$app->get('/sample/{id}', function ($id) use ($blogPosts) {
-
-    $app['db']; //attivo il facade R
-    $e = R::findAll('table', ' ORDER BY date DESC LIMIT 2');
-
-    // ...
-    // per ricordarsi di validare anche lo User-Agent in caso
-    // ...
-    if (!isset($blogPosts[$id])) {
-        $app->abort(404, "Post $id does not exist.");
-    }
-})
-->assert('id', '\d+')
-->when("request.headers.get('User-Agent') matches '/firefox/i'");
+// Controller
+$app->mount('/api/v1', new D1b0Controller());
+$app->mount('/api/v1/status', new StatusController());
+$app->mount('/api/v1/user', new UserController());
 
 $app->run();
+
+
+// @SERVER: php -S 127.0.0.1:8080 -t web/
+// @TEST:  http://127.0.0.1:8080/api/v1/status
+
+
+
+// $blogPosts = [];
+// $app->get('/sample/{id}', function ($id) use ($blogPosts) {
+//
+//     $app['db']; //attivo il facade R
+//     $e = R::findAll('table', ' ORDER BY date DESC LIMIT 2');
+//
+//     // ...
+//     // per ricordarsi di validare anche lo User-Agent in caso
+//     // ...
+//     if (!isset($blogPosts[$id])) {
+//         $app->abort(404, "Post $id does not exist.");
+//     }
+// })
+// ->assert('id', '\d+')
+// ->when("request.headers.get('User-Agent') matches '/firefox/i'");
