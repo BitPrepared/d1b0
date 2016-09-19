@@ -284,24 +284,24 @@ schemas:
                   description: 'ID cancellare una specialità non ancora completata' #TODO assegnare ID
                   securedBy:
                     - basicSecurityLayer
-  /ticket:
-    type: base
-    get:
-      description: |
-        ticket attivi per l'utente
-      securedBy:
-        - basicSecurityLayer
-      responses:
-        200:
+      /ticket:
+        type: base
+        get:
           description: |
-            ticket attivi #TODO: inserimento a mano su db
-          body:
-            application/json:
-              example: '[{ "id": "", "message":"HTML MESSAGE", "priority": 3 }]'
-              schema: Ticket
-        204:
-          description: |
-            nessun ticket
+            ticket attivi per l'utente
+          securedBy:
+            - basicSecurityLayer
+          responses:
+            200:
+              description: |
+                ticket attivi #TODO: inserimento a mano su db
+              body:
+                application/json:
+                  example: '[{ "id": "", "message":"HTML MESSAGE", "priority": 3 }]'
+                  schema: Ticket
+            204:
+              description: |
+                nessun ticket
 
 /workspace:
     type: base
