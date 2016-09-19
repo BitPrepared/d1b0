@@ -41,7 +41,7 @@ $app->register(new MonologServiceProvider(), array(
 
 // @see: https://github.com/ivoba/redbean-service-provider
 //'mysql:host=localhost;dbname=mydatabase', 'user', 'password'
-$app->register(new RedBeanServiceProvider(), array('db.options' => array( 'dsn' => 'sqlite:/tmp/db.sqlite' )));
+$app->register(new RedBeanServiceProvider(), array('db.options' => array( 'dsn' => 'sqlite:'.ROOT_PATH.'../../database/workspace.sqlite' )));
 
 // production (X-Forwarded-For*)
 //Request::setTrustedProxies(array($ip));

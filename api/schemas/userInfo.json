@@ -3,8 +3,12 @@
   "id": "http://localhost:8080/schemas/userInfo.json",
   "type": "object",
   "properties": {
-    "username": {
-        "id": "username",
+    "name": {
+        "id": "name",
+        "type:" : "string"
+    },
+    "surname": {
+        "id": "surname",
         "type:" : "string"
     },
     "authMode": {
@@ -16,11 +20,14 @@
       "type": "string"
     },
     "skills": {
-      "id": "skills",
-      "type": "string"
+        "id":"skills",
+        "type":"array",
+        "items":{
+            "$ref": "badge.json"
+        }
     }
   },
   "required": [
-    "username"
+    "name","surname"
   ]
 }

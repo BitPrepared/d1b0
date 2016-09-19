@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://localhost:8080/schemas/badge.json",
+  "type": "object",
+  "properties": {
+    "id": {
+        "id": "id",
+        "type":"integer"
+    },
+    "name": {
+        "id": "name",
+        "type":"string"
+    },
+    "description": {
+        "id": "description",
+        "type":"string"
+    },
+    "img": {
+        "id": "img",
+        "type":"string"
+    },
+    "clove": {
+        "id": "clove",
+        "type":"int"
+    },
+    "completed":{
+        "id":"completed",
+        "type":"boolean"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "clove",
+    "completed"
+  ]
+}
