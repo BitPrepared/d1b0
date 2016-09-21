@@ -23,7 +23,7 @@
         "id":"skills",
         "type":"array",
         "items":{
-            "$ref": "badge.json"
+            "$ref": "badgeUser.json"
         }
     }
   },
