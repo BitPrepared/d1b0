@@ -8,7 +8,7 @@
         "type":"string"
     },
     "badge": {
-        "$reg":"badge.json"
+        "$ref":"badge.json"
     },
     "contact": {
       "id": "contact",
