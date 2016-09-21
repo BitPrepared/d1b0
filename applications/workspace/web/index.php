@@ -14,7 +14,7 @@ use Silex\Provider\MonologServiceProvider;
 use Ivoba\Silex\RedBeanServiceProvider;
 use Carbon\Carbon;
 use Monolog\Logger;
-use RedBean_Facade as R;
+use RedBeanPHP\Facade as R;
 
 // FIXME va messo nel php.ini
 date_default_timezone_set('Europe/Rome');
@@ -41,7 +41,7 @@ $app->register(new MonologServiceProvider(), array(
 
 // @see: https://github.com/ivoba/redbean-service-provider
 //'mysql:host=localhost;dbname=mydatabase', 'user', 'password'
-$app->register(new RedBeanServiceProvider(), array('db.options' => array( 'dsn' => 'sqlite:'.ROOT_PATH.'../../database/workspace.sqlite' )));
+$app->register(new RedBeanServiceProvider(), array('db.options' => array( 'dsn' => 'sqlite:'.ROOT_PATH.'/../../database/workspace.sqlite' )));
 
 // production (X-Forwarded-For*)
 //Request::setTrustedProxies(array($ip));
@@ -81,7 +81,8 @@ $app->mount('/api/v1/user', new UserController());
 $app->run();
 
 
-// @SERVER: php -S 127.0.0.1:8080 -t web/
+// @SERVER:
+//php -S 127.0.0.1:8080 -t web/
 // @TEST:  http://127.0.0.1:8080/api/v1/status
 
 
