@@ -29,8 +29,10 @@ class UserController implements ControllerProviderInterface
 
     public function get($id, Request $request)
     {
-        $e = R::findAll('user', ' ORDER BY id DESC LIMIT 2');
-        return "$id";
+        $user = R::findAll('user', 'id = ?',["$id"]);
+        $headers = [];
+        var_dump($user);
+        return JsonResponse::create($user, 200, $headers)->setSharedMaxAge(300);
     }
 
     public function signup(Request $request)
@@ -50,7 +52,6 @@ class UserController implements ControllerProviderInterface
             $user->surname=$data['surname'];
             $user->surname=$data['surname'];*/
             try{
-                R::setStrictTyping(false);
                 $user = R::dispense('user');
                 //$user->import($data);
                 $size = mcrypt_get_iv_size(MCRYPT_CAST_256, MCRYPT_MODE_CFB);
@@ -63,8 +64,8 @@ class UserController implements ControllerProviderInterface
                 $user->email=$data['email'];
                 $user->surname=$data['surname'];
                 $user->authmode=$data['authMode'];
-                $user->insertTime=date('Y-m-d H:i:s');;
-                //$user->updateTime=date('Y-m-d G:i:s');;
+                $user->inserttime=date('Y-m-d H:i:s');;
+                $user->updatetime=date('Y-m-d G:i:s');;
                 $id = R::store($user);
                 $res = (object)["id" => $id];
             }catch(Exception $e){
@@ -75,10 +76,8 @@ class UserController implements ControllerProviderInterface
 
         }
 
-
-
         $headers = [];
-
+        //TODO redirect to other page (/security/callback?authMode=Email)
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
 }
