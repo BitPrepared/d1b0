@@ -117,6 +117,10 @@ schemas:
  - SinglePart:      !include schemas/singlePart.json
  - UserInfo:        !include schemas/userInfo.json
  - Ticket:          !include schemas/ticket.json
+ - Badge:           !include schemas/badge.json
+ - BadgeList:       !include schemas/badgeList.json
+ - RequestBadge:    !include schemas/badgeRequest.json
+ - TicketList:      !include schemas/ticketList.json
 
 /status:
   type: base
@@ -137,10 +141,22 @@ schemas:
          filterBy:
              type: string
              enum: [specialita,brevetti,events]
+     responses:
+       200:
+         description: elenco badge
+         body:
+           application/json:
+             schema: BadgeList
+
   /proposal:
     post:
       description: |
         proposta di un nuovo badge
+      securedBy:
+        - basicSecurityLayer
+      body:
+        application/json:
+          schema: RequestBadge # va approfondito la parte di contact
       responses:
         202:
           description: |
@@ -148,13 +164,14 @@ schemas:
             che verrà preso in carico e processato in maniera asyncrona
           body:
             application/json:
-              schema: Ticket #TODO: fare il metodo per i ticket
+              schema: Ticket #TODO: fare il metodo per i ticket -> proposte extra sistema?
         208:
           description: |
             il badge esiste gia'
           body:
             application/json:
               schema: GelfMessage
+
 /security:
    /login:
      type: base
@@ -297,8 +314,8 @@ schemas:
                 ticket attivi #TODO: inserimento a mano su db
               body:
                 application/json:
-                  example: '[{ "id": "", "message":"HTML MESSAGE", "url":"http://www.domain.it/ticket?things=etc..","priority": 3 }]'
-                  schema: Ticket
+                  example: '[{ "id": 1, "message": "HTML MESSAGE", "url": "http://", "priority": "low" }]'
+                  schema: TicketList
             204:
               description: |
                 nessun ticket

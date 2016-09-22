@@ -18,20 +18,10 @@
     "img": {
         "id": "img",
         "type":"string"
-    },
-    "clove": {
-        "id": "clove",
-        "type":"int"
-    },
-    "completed":{
-        "id":"completed",
-        "type":"boolean"
     }
   },
   "required": [
     "id",
-    "name",
-    "clove",
-    "completed"
+    "name"
   ]
 }

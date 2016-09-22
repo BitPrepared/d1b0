@@ -3,6 +3,10 @@
   "id": "http://localhost:8080/schemas/singlePart.json",
   "type": "object",
   "properties": {
+    "hash": {
+      "id": "hash",
+      "type": "string"
+    },
     "type": {
       "id": "type",
       "type": "string"
