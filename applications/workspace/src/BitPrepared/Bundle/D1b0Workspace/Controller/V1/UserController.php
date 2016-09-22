@@ -9,6 +9,7 @@ use Silex\Application;
 use Silex\Api\ControllerProviderInterface;
 use Monolog\Logger;
 use RedBeanPHP\Facade as R;
+use BitPrepared\Bundle\D1b0Workspace\Exception\UnauthorizedException;
 
 class UserController implements ControllerProviderInterface
 {
@@ -23,15 +24,20 @@ class UserController implements ControllerProviderInterface
         $this->app['db'];
         //R::fancyDebug( TRUE );
         $factory->post('/signup', array($this, 'signup'));
-        $factory->get('/{id}', array($this, 'get'));
-        $factory->post('/{id}/badge', array($this, 'postBadge'));
-        $factory->get('/{id}/badge/{id_badge}', array($this, 'getBadge'));
-        $factory->patch('/{id}/badge/{id_badge}/completed', array($this, 'markBadgeAsCompleted'));
-        $factory->delete('/{id}/badge/{id_badge}', array($this, 'deleteUserBadge'));
-        $factory->get('/{id}/ticket', array($this, 'getTicket'));
+        $factory->get('/{id}', array($this, 'get'))->before([$this,'isSession']);
+        $factory->post('/{id}/badge', array($this, 'postBadge'))->before([$this,'isSession']);
+        $factory->get('/{id}/badge/{id_badge}', array($this, 'getBadge'))->before([$this,'isSession']);
+        $factory->patch('/{id}/badge/{id_badge}/completed', array($this, 'markBadgeAsCompleted'))->before([$this,'isSession']);
+        $factory->delete('/{id}/badge/{id_badge}', array($this, 'deleteUserBadge'))->before([$this,'isSession']);
+        $factory->get('/{id}/ticket', array($this, 'getTicket'))->before([$this,'isSession']);
         return $factory;
     }
 
+    public function isSession(Request $request,Application $app){
+            if($this->app['session']->has('user') !== true){
+                throw new UnauthorizedException("errore",1);
+            }
+    }
 
     public function get($id, Request $request)
     {
