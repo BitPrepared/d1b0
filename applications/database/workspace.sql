@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 21, 2016 at 01:24 PM
+-- Generation Time: Sep 23, 2016 at 12:05 AM
 -- Server version: 5.5.52-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.19
 
@@ -145,6 +145,7 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user` int(11) NOT NULL,
   `message` text NOT NULL,
+  `url` varchar(255) NOT NULL,
   `priority` enum('low','medium','high','') NOT NULL,
   `status` enum('closed','pending','open','') NOT NULL,
   `inserttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -186,6 +187,7 @@ CREATE TABLE IF NOT EXISTS `userbadge` (
   `badge` int(11) NOT NULL,
   `completed` tinyint(1) NOT NULL DEFAULT '0',
   `inserttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updatetime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -205,6 +207,32 @@ CREATE TABLE IF NOT EXISTS `userbadgeclove` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `userbadgeclovetot`
+--
+CREATE TABLE IF NOT EXISTS `userbadgeclovetot` (
+`user` int(11)
+,`badge` int(11)
+,`tot` bigint(21)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `userbadgecomplete`
+--
+CREATE TABLE IF NOT EXISTS `userbadgecomplete` (
+`id` int(11)
+,`user` int(11)
+,`badge` int(11)
+,`completed` tinyint(1)
+,`inserttime` timestamp
+,`name` varchar(25)
+,`description` varchar(255)
+,`img` varchar(255)
+,`clove` bigint(21)
+);
 -- --------------------------------------------------------
 
 --
@@ -250,6 +278,24 @@ CREATE TABLE IF NOT EXISTS `workspace` (
   `lastupdatetime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `userbadgeclovetot`
+--
+DROP TABLE IF EXISTS `userbadgeclovetot`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `userbadgeclovetot` AS select `userbadgeclove`.`user` AS `user`,`userbadgeclove`.`badge` AS `badge`,count(`userbadgeclove`.`parte`) AS `tot` from `userbadgeclove` group by `userbadgeclove`.`user`,`userbadgeclove`.`badge`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `userbadgecomplete`
+--
+DROP TABLE IF EXISTS `userbadgecomplete`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `userbadgecomplete` AS select `userbadge`.`id` AS `id`,`userbadge`.`user` AS `user`,`userbadge`.`badge` AS `badge`,`userbadge`.`completed` AS `completed`,`userbadge`.`inserttime` AS `inserttime`,`badge`.`name` AS `name`,`badge`.`description` AS `description`,`badge`.`img` AS `img`,ifnull(`userbadgeclovetot`.`tot`,0) AS `clove` from ((`userbadge` left join `badge` on((`userbadge`.`badge` = `badge`.`id`))) left join `userbadgeclovetot` on(((`userbadgeclovetot`.`badge` = `badge`.`id`) and (`userbadgeclovetot`.`user` = `userbadge`.`user`)))) where (`userbadge`.`deleted` = 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
