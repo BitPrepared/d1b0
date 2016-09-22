@@ -25,8 +25,10 @@ class UserController implements ControllerProviderInterface
         $factory->post('/signup', array($this, 'signup'));
         $factory->get('/{id}', array($this, 'get'));
         $factory->post('/{id}/badge', array($this, 'postBadge'));
+        $factory->get('/{id}/badge/{id_badge}', array($this, 'getBadge'));
         return $factory;
     }
+
 
     public function get($id, Request $request)
     {
@@ -133,7 +135,6 @@ class UserController implements ControllerProviderInterface
         //TODO valiadre id in funzione della sessione utente (altrimenti chiunque aggiunge badge a chiunque)
         $data = json_decode($request->getContent(), true);
 
-        echo "***".$data['id']."***";
         $userbadge = R::dispense('userbadge');
         $userbadge->user=$id;
         $userbadge->badge=$data['id'];
@@ -141,6 +142,44 @@ class UserController implements ControllerProviderInterface
         $id = R::store($userbadge);
 
         $res = (object)["id" => $id];
+        $headers = [];
+        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+    }
+
+    public function getBadge($id,$id_badge,Request $request)
+    {
+        echo $id;
+        echo $id_badge;
+        $badges = R::getAll('SELECT
+                            userbadge.id,
+                            userbadge.badge,
+                            userbadge.completed,
+                            userbadge.inserttime,
+                            badge.name,
+                            badge.description,
+                            badge.img,
+                            COUNT(badge.id) AS clove
+                            FROM userbadge
+                            LEFT JOIN badge
+                            ON userbadge.badge = badge.id
+                            LEFT JOIN userbadgeclove
+                            ON userbadgeclove.badge = badge.id
+                            AND
+                            userbadgeclove.user = userbadge.user
+                            WHERE userbadge.user = ? AND
+                            badge.id = ?
+                            GROUP BY badge.id',[$id,$id_badge]);
+        $badge=$badges[0];
+        $res = [
+                    'badge'=>[
+                        'id'=>$badge['badge'],
+                        'name'=>$badge['name'],
+                        'description'=>$badge['description'],
+                        'img'=>$badge['img']
+                    ],
+                    'clove'=>$badge['clove'],
+                    'completed'=>$badge['completed']
+                ];
         $headers = [];
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
