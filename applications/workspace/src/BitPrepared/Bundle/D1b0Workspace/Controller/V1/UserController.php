@@ -21,12 +21,12 @@ class UserController implements ControllerProviderInterface
         $factory = $app['controllers_factory'];
         # il mount point e' precedente e non serve prima
         $this->app['db'];
-        R::fancyDebug( TRUE );
+        //R::fancyDebug( TRUE );
         $factory->post('/signup', array($this, 'signup'));
         $factory->get('/{id}', array($this, 'get'));
         $factory->post('/{id}/badge', array($this, 'postBadge'));
         $factory->get('/{id}/badge/{id_badge}', array($this, 'getBadge'));
-        $factory->put('/{id}/badge/{id_badge}', array($this, 'markBadgeAsCompleted'));
+        $factory->patch('/{id}/badge/{id_badge}/completed', array($this, 'markBadgeAsCompleted'));
         $factory->delete('/{id}/badge/{id_badge}', array($this, 'deleteUserBadge'));
         return $factory;
     }
@@ -72,7 +72,7 @@ class UserController implements ControllerProviderInterface
             array_push($badgeList,
                 [
                     'badge'=>[
-                        'id'=>$badge['badge'],
+                        'id'=>$badge['id'],
                         'name'=>$badge['name'],
                         'description'=>$badge['description'],
                         'img'=>$badge['img']

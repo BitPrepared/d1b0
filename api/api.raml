@@ -121,6 +121,7 @@ schemas:
  - BadgeList:       !include schemas/badgeList.json
  - RequestBadge:    !include schemas/badgeRequest.json
  - TicketList:      !include schemas/ticketList.json
+ - UserBadge:      !include schemas/userBadge.json
 
 /status:
   type: base
@@ -287,20 +288,36 @@ schemas:
               description: 'ID aggiungere un badge (specialità/brevetto)'
               securedBy:
                 - basicSecurityLayer
+              body:
+                  application/json:
+                      schema: UserBadge
+                      example: '{"id":3}'
+
           /{id_badge}:
               type: base
               get:
                  description: immagine badge corrente per l'utente
                  securedBy:
                    - basicSecurityLayer
-              put:
-                  description: 'ID  segnare completata una specialità o un brevetto o aggiungere uno spicchio' #TODO assegnare ID
-                  securedBy:
-                    - basicSecurityLayer
+                 responses:
+                   200:
+                       body:
+                           application/json:
+                               schema: Badge
               delete:
                   description: 'ID cancellare una specialità non ancora completata' #TODO assegnare ID
                   securedBy:
                     - basicSecurityLayer
+                  responses:
+                      204:
+              /completed:
+                  patch:
+                      description: 'Segnare completata una specialità o un brevetto'
+                      securedBy:
+                          - basicSecurityLayer
+                      responses:
+                          204:
+
       /ticket:
         type: base
         get:
@@ -498,13 +515,13 @@ schemas:
                         description: Part marked as read.
                 /checkin:
                     type: base
-                    post:
+                    patch:
                         description: |
                           ID indicare la presenza ad un evento (Io c'ero) #TODO assegnare ID
                         securedBy:
                           - basicSecurityLayer
                         responses:
-                            201:
+                            200:
                                 body:
                                     application/json:
                                         example: '{"points":50}' #TODO ragionare se notificare un messaggio sull aggiunta di spicchi al profilo
