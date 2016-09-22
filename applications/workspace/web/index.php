@@ -6,12 +6,14 @@ use BitPrepared\Bundle\D1b0Workspace\Application\D1b0Application;
 use BitPrepared\Bundle\D1b0Workspace\Controller\V1\D1b0Controller;
 use BitPrepared\Bundle\D1b0Workspace\Controller\V1\StatusController;
 use BitPrepared\Bundle\D1b0Workspace\Controller\V1\UserController;
+use BitPrepared\Bundle\D1b0Workspace\Controller\V1\SecurityController;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Silex\Provider\MonologServiceProvider;
 use Ivoba\Silex\RedBeanServiceProvider;
+use Silex\Provider\SessionServiceProvider;
 use Carbon\Carbon;
 use Monolog\Logger;
 use RedBeanPHP\Facade as R;
@@ -42,6 +44,7 @@ $app->register(new MonologServiceProvider(), array(
 // @see: https://github.com/ivoba/redbean-service-provider
 //'mysql:host=localhost;dbname=mydatabase', 'user', 'password'
 $app->register(new RedBeanServiceProvider(), array('db.options' => array( 'dsn' => 'sqlite:'.ROOT_PATH.'/../../database/workspace.sqlite' )));
+$app->register(new SessionServiceProvider());
 
 // production (X-Forwarded-For*)
 //Request::setTrustedProxies(array($ip));
@@ -77,6 +80,7 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
 $app->mount('/api/v1', new D1b0Controller());
 $app->mount('/api/v1/status', new StatusController());
 $app->mount('/api/v1/user', new UserController());
+$app->mount('/api/v1/security', new SecurityController());
 
 $app->run();
 

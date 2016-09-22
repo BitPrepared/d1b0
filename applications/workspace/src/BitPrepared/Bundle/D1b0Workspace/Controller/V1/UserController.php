@@ -28,6 +28,7 @@ class UserController implements ControllerProviderInterface
         $factory->get('/{id}/badge/{id_badge}', array($this, 'getBadge'));
         $factory->patch('/{id}/badge/{id_badge}/completed', array($this, 'markBadgeAsCompleted'));
         $factory->delete('/{id}/badge/{id_badge}', array($this, 'deleteUserBadge'));
+        $factory->get('/{id}/ticket', array($this, 'getTicket'));
         return $factory;
     }
 
@@ -42,31 +43,10 @@ class UserController implements ControllerProviderInterface
             'surname'=>$user->surname,
             'authmode'=>$user->authmode,
             'authmode'=>$user->authmode,
-            'skills'=>'roba',
+            'skills'=>'',
         ];
 
-        $badges = R::getAll('SELECT
-                            userbadge.id,
-                            userbadge.badge,
-                            userbadge.completed,
-                            userbadge.inserttime,
-                            badge.name,
-                            badge.description,
-                            badge.img,
-                            COUNT(badge.id) AS clove
-                            FROM userbadge
-                            LEFT JOIN badge
-                            ON userbadge.badge = badge.id
-                            LEFT JOIN userbadgeclove
-                            ON userbadgeclove.badge = badge.id
-                            AND
-                            userbadgeclove.user = userbadge.user
-                            WHERE userbadge.user = ?
-                            GROUP BY badge.id',[$id]);
-
-        //TODO clove è sempre a uno perchè la COUNT di LEFT JOIN da sempre una entry! è un errore perchè da 1 anche a badge in cui il ragazzo non avrebbe clove
-        //var_dump($badges);
-
+        $badges = R::findAll('userbadgecomplete','WHERE user = ?',[$id]);
         $badgeList=[];
         foreach( $badges as $badge){
             array_push($badgeList,
@@ -152,28 +132,7 @@ class UserController implements ControllerProviderInterface
 
     public function getBadge($id,$id_badge,Request $request)
     {
-        echo $id;
-        echo $id_badge;
-        $badges = R::getAll('SELECT
-                            userbadge.id,
-                            userbadge.badge,
-                            userbadge.completed,
-                            userbadge.inserttime,
-                            badge.name,
-                            badge.description,
-                            badge.img,
-                            COUNT(badge.id) AS clove
-                            FROM userbadge
-                            LEFT JOIN badge
-                            ON userbadge.badge = badge.id
-                            LEFT JOIN userbadgeclove
-                            ON userbadgeclove.badge = badge.id
-                            AND
-                            userbadgeclove.user = userbadge.user
-                            WHERE userbadge.user = ? AND
-                            userbadge.id = ?
-                            GROUP BY badge.id',[$id,$id_badge]); //TODO tenere cont dei badge deleted
-        $badge=$badges[0];
+        $badge = R::findOne('userbadgecomplete','WHERE user = ? AND badge = ?',[$id,$id_badge]);
         $res = [
                     'badge'=>[
                         'id'=>$badge['badge'],
@@ -188,9 +147,6 @@ class UserController implements ControllerProviderInterface
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
     public function markBadgeAsCompleted($id,$id_badge,Request $request){
-
-        //$userbadge = R::findOne('userbadge', 'user = ? AND badge = ?',[$id,$id_badge]); TODO da valutare in base a cosa sia id_badge
-
         $userbadge = R::load('userbadge',$id_badge);
         $userbadge->user=$id;
         $userbadge->badge=$id_badge;
@@ -202,14 +158,31 @@ class UserController implements ControllerProviderInterface
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
     public function deleteUserBadge($id,$id_badge,Request $request){
-
-        //$userbadge = R::findOne('userbadge', 'user = ? AND badge = ?',[$id,$id_badge]); TODO DA VALUTARE IN BASE A COSA SIA id_badge
         $userbadge = R::load('userbadge',$id_badge);
         $userbadge->deleted=1;
         $userbadge->updatetime=date('Y-m-d H:i:s');
         $id = R::store($userbadge);
-        $res = (object)[];
         $headers = [];
-        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/html');
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $response->setSharedMaxAge(300);
+        return $response;
+    }
+    public function getTicket($id,Request $request){
+        $ticketRaw = R::findAll('ticket','WHERE user = ? AND (NOT status = "closed")',[$id]);
+
+        $tickets=[];
+        foreach($ticketRaw as $ticket){
+            array_push($tickets,[
+                "id"=>$ticket['id'],
+                "message"=>$ticket['message'],
+                "url"=>$ticket['url'],
+                "priority"=>$ticket['priority']
+            ]);
+        }
+
+        $headers = [];
+        return JsonResponse::create($tickets, 200, $headers)->setSharedMaxAge(300);
     }
 }

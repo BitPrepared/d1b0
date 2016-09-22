@@ -191,7 +191,7 @@ schemas:
            302:
              description: |
               redirect alla /security/callback?authMode=Facebook nel caso Facebook
-           400:
+           401:
              body:
                application/json:
                  schema: GelfMessage
@@ -222,6 +222,8 @@ schemas:
          description: 'ID: 01 Autenticazione'
          securedBy:
            - basicSecurityLayer
+         responses:
+             204:
 
    /callback:
        type: base
