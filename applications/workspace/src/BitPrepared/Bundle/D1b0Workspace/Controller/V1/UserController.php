@@ -26,6 +26,8 @@ class UserController implements ControllerProviderInterface
         $factory->get('/{id}', array($this, 'get'));
         $factory->post('/{id}/badge', array($this, 'postBadge'));
         $factory->get('/{id}/badge/{id_badge}', array($this, 'getBadge'));
+        $factory->put('/{id}/badge/{id_badge}', array($this, 'markBadgeAsCompleted'));
+        $factory->delete('/{id}/badge/{id_badge}', array($this, 'deleteUserBadge'));
         return $factory;
     }
 
@@ -139,6 +141,7 @@ class UserController implements ControllerProviderInterface
         $userbadge->user=$id;
         $userbadge->badge=$data['id'];
         $userbadge->inserttime=date('Y-m-d H:i:s');
+        $userbadge->updatetime=date('Y-m-d H:i:s');
         $id = R::store($userbadge);
 
         $res = (object)["id" => $id];
@@ -180,6 +183,30 @@ class UserController implements ControllerProviderInterface
                     'clove'=>$badge['clove'],
                     'completed'=>$badge['completed']
                 ];
+        $headers = [];
+        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+    }
+    public function markBadgeAsCompleted($id,$id_badge,Request $request){
+
+        $userbadge = R::findOne('userbadge', 'user = ? AND badge = ?',[$id,$id_badge]);
+
+        //$userbadge = R::load('userbadge',$id);
+        $userbadge->user=$id;
+        $userbadge->badge=$id_badge;
+        $userbadge->updatetime=date('Y-m-d H:i:s');
+        $userbadge->completed=1;
+        $id = R::store($userbadge);
+        $res = (object)["id" => $id];
+        $headers = [];
+        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+    }
+    public function deleteUserBadge($id,$id_badge,Request $request){
+
+        $userbadge = R::findOne('userbadge', 'user = ? AND badge = ?',[$id,$id_badge]);
+        $userbadge->deleted=1;
+        $userbadge->updatetime=date('Y-m-d H:i:s');
+        $id = R::store($userbadge);
+        $res = (object)[];
         $headers = [];
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
