@@ -24,6 +24,7 @@ class UserController implements ControllerProviderInterface
         R::fancyDebug( TRUE );
         $factory->post('/signup', array($this, 'signup'));
         $factory->get('/{id}', array($this, 'get'));
+        $factory->post('/{id}/badge', array($this, 'postBadge'));
         return $factory;
     }
 
@@ -58,6 +59,8 @@ class UserController implements ControllerProviderInterface
                             userbadgeclove.user = userbadge.user
                             WHERE userbadge.user = ?
                             GROUP BY badge.id',[$id]);
+
+        //TODO clove è sempre a uno perchè la COUNT di LEFT JOIN da sempre una entry! è un errore perchè da 1 anche a badge in cui il ragazzo non avrebbe clove
         //var_dump($badges);
 
         $badgeList=[];
@@ -108,8 +111,8 @@ class UserController implements ControllerProviderInterface
                 $user->email=$data['email'];
                 $user->surname=$data['surname'];
                 $user->authmode=$data['authMode'];
-                $user->inserttime=date('Y-m-d H:i:s');;
-                $user->updatetime=date('Y-m-d G:i:s');;
+                $user->inserttime=date('Y-m-d H:i:s');
+                $user->updatetime=date('Y-m-d G:i:s');
                 $id = R::store($user);
                 $res = (object)["id" => $id];
             }catch(Exception $e){
@@ -122,6 +125,23 @@ class UserController implements ControllerProviderInterface
 
         $headers = [];
         //TODO redirect to other page (/security/callback?authMode=Email)
+        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+    }
+
+    public function postBadge($id,Request $request)
+    {
+        //TODO valiadre id in funzione della sessione utente (altrimenti chiunque aggiunge badge a chiunque)
+        $data = json_decode($request->getContent(), true);
+
+        echo "***".$data['id']."***";
+        $userbadge = R::dispense('userbadge');
+        $userbadge->user=$id;
+        $userbadge->badge=$data['id'];
+        $userbadge->inserttime=date('Y-m-d H:i:s');
+        $id = R::store($userbadge);
+
+        $res = (object)["id" => $id];
+        $headers = [];
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
 }
