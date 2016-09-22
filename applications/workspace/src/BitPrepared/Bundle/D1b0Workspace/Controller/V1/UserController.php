@@ -88,6 +88,7 @@ class UserController implements ControllerProviderInterface
 
     public function signup(Request $request)
     {
+        //TODO ricordarsi di salvare in log il login ^^
         // $this->app['monolog']->addInfo(sprintf("Required '%s'.", 'status'));
         $this->app->log('log info', [], Logger::INFO); //grazie al traits <- da trasformare prima in app
         $data = json_decode($request->getContent(), true);
@@ -170,8 +171,8 @@ class UserController implements ControllerProviderInterface
                             AND
                             userbadgeclove.user = userbadge.user
                             WHERE userbadge.user = ? AND
-                            badge.id = ?
-                            GROUP BY badge.id',[$id,$id_badge]);
+                            userbadge.id = ?
+                            GROUP BY badge.id',[$id,$id_badge]); //TODO tenere cont dei badge deleted
         $badge=$badges[0];
         $res = [
                     'badge'=>[
@@ -188,9 +189,9 @@ class UserController implements ControllerProviderInterface
     }
     public function markBadgeAsCompleted($id,$id_badge,Request $request){
 
-        $userbadge = R::findOne('userbadge', 'user = ? AND badge = ?',[$id,$id_badge]);
+        //$userbadge = R::findOne('userbadge', 'user = ? AND badge = ?',[$id,$id_badge]); TODO da valutare in base a cosa sia id_badge
 
-        //$userbadge = R::load('userbadge',$id);
+        $userbadge = R::load('userbadge',$id_badge);
         $userbadge->user=$id;
         $userbadge->badge=$id_badge;
         $userbadge->updatetime=date('Y-m-d H:i:s');
@@ -202,7 +203,8 @@ class UserController implements ControllerProviderInterface
     }
     public function deleteUserBadge($id,$id_badge,Request $request){
 
-        $userbadge = R::findOne('userbadge', 'user = ? AND badge = ?',[$id,$id_badge]);
+        //$userbadge = R::findOne('userbadge', 'user = ? AND badge = ?',[$id,$id_badge]); TODO DA VALUTARE IN BASE A COSA SIA id_badge
+        $userbadge = R::load('userbadge',$id_badge);
         $userbadge->deleted=1;
         $userbadge->updatetime=date('Y-m-d H:i:s');
         $id = R::store($userbadge);
