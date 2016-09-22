@@ -29,10 +29,54 @@ class UserController implements ControllerProviderInterface
 
     public function get($id, Request $request)
     {
-        $user = R::findAll('user', 'id = ?',["$id"]);
+        $user = R::findOne('user', 'id = ?',["$id"]);
         $headers = [];
-        var_dump($user);
-        return JsonResponse::create($user, 200, $headers)->setSharedMaxAge(300);
+
+        $output = [
+            'name'=>$user->name,
+            'surname'=>$user->surname,
+            'authmode'=>$user->authmode,
+            'authmode'=>$user->authmode,
+            'skills'=>'roba',
+        ];
+
+        $badges = R::getAll('SELECT
+                            userbadge.id,
+                            userbadge.badge,
+                            userbadge.completed,
+                            userbadge.inserttime,
+                            badge.name,
+                            badge.description,
+                            badge.img,
+                            COUNT(badge.id) AS clove
+                            FROM userbadge
+                            LEFT JOIN badge
+                            ON userbadge.badge = badge.id
+                            LEFT JOIN userbadgeclove
+                            ON userbadgeclove.badge = badge.id
+                            AND
+                            userbadgeclove.user = userbadge.user
+                            WHERE userbadge.user = ?
+                            GROUP BY badge.id',[$id]);
+        //var_dump($badges);
+
+        $badgeList=[];
+        foreach( $badges as $badge){
+            array_push($badgeList,
+                [
+                    'badge'=>[
+                        'id'=>$badge['badge'],
+                        'name'=>$badge['name'],
+                        'description'=>$badge['description'],
+                        'img'=>$badge['img']
+                    ],
+                    'clove'=>$badge['clove'],
+                    'completed'=>$badge['completed']
+                ]
+            );
+        }
+        $output['skills']=$badgeList;
+        return JsonResponse::create($output, 200, $headers)->setSharedMaxAge(300);
     }
 
     public function signup(Request $request)
