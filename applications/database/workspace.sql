@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 23, 2016 at 12:05 AM
+-- Generation Time: Sep 24, 2016 at 03:57 PM
 -- Server version: 5.5.52-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.19
 
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `part` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `workspace` int(11) NOT NULL,
   `user` int(11) NOT NULL,
-  `insterttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `inserttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `lastupdatetime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `totalpoint` int(11) NOT NULL DEFAULT '0',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `partbadge` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `badge` int(11) NOT NULL,
   `part` int(11) NOT NULL,
-  `inser` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `inserttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `Not duplicate` (`badge`,`part`) COMMENT 'non duplicare per una parte le specialita ad essa associate'
@@ -132,6 +132,21 @@ CREATE TABLE IF NOT EXISTS `share` (
   `key` varchar(255) NOT NULL,
   `inserttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `team`
+--
+
+CREATE TABLE IF NOT EXISTS `team` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `workspace` int(11) NOT NULL,
+  `patrol` varchar(255) NOT NULL,
+  `unit` varchar(255) NOT NULL,
+  `group` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -240,11 +255,13 @@ CREATE TABLE IF NOT EXISTS `userbadgecomplete` (
 --
 
 CREATE TABLE IF NOT EXISTS `userworkspace` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `workspace` int(11) NOT NULL,
   `user` int(11) NOT NULL,
   `inserttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`workspace`,`user`) COMMENT 'teniamo storia dell accesso ad un workspace'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQUE` (`workspace`,`user`) COMMENT 'teniamo storia dell accesso ad un workspace'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
