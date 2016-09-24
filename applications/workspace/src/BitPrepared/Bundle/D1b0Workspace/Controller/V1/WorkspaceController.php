@@ -21,9 +21,9 @@ class WorkspaceController implements ControllerProviderInterface
         $factory = $app['controllers_factory'];
         # il mount point e' precedente e non serve prima
         $this->app['db'];
-        //R::fancyDebug( TRUE );
+        R::fancyDebug( TRUE );
         $factory->get('/', array($this, 'getWorkspaceList'));
-        $factory->port('/', array($this, 'createWorkspace'));
+        $factory->post('/', array($this, 'createWorkspace'));
         return $factory;
     }
     public function getSessionId(){
@@ -59,36 +59,40 @@ class WorkspaceController implements ControllerProviderInterface
     }
     public function createWorkspace(Request $request)
     {
+        $user_id=$this->getSessionId();
+        $counter=0;
         $data = json_decode($request->getContent(), true);
         //TODO validate json_decode
         $title=$data['title'];
         $description=$data['description'];
         $environment=$data['environment'];
 
-        $patrol = $data['patrol'];
-        $unit = $data['unit'];
-        $group = $data['group'];
+        $patrol = $data['team']['patrol'];
+        $unit = $data['team']['unit'];
+        $group = $data['team']['group'];
 
         //save the workspace get id
-        $ws = R::load("workspace");
+        $ws = R::dispense("workspace");
             $ws->title=$title;
             $ws->description=$description;
             $ws->environment=$environment;
+            $ws->completed=false;
             $ws->inserttime=date('Y-m-d H:i:s');
             $ws->lastupdatetime=date('Y-m-d H:i:s');
         $id = R::store($ws);
 
         //save the team
-        $team = R::load("team");
+        $team = R::dispense("team");
             $team->workspace=$id;
             $team->patrol=$patrol;
             $team->unit=$unit;
             $team->group=$group;
-        $id = R::store($team);
+        $team_id = R::store($team);
 
         //create a phantom part to add badge
-        $part = R::load("part");
+        $part = R::dispense("part");
             $part->workspace=$id;
+            $part->user=$user_id;
             $part->inserttime=date('Y-m-d H:i:s');
             $part->lastupdatetime=date('Y-m-d H:i:s');
             $part->totalpoint=0;
@@ -97,23 +101,22 @@ class WorkspaceController implements ControllerProviderInterface
         //add the badge to the project
         foreach($data['badges'] as $badge_id){
             //TODO insert those badge as first hidden post
-            $pb = R::load("partbadge");
-            $pb->badge=$badge_id;
-            $pb->part=$part_id;
-            $pb->inserttime=date('Y-m-d H:i:s');
-            R::store($part);
+            $pb = R::dispense("partbadge");
+                $pb->badge=$badge_id;
+                $pb->part=$part_id;
+                $pb->inserttime=date('Y-m-d H:i:s');
+            $tmp = R::store($pb);
         }
 
-
-        $user_id=$this->getSessionId();
-
         //add the workspace created to the user as owner
-        $usw = R::load("userworkspace");
+        $usw = R::dispense("userworkspace");
             $usw->user=$user_id;
             $usw->workspace=$id;
             $usw->inserttime=date('Y-m-d H:i:s');
         R::store($usw);
 
-
+        $res = ["id" => $id];
+        $headers = [];
+        return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
     }
 }
