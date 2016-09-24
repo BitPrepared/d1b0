@@ -7,6 +7,7 @@ use BitPrepared\Bundle\D1b0Workspace\Controller\V1\D1b0Controller;
 use BitPrepared\Bundle\D1b0Workspace\Controller\V1\StatusController;
 use BitPrepared\Bundle\D1b0Workspace\Controller\V1\UserController;
 use BitPrepared\Bundle\D1b0Workspace\Controller\V1\SecurityController;
+use BitPrepared\Bundle\D1b0Workspace\Controller\V1\WorkspaceController;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -81,6 +82,7 @@ $app->mount('/api/v1', new D1b0Controller());
 $app->mount('/api/v1/status', new StatusController());
 $app->mount('/api/v1/user', new UserController());
 $app->mount('/api/v1/security', new SecurityController());
+$app->mount('/api/v1/workspace', new WorkspaceController());
 
 $app->run();
 
