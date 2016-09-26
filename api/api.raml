@@ -25,6 +25,30 @@ protocols: [ HTTPS ]
 mediaType: application/json
 
 securitySchemes:
+  - querySecurityLayer:
+      type: x-{other}
+      description: |
+        Layer di sicurezza per query
+        Si può adottare solo nel caso che si riesca a ricondurre all'utente che
+        fa la chiamata deducendolo da altri parametri (Es: idUtente), passando
+        l'hmac come queryParameters 
+      describedBy:
+        protocols: [ HTTPS ]
+        responses:
+          401:
+              description: |
+                  Bad or expired token. This can happen if the user or Dropbox
+                  revoked or expired an access token. To fix, you should re-
+                  authenticate the user.
+          403:
+              description: |
+                  Bad request (wrong consumer key, bad nonce, expired
+                  timestamp...).
+          404:
+            description: Unauthorized #TO THINK 404 non e' bellissimo da pensare
+      settings:
+        scopes:
+          - "todo/to think"
   - basicSecurityLayer:
       type: x-{other}
       description: Layer di sicurezza di base (pensare a JWT)
@@ -307,7 +331,12 @@ schemas:
           description: |
             ticket attivi per l'utente
           securedBy:
-            - basicSecurityLayer
+            - querySecurityLayer
+          queryParameters:
+            check:
+              type: string
+              description: HMAC inline
+              required: true
           responses:
             200:
               description: |

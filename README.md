@@ -17,6 +17,10 @@ Progetto Segreto
 [ ] in test: mail catcher !!!! come config di base , in prod settare ssmtp o qualcosa per l'invio serio di mail! (mailgun??) MATRAIL?
 [ ] apt-check-security.sh forse e da mettere in un cron anche di root va bene
 [ ] delete nei vari elementi
+[ ] goaccess :
+      - https://www.webfoobar.com/index.php/node/53
+      - https://pantheon.io/docs/nginx-access-log/
+      - http://vujade.co/monitoring-nginx-traffic-using-goaccess/
 
 ## COMANDI
 
