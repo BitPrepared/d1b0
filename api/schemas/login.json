@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "authMode": {
-        "id": "authmode",
+        "id": "authMode",
         "type:" : "string"
     },
     "email": {
@@ -25,6 +25,6 @@
     }
   },
   "required": [
-    "authmode"
+    "authMode"
   ]
 }

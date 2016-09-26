@@ -1,3 +1,5 @@
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/BitPrepared/d1b0/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/BitPrepared/d1b0/?branch=master)
+
 # d1b0
 Progetto Segreto
 
