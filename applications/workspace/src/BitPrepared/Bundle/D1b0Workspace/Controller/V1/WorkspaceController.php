@@ -24,6 +24,9 @@ class WorkspaceController implements ControllerProviderInterface
         R::fancyDebug( TRUE );
         $factory->get('/', array($this, 'getWorkspaceList'));
         $factory->post('/', array($this, 'createWorkspace'));
+        $factory->get('/{id}', array($this, 'getWorkspace'));
+        $factory->get('/{id}/share', array($this, 'share'));
+        $factory->post('/{id}/part', array($this, 'postPart'));
         return $factory;
     }
     public function getSessionId(){
@@ -118,5 +121,69 @@ class WorkspaceController implements ControllerProviderInterface
         $res = ["id" => $id];
         $headers = [];
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
+    }
+
+    public function getWorkspace($id,Request $request){
+        $user_id=$this->getSessionId();
+        //TODO controllare che l'utente abbia diritto a vedere questo workspace
+
+        $workspace =  R::findOne("workspace","id = ?",[$id]);
+        $part = R::findAll("part","workspace = ?",[$id]);
+
+        $badges = R::findAll("workspacebadge","workspace = ?",[$id]);
+
+        $l_part=[];
+        foreach($part as $p){
+            array_push($l_part,intval($p['id']));
+        }
+        $l_badges=[];
+        foreach($badges as $b){
+            array_push($l_badges,intval($b['badge']));
+        }
+
+        $res = [
+            'id'=> $workspace['id'],
+            'title'=> $workspace['title'],
+            'description'=> $workspace['description'],
+            'environment'=> $workspace['environment'],
+            'environment'=> $workspace['environment'],
+            'completed'=> $workspace['completed'],
+            'parts'=>$l_part,
+            'badges'=>$l_badges
+        ];
+        $headers = [];
+        return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
+    }
+
+    public function share($id,Request $request){
+        $generatedKey = hash("sha256",(mt_rand(10000,99999).time().$id));
+        //TODO verificare documentazione realtiva sulla reale entropia generata da questo sistema
+        $user_id=$this->getSessionId();
+        $share = R::dispense("share");
+            $share->user=$user_id;
+            $share->workspace=$id;
+            $share->key=$generatedKey;
+            $share->inserttime=date('Y-m-d H:i:s');
+        $share_id = R::store($share);
+
+        $date = new \DateTime();
+        date_add($date, date_interval_create_from_date_string('15 minutes'));
+
+        $res = [
+            "id"=>$share_id,
+            "key"=>$generatedKey,
+            "expire"=>$date->format('Y-m-d H:i:s')
+        ];
+
+        $headers = [];
+        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+    }
+
+    public function postPart($id,Request $request){
+        $user_id=$this->getSessionId();
+
+        $res = [];
+        $headers = [];
+        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
 }

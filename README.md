@@ -6,20 +6,20 @@ Progetto Segreto
 
 #TODO
 
-[ ] tolleranza validita token per utente
-[ ] disabilitare TRACE su haproxy
-[ ] haproxy gzip, https, anti ddos, anti info server (500 e header)
-[ ] rivedere i gelf message verso l'utente
-[ ] finire la review di schema e example
-[ ] in ansible-role-nginx bug: https://github.com/jdauphant/ansible-role-nginx/issues/28 da risolvere per DO e co
-[ ] tidy config: http://api.html-tidy.org/tidy/quickref_5.2.0.html#MarkupHeader
-[ ] rsnapshot (log) ed eventualmente file caricati (=> crittografia)
-[ ] automatic backup mysql
-[ ] log rotation
-[ ] in test: mail catcher !!!! come config di base , in prod settare ssmtp o qualcosa per l'invio serio di mail! (mailgun??) MATRAIL?
-[ ] apt-check-security.sh forse e da mettere in un cron anche di root va bene
-[ ] delete nei vari elementi
-[ ] goaccess :
+-[ ] tolleranza validita token per utente
+-[ ] disabilitare TRACE su haproxy
+-[ ] haproxy gzip, https, anti ddos, anti info server (500 e header)
+-[ ] rivedere i gelf message verso l'utente
+-[ ] finire la review di schema e example
+-[ ] in ansible-role-nginx bug: https://github.com/jdauphant/ansible-role-nginx/issues/28 da risolvere per DO e co
+-[ ] tidy config: http://api.html-tidy.org/tidy/quickref_5.2.0.html#MarkupHeader
+-[ ] rsnapshot (log) ed eventualmente file caricati (=> crittografia)
+-[ ] automatic backup mysql
+-[ ] log rotation
+-[ ] in test: mail catcher !!!! come config di base , in prod settare ssmtp o qualcosa per l'invio serio di mail! (mailgun??) MATRAIL?
+-[ ] apt-check-security.sh forse e da mettere in un cron anche di root va bene
+-[ ] delete nei vari elementi
+-[ ] goaccess :
       - https://www.webfoobar.com/index.php/node/53
       - https://pantheon.io/docs/nginx-access-log/
       - http://vujade.co/monitoring-nginx-traffic-using-goaccess/
