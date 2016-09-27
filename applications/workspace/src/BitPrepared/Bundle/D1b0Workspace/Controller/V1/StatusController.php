@@ -32,9 +32,9 @@ class StatusController implements ControllerProviderInterface
         $this->app->log('log info', [], Logger::INFO); //grazie al traits <- da trasformare prima in app
 
         $data = array(
-          "workspace" => "OK",
-          "fileManager" => "OK",
-          "externalLogin" => "OK"
+            "workspace" => "OK",
+            "fileManager" => "OK",
+            "externalLogin" => "OK"
         );
 
         $headers = [];
