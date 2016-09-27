@@ -1,0 +1,176 @@
+# CREATE CHROOT
+
+- name: disable tmpfs jail run dir
+  mount: name={{jail_root_dir}}/run src='tmpfs' fstype=tmpfs opts='noexec,size=1M' state=absent
+
+- name: disable  tmpfs jail tmp dir
+  mount: name={{jail_root_dir}}/tmp src='tmpfs' fstype=tmpfs opts='noexec,size=100M' state=absent
+
+- name: sprotect jail file
+  action: command chattr -R -i "{{jail_root_dir}}"
+  ignore_errors: yes
+
+- name: check exist (replace)
+  file: path={{jail_root_dir}} state=directory state=absent
+
+- name: create chroot jail dir
+  file: path={{jail_root_dir}} state=directory mode=0700
+
+# Create devices
+#mkdir $JAIL/dev
+- name: create /dev
+  file: path={{jail_root_dir}}/dev state=directory mode=0755
+
+#mknod -m 0666 {{jail_root_dir}}/dev/null c 1 3
+- name: create /dev/null
+  action: command mknod -m 0600 {{jail_root_dir}}/dev/null c 1 3
+
+#mknod -m 0666 $JAIL/dev/random c 1 8
+- name: create /dev/random
+  action: command mknod -m 0666 {{jail_root_dir}}/dev/random c 1 8
+
+#mknod -m 0444 $JAIL/dev/urandom c 1 9
+- name: create /dev/urandom
+  action: command mknod -m 0444 {{jail_root_dir}}/dev/urandom c 1 9
+
+# mkdir -p $JAIL/{etc,bin,usr,var} e mkdir -p $JAIL/{run,tmp}
+- name: create system dir
+  file: path={{jail_root_dir}}/{{item}} state=directory mode=0700
+  with_items:
+    - etc
+    - bin
+    - usr
+    - var
+    - run
+    - tmp
+
+# mkdir -p $JAIL/usr/{lib,sbin,bin}
+- name: create usr dir
+  file: path={{jail_root_dir}}/usr/{{item}} state=directory mode=0700
+  with_items:
+    - lib
+    - sbin
+    - bin
+
+# mkdir -p $JAIL/var/run
+- name: create var dir
+  file: path={{jail_root_dir}}/var/{{item}} state=directory mode=0700
+  with_items:
+    - run
+
+# cd $JAIL; ln -s usr/lib lib64
+- name: create symbolic lib 64bit
+  action: command ln -s usr/lib lib64
+  args:
+    chdir: "{{jail_root_dir}}"
+
+# cd $JAIL/usr; ln -s lib lib64
+- name: create symbolic lib
+  action: command ln -s lib lib64
+  args:
+    chdir: "{{jail_root_dir}}/usr"
+
+# ‘/etc/services’ -> ‘/var/www/jail/etc/services’
+# ‘/etc/nsswitch.conf’ -> ‘/var/www/jail/etc/nsswitch.conf’
+# cp: cannot stat ‘/etc/nscd.conf’: No such file or directory
+# ‘/etc/protocols’ -> ‘/var/www/jail/etc/protocols’
+# ‘/etc/ld.so.conf’ -> ‘/var/www/jail/etc/ld.so.conf’
+# ‘/etc/host.conf’ -> ‘/var/www/jail/etc/host.conf’
+- name: copy base file
+  copy: src=etc/{{item}} dest="{{jail_root_dir}}/etc" owner=root group=root mode=0644
+  with_items:
+    - services
+    - nsswitch.conf
+    - protocols
+    - ld.so.conf
+    - host.conf
+
+# ‘/etc/resolv.conf’ -> ‘/var/www/jail/etc/resolv.conf’
+- name: copy system resolv.conf config file
+  action: command cp -rfvL /etc/resolv.conf {{jail_root_dir}}/etc/
+
+# ‘/etc/hosts’ -> ‘/var/www/jail/etc/hosts’
+- name: copy system hosts config file
+  action: command cp -rfvL /etc/hosts {{jail_root_dir}}/etc/
+
+# ‘/etc/localtime’ -> ‘/var/www/jail/etc/localtime’
+- name: copy system localtime config file
+  action: command cp -rfvL /etc/localtime {{jail_root_dir}}/etc/
+
+# ‘/etc/ld.so.cache’ -> ‘/var/www/jail/etc/ld.so.cache’
+- name: copy system ld.so.cache config file
+  action: command cp -rfvL /etc/ld.so.cache {{jail_root_dir}}/etc/
+
+# Adjust chroot() security
+
+# Add users
+# 1337 deve coincidere con quello del sistema padre! FIXME: check
+- name: setup www-data user
+  action: shell echo "www-data:x:33:33:www-data:/:/bin/false" >> "{{jail_root_dir}}/etc/passwd"
+
+- name: setup nobody user
+  action: shell echo "nobody:x:65534:65534:www-data:/:/bin/false" >> "{{jail_root_dir}}/etc/passwd"
+
+# Add groups
+- name: setup www-data group
+  action: shell echo "www-data:x:33:" >> "{{jail_root_dir}}/etc/group"
+
+- name: setup nobody group
+  action: shell echo "nobody:x:65534:" >> "{{jail_root_dir}}/etc/group"
+
+# Add shadow
+- name: setup www-data shadow
+  action: shell echo "www-data:x:16990::::::" >> "{{jail_root_dir}}/etc/shadow"
+
+- name: setup nobody shadow
+  action: shell echo "nobody:x:16990::::::" >> "{{jail_root_dir}}/etc/shadow"
+
+# Add gshadow
+- name: setup www-data gshadow
+  action: shell echo "www-data:::" >> "{{jail_root_dir}}/etc/gshadow"
+
+- name: setup nobody gshadow
+  action: shell echo "nobody:::" >> "{{jail_root_dir}}/etc/gshadow"
+
+# mount -t tmpfs none {{jail_root_dir}}/run -o 'noexec,size=1M'
+- name: tmpfs jail run dir
+  mount: name={{jail_root_dir}}/run src='tmpfs' fstype=tmpfs opts='noexec,size=1M' state=mounted
+
+# mount -t tmpfs none {{jail_root_dir}}/tmp -o 'noexec,size=100M'
+- name: tmpfs jail tmp dir
+  mount: name={{jail_root_dir}}/tmp src='tmpfs' fstype=tmpfs opts='noexec,size=100M' state=mounted
+
+# touch $JAIL/etc/shells
+- name: create etc shells
+  action: command touch shells
+  args:
+    chdir: "{{jail_root_dir}}/etc/"
+
+# # Set ownerships
+# chown -R root:root {{jail_root_dir}}/
+# chown -R www-data:www-data {{jail_root_dir}}/www
+# chown -R www-data:www-data {{jail_root_dir}}/etc/{nginx,php5}
+# chown -R www-data:www-data {{jail_root_dir}}/var/{log,lib}/nginx
+# chown www-data:www-data {{jail_root_dir}}/run/nginx.pid
+#
+# # Restrict permissions
+# find {{jail_root_dir}}/ -gid 0 -uid 0 -type d -print | xargs chmod -rw
+- name: permission 1/4
+  action: shell find "{{jail_root_dir}}/" -gid 0 -uid 0 -type d -print | xargs chmod -rw
+  ignore_errors: yes
+
+# find {{jail_root_dir}}/ -gid 0 -uid 0 -type d -print | xargs chmod +x
+- name: permission 2/4
+  action: shell find "{{jail_root_dir}}/" -gid 0 -uid 0 -type d -print | xargs chmod +x
+
+# find {{jail_root_dir}}/etc -gid 0 -uid 0 -type f -print | xargs chmod -x
+- name: permission 3/4
+  action: shell find "{{jail_root_dir}}/etc" -gid 0 -uid 0 -type f -print | xargs chmod -x
+
+# chmod +rw {{jail_root_dir}}/tmp
+# chmod +rw {{jail_root_dir}}/run
+- name: permission 4/4
+  action: command chmod +rw "{{jail_root_dir}}/{{item}}"
+  with_items:
+    - tmp
+    - run

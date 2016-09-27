@@ -11,11 +11,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "debian/jessie64"
-  #config.vm.box = "fujimakishouten/debian-stretch64"
+
+  # bug chiave ssh
+  # config.vm.box_version = "= 8.6.0"
+
+  # WORKS
+  config.vm.box_version = "= 8.5.2"
+
+  # WORKS
+  # config.vm.box_version = "= 8.5.0"
+
+  # WORKS
+  # config.vm.box_version = "= 8.4.0"
 
   config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh"
   config.vm.network "forwarded_port", guest: 80, host: 8080, id: "http"
   config.vm.network "forwarded_port", guest: 443, host: 8443, id: "https"
+  config.vm.network "forwarded_port", guest: 9090, host: 9090, id: "http-php-jail"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -124,6 +136,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # chef-validator, unless you changed the configuration.
   #
   #   chef.validation_client_name = "ORGNAME-validator"
+
+  config.vm.synced_folder '.', '/vagrant', disabled: true
 
   config.vm.provision "ansible" do |ansible|
     ansible.verbose = "v"

@@ -1,0 +1,6 @@
+
+- name: systemv php-fpm chroot service
+  template: src=php-fpm-chroot.initd.j2 dest=/etc/init.d/php-fpm-chroot mode=0755
+
+- name: install php-fpm chroot as default service
+  action: command update-rc.d php-fpm-chroot defaults

@@ -1,0 +1,28 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          php-fpm-chroot
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start php-fpm in a chroot
+### END INIT INFO
+
+CHROOT={{jail_root_dir}}
+
+case "$1" in
+  start)
+        /usr/sbin/chroot $CHROOT /usr/local/php/sbin/php-fpm --daemonize --fpm-config /usr/local/php/etc/php-fpm.conf
+        ;;
+  stop)
+        #pgrep php | xargs kill -9
+        cat {{jail_root_dir}}/run/php5-fpm.pid | xargs kill
+        ;;
+  *)
+        echo "Usage: $N {start|stop}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

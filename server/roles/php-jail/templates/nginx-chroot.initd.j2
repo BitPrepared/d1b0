@@ -1,0 +1,31 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          nginx-chroot
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start nginx in a chroot
+### END INIT INFO
+
+CHROOT={{jail_root_dir}}
+
+case "$1" in
+  start)
+        /usr/sbin/chroot $CHROOT /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf -q -g 'daemon on; master_process on;'
+        ;;
+  reload)
+        /usr/sbin/chroot $CHROOT /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf -g 'daemon on; master_process on;' -s reload
+        ;;
+  stop)
+        #pgrep nginx | xargs kill -9
+        cat {{jail_root_dir}}/run/nginx.pid | xargs kill
+        ;;
+  *)
+        echo "Usage: $N {start|reload|stop}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

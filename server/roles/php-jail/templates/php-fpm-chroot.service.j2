@@ -1,0 +1,33 @@
+# Stop dance for nginx
+# =======================
+#
+# ExecStop sends SIGSTOP (graceful stop) to the nginx process.
+# If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control
+# and sends SIGTERM (fast shutdown) to the main process.
+# After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends
+# SIGKILL to all the remaining processes in the process group (KillMode=mixed).
+#
+# nginx signals reference doc:
+# http://nginx.org/en/docs/control.html
+#
+[Unit]
+Description=PHP FastCGI process manager (Chroot)
+After=syslog.target network.target auditd.service nginx.service
+
+[Service]
+User=www-data
+Group=www-data
+NoNewPrivileges=yes
+Type=forking
+PIDFile={{jail_root_dir}}/run/php-fpm.pid
+RootDirectory={{jail_root_dir}}
+ExecStart=/usr/local/php/sbin/php-fpm --fpm-config /usr/local/php/etc/php-fpm.conf
+ExecReload=/bin/kill -USR2 $MAINPID
+TimeoutStopSec=5
+KillMode=mixed
+
+#CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+#AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

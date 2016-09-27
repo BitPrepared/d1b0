@@ -1,0 +1,6 @@
+
+- name: /etc/systemd/system/php-fpm-chroot.service
+  template: src=php-fpm-chroot.service.j2 dest=/etc/systemd/system/php-fpm-chroot.service
+
+
+# va ggiunto tar quelli che partono all'avvio

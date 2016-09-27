@@ -1,0 +1,102 @@
+
+# download file e metterli in locale
+# * https://gist.github.com/dorneanu/9f940b2ded9c05b5be9f#file-chroot-sh
+# * https://gist.github.com/dorneanu/9f940b2ded9c05b5be9f#file-n2chroot
+# * https://gist.github.com/dorneanu/9f940b2ded9c05b5be9f#file-nginx-chroot (nginx-chroot  to copy to /etc/init.d/*)
+# * https://gist.github.com/dorneanu/9f940b2ded9c05b5be9f#file-php5-fpm-chroot (php5-fpm-chroot to copy to /etc/init.d/*)
+- name: check uncompress application presence
+  apt: name={{item}} update_cache=yes cache_valid_time=3600
+  with_items:
+    - unzip
+    - tar
+
+- name: install compile application
+  apt: name={{item}} update_cache=yes cache_valid_time=3600
+  with_items:
+    - binutils
+    - cpp-4.9
+    - gcc-4.9
+    - libasan1
+    - libatomic1
+    - libcilkrts5
+    - libcloog-isl4
+    - libgcc-4.9-dev
+    - libgomp1
+    - libisl10
+    - libitm1
+    - liblsan0
+    - libmpc3
+    - libmpfr4
+    - libquadmath0
+    - libtsan0
+    - libubsan0
+    - build-essential
+    - dpkg-dev
+    - g++-4.9
+    - libbz2-dev
+    - libc-dev-bin
+    - libc6-dev
+    - libdpkg-perl
+    - libpcre3-dev
+    - libpcrecpp0
+    - libssl-dev
+    - libstdc++-4.9-dev
+    - zlib1g-dev
+    - linux-libc-dev
+    - autoconf
+    - automake
+    - autotools-dev
+
+- include: jail.yml
+
+- name: n2chroot script
+  template: src=n2chroot.j2 dest=/root/scripts/n2chroot mode=0755
+
+- include: nginx.yml
+#- include: nginx-systemd.yml
+- include: nginx-systemv.yml
+
+- include: php.yml
+#- include: php-systemd.yml
+- include: php-systemv.yml
+
+- name: n2chroot script
+  file: path=/root/scripts/n2chroot state=absent
+
+- name: remove compile application
+  apt: name={{item}} state=absent
+  with_items:
+    - binutils
+    - cpp-4.9
+    - gcc-4.9
+    - libasan1
+    - libatomic1
+    - libcilkrts5
+    - libcloog-isl4
+    - libgcc-4.9-dev
+    - libgomp1
+    - libisl10
+    - libitm1
+    - liblsan0
+    - libmpc3
+    - libmpfr4
+    - libquadmath0
+    - libtsan0
+    - libubsan0
+    - build-essential
+    - dpkg-dev
+    - g++-4.9
+    - libbz2-dev
+    - libc-dev-bin
+    - libc6-dev
+    - libdpkg-perl
+    - libpcre3-dev
+    - libpcrecpp0
+    - libssl-dev
+    - libstdc++-4.9-dev
+    - zlib1g-dev
+    - linux-libc-dev
+    - autoconf
+    - automake
+    - autotools-dev
+  when: application_environment != "developer"

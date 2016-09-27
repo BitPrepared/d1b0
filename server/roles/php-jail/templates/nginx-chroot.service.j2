@@ -1,0 +1,35 @@
+# Stop dance for nginx
+# =======================
+#
+# ExecStop sends SIGSTOP (graceful stop) to the nginx process.
+# If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control
+# and sends SIGTERM (fast shutdown) to the main process.
+# After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends
+# SIGKILL to all the remaining processes in the process group (KillMode=mixed).
+#
+# nginx signals reference doc:
+# http://nginx.org/en/docs/control.html
+#
+[Unit]
+Description=Nginx Server (Chroot)
+After=syslog.target network.target auditd.service
+
+[Service]
+User=www-data
+Group=www-data
+NoNewPrivileges=yes
+Type=forking
+PIDFile={{jail_root_dir}}/run/nginx.pid
+RootDirectory={{jail_root_dir}}
+ExecStartPre=/usr/local/nginx/sbin/nginx -t -c /usr/local/nginx/conf/nginx.conf
+ExecStart=/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+ExecReload=/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf -s reload
+ExecStop=/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf -s stop
+TimeoutStopSec=5
+KillMode=mixed
+
+#CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+#AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

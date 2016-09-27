@@ -1,0 +1,6 @@
+
+- name: systemv nginx chroot service
+  template: src=nginx-chroot.initd.j2 dest=/etc/init.d/nginx-chroot mode=0755
+
+- name: install nginx chroot as default service
+  action: command update-rc.d nginx-chroot defaults

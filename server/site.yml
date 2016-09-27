@@ -13,13 +13,17 @@
     # - { role: ANXS.openssh, tags: ["base"] }
 
     #- { role: ansible-no-apparmor, tags: ["hardening"] }
-    - { role: apparmor, tags: ["hardening"] }
-    - { role: dev-sec.os-hardening, tags: ["hardening"] }
-    - { role: dev-sec.ssh-hardening, tags: ["hardening"] }
 
-    # fa anche ntpudate!
+    # SOSPESI MOMENTANEAMENTE
+    #- { role: apparmor, tags: ["hardening"] }
+    #- { role: dev-sec.os-hardening, tags: ["hardening"] }
+    #- { role: dev-sec.ssh-hardening, tags: ["hardening"] }
+
+    # fa anche ntpudate! DA CONVERTIRE!
     # https://github.com/lyrasis/ansible-linux-security-role
     # - { role: linux-security-check, tags: ["hardening"] }
+
+    - { role: linux-security-check, tags: ["hardening"] }
 
     - { role: base, tags: ["comodity"] }
 

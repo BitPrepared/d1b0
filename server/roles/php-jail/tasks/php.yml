@@ -1,0 +1,168 @@
+
+
+- name: check pre exist PHP e Suhosin
+  file: path="{{item}}" state=absent
+  with_items:
+    - /tmp/php-5.6.26
+    - /tmp/nsuhosin-0.9.38
+
+- name: download PHP 5.6.26
+  unarchive:
+    src: "http://it2.php.net/get/php-5.6.26.tar.gz/from/this/mirror"
+    dest: /tmp
+    remote_src: yes
+    copy: no
+
+- name: download Suhosin
+  unarchive:
+    src: "https://download.suhosin.org/suhosin-0.9.38.tar.gz"
+    dest: /tmp
+    remote_src: yes
+    copy: no
+
+
+- name: install php dependency lib shared memory
+  apt: name={{item}}
+  with_items:
+      - libmm-dev
+      - libmm14
+
+# ./configure --disable-all --disable-debug --enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --enable-memory-limit --prefix=/var/www/jail/usr/local/php --with-config-file-path=/usr/local/php/etc/
+- name: configure/make/install php 5.6.26
+  command: "{{ item }}"
+  args:
+    chdir: /tmp/php-5.6.26
+  with_items:
+    - ./configure --disable-all
+      --disable-debug
+      --enable-fpm
+      --with-fpm-user=www-data
+      --with-fpm-group=www-data
+      --with-mysql=mysqlnd
+      --with-mysqli=mysqlnd
+      --enable-pdo
+      --enable-session
+      --with-mm
+      --with-pdo-mysql=mysqlnd
+      --prefix={{jail_root_dir}}/usr/local/php
+      --with-config-file-path=/usr/local/php/etc/
+      --with-config-file-scan-dir=/usr/local/php/etc/conf.d/
+    - make
+    - make install
+
+- name: n2chroot php
+  shell: /root/scripts/n2chroot "{{jail_root_dir}}/usr/local/php/bin/php"
+
+# - name: n2chroot php-cgi
+#   shell: /root/scripts/n2chroot "{{jail_root_dir}}/usr/local/php/bin/php-cgi"
+
+- name: n2chroot php-fpm
+  shell: /root/scripts/n2chroot "{{jail_root_dir}}/usr/local/php/sbin/php-fpm"
+
+- name: permission php-fpm
+  file: path={{jail_root_dir}}/usr/local/php/ owner=www-data group=www-data state=directory recurse=yes
+
+- name: create /var per nginx
+  file: path={{jail_root_dir}}/var/{{item}}/php state=directory mode=0755
+  with_items:
+    - log
+    - lib
+
+# cp /tmp/...php.ini-development /usr/local/php/php.ini
+- name: php.ini production
+  copy: src=php/php.ini dest={{jail_root_dir}}/usr/local/php/etc/php.ini mode=0644
+
+- name: create php conf extension dir
+  file: path="{{jail_root_dir}}/usr/local/php/etc/conf.d/"  state=directory mode=0755
+
+- name: create session and upload dir
+  file: path="{{jail_root_dir}}/tmp/{{item}}/"  state=directory mode=0755
+  with_items:
+    - sessions
+    - uploads 
+
+- name: suhosin.ini production
+  copy: src=php/conf.d/suhosin.ini dest={{jail_root_dir}}/usr/local/php/etc/conf.d/suhosin.ini mode=0644
+
+# cp sapi/fpm/php-fpm /usr/local/bin
+
+- name: php-fpm.conf script
+  template: src=php-fpm.conf.j2 dest={{jail_root_dir}}/usr/local/php/etc/php-fpm.conf mode=0644
+
+- name: php-fpm-checkconf
+  copy: src=php-fpm-checkconf dest={{jail_root_dir}}/usr/local/php/bin/php-fpm-checkconf mode=0755
+
+- name: protect config file php-fpm
+  action: command chattr +i "{{jail_root_dir}}/usr/local/php/etc/php-fpm.conf"
+
+- name: protect config file php.ini
+  action: command chattr +i "{{jail_root_dir}}/usr/local/php/etc/php.ini"
+
+- name: phpize
+  action: command {{jail_root_dir}}/usr/local/php/bin/phpize
+  args:
+    chdir: /tmp/suhosin-0.9.38
+
+- name: configure suhosin 0.9.38
+  command: "{{ item }}"
+  args:
+    chdir: /tmp/suhosin-0.9.38
+  with_items:
+    - ./configure --with-php-config={{jail_root_dir}}/usr/local/php/bin/php-config
+      --enable-suhosin
+      --prefix={{jail_root_dir}}/usr/local/php
+    - make
+    - make install
+
+- name: create php extension dir
+  file: path="{{jail_root_dir}}/usr/lib/php/extensions/no-debug-non-zts-20131226"  state=directory mode=0755
+
+# /var/www/jail/usr/local/php/lib/php/extensions/no-debug-non-zts-20131226/suhosin.so
+# /var/www/jail/usr/lib/php/extensions/no-debug-non-zts-20131226
+- name: setup suhosin.so
+  copy:
+    src: "{{jail_root_dir}}/usr/local/php/lib/php/extensions/no-debug-non-zts-20131226/suhosin.so"
+    dest: "{{jail_root_dir}}/usr/lib/php/extensions/no-debug-non-zts-20131226/suhosin.so"
+    remote_src: true
+
+# cp -Rv /usr/share/zoneinfo $JAIL/usr/share/
+- name: copy system zoneinfo
+  action: command cp -rfvL /usr/share/zoneinfo {{jail_root_dir}}/usr/share/
+
+# - name: check jail php
+#   shell: /usr/sbin/chroot {{jail_root_dir}} /usr/local/php/bin/php-fpm-checkconf
+#   register: command_result
+#   failed_when: "'failed' in command_result.stderr"
+
+- name: clean PHP e Suhosin
+  file: path="{{item}}" state=absent
+  with_items:
+    - /tmp/php-5.6.26
+    - /tmp/suhosin-0.9.38
+  when: application_environment != "developer"
+
+# ./configure --with-libdir=lib64 --with-gd --with-mysql --prefix=/usr --exec-prefix=/usr \
+# --bindir=/usr/bin --sbindir=/usr/sbin --sysconfdir=/etc --datadir=/usr/share \
+# --includedir=/usr/include --libexecdir=/usr/libexec --localstatedir=/var \
+# --sharedstatedir=/usr/com --mandir=/usr/share/man --infodir=/usr/share/info \
+# --cache-file=../config.cache --with-config-file-path=/etc \
+# --with-config-file-scan-dir=/etc/php.d  --enable-fastcgi \
+# --enable-force-cgi-redirect
+
+
+# Installing PHP CLI binary:        /var/www/jail/usr/local/php/bin/
+# Installing PHP CLI man page:      /var/www/jail/usr/local/php/php/man/man1/
+# Installing PHP FPM binary:        /var/www/jail/usr/local/php/sbin/
+# Installing PHP FPM config:        /var/www/jail/usr/local/php/etc/
+# Installing PHP FPM man page:      /var/www/jail/usr/local/php/php/man/man8/
+# Installing PHP FPM status page:   /var/www/jail/usr/local/php/php/php/fpm/
+# Installing PHP CGI binary:        /var/www/jail/usr/local/php/bin/
+# Installing PHP CGI man page:      /var/www/jail/usr/local/php/php/man/man1/
+# Installing build environment:     /var/www/jail/usr/local/php/lib/php/build/
+# Installing header files:           /var/www/jail/usr/local/php/include/php/
+# Installing helper programs:       /var/www/jail/usr/local/php/bin/
+#   program: phpize
+#   program: php-config
+# Installing man pages:             /var/www/jail/usr/local/php/php/man/man1/
+#   page: phpize.1
+#   page: php-config.1

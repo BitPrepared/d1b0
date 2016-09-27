@@ -1,0 +1,9 @@
+# https://wiki.archlinux.org/index.php/Nginx#Installation_in_a_chroot
+# http://blog.dornea.nu/2016/01/15/howto-put-nginx-and-php-to-jail-in-debian-8/
+
+
+- name: /etc/systemd/system/nginx-chroot.service
+  template: src=nginx-chroot.service.j2 dest=/etc/systemd/system/nginx-chroot.service
+
+
+# va messo tra quelli all'avvio

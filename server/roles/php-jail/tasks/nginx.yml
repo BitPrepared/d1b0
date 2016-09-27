@@ -1,0 +1,168 @@
+# Create NGINX
+
+# mkdir -p $JAIL/usr/share/nginx
+- name: create /usr per nginx
+  file: path={{jail_root_dir}}/usr/share/nginx state=directory mode=0755
+
+# mkdir -p $JAIL/var/{log,lib}/nginx
+- name: create /var per nginx
+  file: path={{jail_root_dir}}/var/{{item}}/nginx state=directory mode=0755
+  with_items:
+    - log
+    - lib
+
+- name: create /var temp dir per nginx
+  file: path={{jail_root_dir}}/var/lib/nginx/{{item}} state=directory mode=0755
+  with_items:
+    - body
+    - fastcgi_temp
+
+# mkdir -p $JAIL/www/cgi-bin
+- name: create /www/cgi-bin per nginx cgi-bin eventualy
+  file: path={{jail_root_dir}}/www/cgi-bin state=directory mode=0755
+
+# mkdir -p $JAIL/usr/share/nginx
+- name: create /etc/nginx/ per nginx
+  file: path={{jail_root_dir}}/etc/nginx state=directory mode=0755
+
+- name: check pre exist nginx e naxis
+  file: path="{{item}}" state=absent
+  with_items:
+    - /tmp/naxsi-0.55.1
+    - /tmp/nginx-1.11.4
+
+- name: download nginx 1.11.4
+  unarchive:
+    src: "https://nginx.org/download/nginx-1.11.4.tar.gz"
+    dest: /tmp
+    remote_src: yes
+    copy: no
+
+- name: download naxis 0.55.1
+  unarchive:
+    src: "https://github.com/nbs-system/naxsi/archive/0.55.1.zip"
+    dest: /tmp
+    remote_src: yes
+    copy: no
+
+- name: configure nginx
+  command: "{{ item }}"
+  args:
+    chdir: /tmp/nginx-1.11.4
+  with_items:
+    - ./configure --prefix={{jail_root_dir}}/usr/local/nginx
+      --add-module=../naxsi-0.55.1/naxsi_src/
+      --with-cc-opt='-g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro'
+      --without-http_ssi_module
+      --without-http_geo_module
+      --without-http_split_clients_module
+      --without-http_proxy_module
+      --without-http_uwsgi_module
+      --without-http_scgi_module
+      --without-http_memcached_module
+      --without-http_empty_gif_module
+      --without-http_upstream_hash_module
+      --without-http_upstream_ip_hash_module
+      --without-http_upstream_least_conn_module
+      --without-http_upstream_keepalive_module
+      --error-log-path=/var/log/nginx/error.log
+      --http-log-path=/var/log/nginx/access.log
+      --http-client-body-temp-path=/var/lib/nginx/body
+      --http-client-body-temp-path=/var/lib/nginx/body
+      --http-fastcgi-temp-path=/var/lib/nginx/fastcgi_temp
+    - make
+    - make install
+
+- name: naxsi_core.rules
+  copy: src=/tmp/naxsi-0.55.1/naxsi_config/naxsi_core.rules dest="{{jail_root_dir}}/usr/local/nginx/conf/naxsi_core.rules" remote_src=yes mode=0644
+
+- name: remove nginx e naxis
+  file: path="{{item}}" state=absent
+  with_items:
+    - /tmp/naxsi-0.55.1
+    - /tmp/nginx-1.11.4
+
+- name: n2chroot script
+  shell: /root/scripts/n2chroot "{{jail_root_dir}}/usr/local/nginx/sbin/nginx"
+
+# Create PID file
+#touch $JAIL/run/nginx.pid
+- name: create PID nginx file
+  action: command touch nginx.pid
+  args:
+    chdir: "{{jail_root_dir}}/run/"
+
+- name: create /lib/x86_64-linux-gnu/ per nginx
+  file: path={{jail_root_dir}}/lib/x86_64-linux-gnu/ state=directory mode=0755
+
+- name: create /usr/lib/x86_64-linux-gnu/ per nginx
+  file: path={{jail_root_dir}}/usr/lib/x86_64-linux-gnu/ state=directory mode=0755
+
+# Copy libnss: cp /lib/x86_64-linux-gnu/libnss_* $JAIL/lib/x86_64-linux-gnu/
+- name: copy libnss (/lib)
+  shell: cp libnss_* {{jail_root_dir}}/lib/x86_64-linux-gnu/
+  args:
+    chdir: /lib/x86_64-linux-gnu/
+
+- name: copy libnsl.so (/lib)
+  shell: cp libnsl.so.1 {{jail_root_dir}}/lib/x86_64-linux-gnu/
+  args:
+    chdir: /lib/x86_64-linux-gnu/
+
+- name: copy locale
+  shell: cp -r . {{jail_root_dir}}/usr/share/locale/
+  args:
+    chdir: /usr/share/locale/
+
+- name: static nginx.conf
+  template: src=nginx.conf.j2 dest={{jail_root_dir}}/usr/local/nginx/conf/nginx.conf mode=0644
+
+- name: static fastcgi_params
+  template: src=fastcgi_params.j2 dest={{jail_root_dir}}/usr/local/nginx/conf/fastcgi_params mode=0644
+
+- name: static naxsi.rules
+  template: src=naxsi.rules.j2 dest={{jail_root_dir}}/usr/local/nginx/conf/naxsi.rules mode=0644
+
+- name: copy info.php
+  template: src=info.php.j2 dest={{jail_root_dir}}/usr/local/nginx/html/info.php mode=0644
+
+# chown -R www-data:www-data $JAIL/www
+- name: permission www dir
+  file: path={{jail_root_dir}}/www owner=www-data group=www-data state=directory recurse=yes
+
+# chown -R www-data:www-data $JAIL/etc/nginx
+- name: permission etc nginx dir
+  file: path={{jail_root_dir}}/etc/nginx owner=www-data group=www-data state=directory recurse=yes
+
+# chown -R www-data:www-data $JAIL/var/{log,lib}/nginx
+- name: permission nginx var dir
+  file: path={{jail_root_dir}}/var/{{item}}/nginx owner=www-data group=www-data state=directory recurse=yes
+  with_items:
+    - log
+    - lib
+
+- name: permission nginx default log dir
+  file: path={{jail_root_dir}}/usr/local/nginx/log/ owner=www-data group=www-data state=directory recurse=yes
+
+# chown www-data:www-data $JAIL/run/nginx.pid
+- name: permission nginx.pid
+  file: path={{jail_root_dir}}/run/nginx.pid owner=www-data group=www-data state=file
+
+# find {{jail_root_dir}}/usr/local/nginx/sbin -type f -print | xargs chmod ug+rx
+- name: permission /usr/local/nginx/sbin
+  action: shell find "{{jail_root_dir}}/usr/local/nginx/sbin" -type f -print | xargs chmod ug+rx
+
+# find {{jail_root_dir}}/ -group www-data -user www-data -print | xargs chmod o-rwx
+- name: permission www-data user
+  action: shell find {{jail_root_dir}}/ -group www-data -user www-data -print | xargs chmod o-rwx
+
+- name: setup capability bind service (porte 80 e 443)
+  action: shell setcap 'cap_net_bind_service=+ep' {{jail_root_dir}}/usr/local/nginx/sbin/nginx
+
+- name: protect config file
+  action: command chattr +i "{{jail_root_dir}}/usr/local/nginx/conf/nginx.conf"
+
+- name: check jail nginx
+  shell: /usr/sbin/chroot {{jail_root_dir}} /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf -t
+  register: command_result
+  failed_when: "'failed' in command_result.stderr"
