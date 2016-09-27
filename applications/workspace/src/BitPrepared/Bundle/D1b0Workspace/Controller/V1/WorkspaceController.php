@@ -230,11 +230,11 @@ class WorkspaceController implements ControllerProviderInterface
 
         $part = R::finOne("part","id = ?",[$part_id]);
 
-        $resource = R::findAll("resource","part = ?"[$part_id]);
+        $resource = R::findAll("resource","part = ?",[$part_id]);
 
-        $partecipants = R::findAll("cero","part = ?"[$part_id]);
+        $partecipants = R::findAll("cero","part = ?",[$part_id]);
 
-        $badges = R::findAll("partbadge","part = ?"[$part_id]);
+        $badges = R::findAll("partbadge","part = ?",[$part_id]);
 
         $res= [
             "id"=>$part->id,
@@ -277,8 +277,8 @@ class WorkspaceController implements ControllerProviderInterface
     public function checkin($id,$part_id Request $request) {
         $user_id = $this->getSessionId();
 
-        $badges = R::findAll("partbadge","part = ?"[$part_id]);
-        $u_badges = R::findAll("userbadge","user = ?"[$user_id]);
+        $badges = R::findAll("partbadge","part = ?",[$part_id]);
+        $u_badges = R::findAll("userbadge","user = ?",[$user_id]);
 
         foreach($badges as $b){
             $point = getPoint($b->id,$u_badges)
@@ -289,7 +289,7 @@ class WorkspaceController implements ControllerProviderInterface
                 $pb->inserttime = date('Y-m-d H:i:s');
                 $bp->points = $point;
             $tmp = R::store($pb);
-            
+
             if($point === POINT_FOR_USING_A_BADGE){
                 $ubc = R::dispense("userbadgeclove");
                     $ubc->user = $user_id;
