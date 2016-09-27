@@ -1,0 +1,94 @@
+- name: install php fpm
+  apt: name={{item}}
+  with_items: "{{php_packages}}"
+
+- name: special pool
+  template: src=custom.conf.j2 dest=/etc/php5/fpm/pool.d/{{item.name}}.conf
+  with_items: "{{pools}}"
+  notify: restart php-fpm
+
+# - name: check
+#   command: systemctl status php5-fpm.service
+#   register: php_fpm_output
+#
+# - debug: msg={{php_fpm_output.stdout_lines}}
+
+# rimuovo quello standard?
+# bluefish - advanced Gtk+ text editor for web and software development
+# php5-exactimage - fast image manipulation library (PHP bindings)
+# php5-gdcm - Grassroots DICOM PHP5 bindings
+# php5-vtkgdcm - Grassroots DICOM VTK PHP bindings
+# php5-geos - GEOS bindings for PHP
+# php5-lasso - Library for Liberty Alliance and SAML protocols - PHP 5 bindings
+# php5-libvirt-php - libvirt bindings for PHP
+# php5-mapscript - php5-cgi module for MapServer
+# php5-adodb - Extension optimising the ADOdb database abstraction library
+# php5-apcu - APC User Cache for PHP 5
+# php5-gearman - PHP wrapper to libgearman
+# php5-geoip - GeoIP module for php5
+# php5-gnupg - wrapper around the gpgme library
+# php5-igbinary - igbinary extension
+# php5-imagick - Provides a wrapper to the ImageMagick library
+# php5-json - JSON module for php5
+# php5-memcache - memcache extension module for PHP5
+# php5-memcached - memcached extension module for PHP5, uses libmemcached
+# php5-mongo - MongoDB database driver
+# php5-msgpack - PHP extension for interfacing with MessagePack
+# php5-mysqlnd-ms - MySQL replication and load balancing module for PHP
+# php5-oauth - OAuth 1.0 consumer and provider extension
+# php5-pecl-http - pecl_http module for PHP 5 Extended HTTP Support
+# php5-pecl-http-dev - pecl_http module for PHP 5 Extended HTTP Support development headers
+# php5-pinba - Pinba module for PHP 5
+# php5-propro - propro module for PHP 5
+# php5-propro-dev - propro module for PHP 5 development headers
+# php5-radius - PECL radius module for PHP 5
+# php5-raphf - raphf module for PHP 5
+# php5-raphf-dev - raphf module for PHP 5 development headers
+# php5-redis - PHP extension for interfacing with Redis
+# php5-rrd - PHP bindings to rrd tool system
+# php5-sasl - Cyrus SASL Extension
+# php5-solr - solr module for PHP 5
+# libssh2-php - transitional dummy package for php5-ssh2
+# php5-ssh2 - Bindings for the libssh2 library
+# php5-stomp - Streaming Text Oriented Messaging Protocol (STOMP) client module for PHP 5
+# php5-svn - PHP Bindings for the Subversion Revision control system
+# php5-tokyo-tyrant - PHP interface to Tokyo Cabinet's network interface, Tokyo Tyrant
+# php5-yac - YAC (Yet Another Cache) for PHP 5
+# php5-zmq - ZeroMQ messaging
+# libphp5-embed - HTML-embedded scripting language (Embedded SAPI library)
+# php5-cgi - server-side, HTML-embedded scripting language (CGI binary)
+# php5-cli - command-line interpreter for the php5 scripting language
+# php5-common - Common files for packages built from the php5 source
+# php5-curl - CURL module for php5
+# php5-dbg - Debug symbols for PHP5
+# php5-dev - Files for PHP5 module development
+# php5-enchant - Enchant module for php5
+# php5-fpm - server-side, HTML-embedded scripting language (FPM-CGI binary)
+# php5-gd - GD module for php5
+# php5-gmp - GMP module for php5
+# php5-imap - IMAP module for php5
+# php5-interbase - interbase/firebird module for php5
+# php5-intl - internationalisation module for php5
+# php5-ldap - LDAP module for php5
+# php5-mcrypt - MCrypt module for php5
+# php5-mysql - MySQL module for php5
+# php5-mysqlnd - MySQL module for php5 (Native Driver)
+# php5-odbc - ODBC module for php5
+# php5-pgsql - PostgreSQL module for php5
+# php5-phpdbg - server-side, HTML-embedded scripting language (PHPDBG binary)
+# php5-pspell - pspell module for php5
+# php5-readline - Readline module for php5
+# php5-recode - recode module for php5
+# php5-snmp - SNMP module for php5
+# php5-sqlite - SQLite module for php5
+# php5-sybase - Sybase / MS SQL Server module for php5
+# php5-tidy - tidy module for php5
+# php5-xmlrpc - XML-RPC module for php5
+# php5-xsl - XSL module for php5
+# php5-librdf - PHP5 language bindings for the Redland RDF library
+# php5-remctl - PECL module for Kerberos-authenticated command execution
+# php5-twig - Enhance performance of the Twig template engine
+# php5-uprofiler - hierarchical profiler for PHP (extension)
+# php5-xcache - Fast, stable PHP opcode cacher
+# php5-xdebug - Xdebug Module for PHP 5
+# php5-xhprof - Hierarchical Profiler for PHP5

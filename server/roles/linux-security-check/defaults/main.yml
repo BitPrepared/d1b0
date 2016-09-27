@@ -1,0 +1,5 @@
+cron_mail_to: root@localhost
+alert_mail_to: root@localhost
+rkhunter_cron: /usr/bin/rkhunter --cronjob --update --quiet
+use_lsat: no
+use_lsat_md5_database: no

@@ -1,0 +1,16 @@
+
+fail2ban_jails:
+  - name: 'ssh'
+    enabled: 'true'
+    port: 'ssh'
+    filter: 'sshd'
+    logpath: '/var/log/auth.log'
+    maxretry: '3'
+    usedns: 'warn'
+  - name: 'ssh-ddos'
+    enabled: 'true'
+    port: 'ssh'
+    filter: 'sshd-ddos'
+    logpath: '/var/log/auth.log'
+    maxretry: '3'
+    usedns: 'warn'

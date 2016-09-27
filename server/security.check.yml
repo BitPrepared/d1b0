@@ -1,0 +1,11 @@
+---
+# file: site.yml
+- hosts: all
+
+  vars:
+     use_lsat: yes
+     use_lsat_md5_database: yes
+     date: "{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"
+
+  roles:
+    - { role: linux-security-check, tags: ["hardening"] }

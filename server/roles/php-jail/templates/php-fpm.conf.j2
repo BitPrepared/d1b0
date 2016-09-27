@@ -1,11 +1,11 @@
 [global]
 pid = /run/php5-fpm.pid
-error_log = /var/log/php/php5-fpm.log
+error_log = /var/log/php-fpm-global.log
 
 [www]
 user = www-data
 group = www-data
-listen = /var/run/php5-fpm.sock
+listen = /var/run/php5-fpm-chroot.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
@@ -14,6 +14,9 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 chdir = /
+
+;serve per trovare errori di comunicazione con php-fpm (abilitare per debug)
+;catch_workers_output = yes
 
 php_value[upload_tmp_dir] = /tmp/uploads
 php_value[session.save_path] = /tmp/sessions

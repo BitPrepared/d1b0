@@ -1,0 +1,118 @@
+- name: ntpdate 1/2
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - ntpdate
+
+- name: make sure the time is correct
+  shell: "ntpdate -u {{ntp_server}}"
+
+- name: check dependency packages
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - zip
+    - nmap
+    - cron
+    - wget
+
+- name: install packages health check
+  apt:
+    pkg: "{{ item }}"
+  with_items:
+    - chkrootkit=0.50-3  #anti rootkit
+    - lsat=0.9.7.1-2     #rootkit, backdoor, sniffer and exploit scanner
+    - rkhunter=1.4.2-0.4
+    - tiger=1:3.2.3-12.1
+
+- name: config rkhunter
+  template: src=etc/rkhunter.conf.j2 dest=/etc/rkhunter.conf mode=0644
+
+- name: rkhunter | Make sure rkhunter has latest defs
+  command: rkhunter --propupd
+  changed_when: False
+
+- name: rkhunter | Check
+  command: rkhunter -c --enable all --skip-keypress --rwo
+
+- name: add cron rkhunter
+  cron: name="Run Rkhunter" hour="{{ 3|random}}" minute="{{ 59 |random}}" job="{{ rkhunter_cron }}" state=present
+  changed_when: False
+
+- name: setup cron mailto
+  cronvar: name="EMAIL" value="{{cron_mail_to}}"
+
+- name: create report dir
+  local_action: file path="report/{{ inventory_hostname }}/" state=directory
+
+- name: Copy original lsatmd5.out [{{use_md5_database}}]
+  copy: src=lsatmd5.out dest=/root/lsatmd5.out
+  when: use_lsat_md5_database == True and use_lsat == True
+
+- name: check lsatmd5.out
+  stat: path=/root/lsatmd5.out
+  register: lsatmd5_check
+
+- name: lsat generate md5
+  command: lsat -w -o report-lsat.html -d
+  when: lsatmd5_check.stat.exists and use_lsat == True
+
+- name: copy lsat diff
+  fetch: src=/root/lsatmd5.diff dest="report/{{ inventory_hostname }}/lsatmd5-{{date}}.diff" flat=yes
+  when: use_lsat == True
+
+- name: lsat generate md5
+  command: lsat -w -o report-lsat.html
+  when: not lsatmd5_check.stat.exists and use_lsat == True
+
+- name: copy lsat report
+  fetch: src=/root/report-lsat.html dest="report/{{ inventory_hostname }}/report-{{date}}-lsat.html" flat=yes
+  when: use_lsat == True
+
+- name: copy lsat md5 database
+  fetch: src=/root/lsatmd5.out dest="report/{{ inventory_hostname }}/lsatmd5-{{date}}.out" flat=yes
+  when: use_lsat == True
+
+- name: clean lsat md5 report
+  file: path=/root/report-lsat.html state=absent
+  when: use_lsat == True
+
+- name: clean lsat md5 database
+  file: path=/root/lsatmd5.out state=absent
+  when: use_lsat == True
+
+- name: config tiger
+  template: src=etc/tiger/tigerrc.j2 dest=/etc/tiger/tigerrc mode=0644
+
+- name: check tiger
+  command: tiger -H
+
+- name: find tiger report
+  shell: "cd /var/log/tiger; find . -maxdepth 1 -type f -iname \"*.html\" | cut -d'/' -f2"
+  register: files_to_copy
+
+- name: copy tiger report
+  fetch: src=/var/log/tiger/{{ item }} dest="report/{{ inventory_hostname }}/{{ item }}" flat=yes
+  with_items: "{{files_to_copy.stdout_lines}}"
+
+- name: clean tiger report
+  file: path=/var/log/tiger/{{ item }} state=absent
+  with_items: "{{files_to_copy.stdout_lines}}"
+
+# - name: copy local lsatmd5.out to remote if exists
+#   local_action: stat path="files/lsatmd5.out"
+#   register: result_check_file
+#
+# - debug: msg="{{result_check_file}}"
+
+# - name: copy md5 to use
+#   fetch: src=/root/lsatmd5.out dest=files/lsatmd5.out
+#   when: result_check_file.stat.exists
+
+#
+# - fetch: src=/tmp/somefile dest=/tmp/fetched
+
+#   register: rkhunter_result
+# - debug: msg="{{rkhunter_result}}"

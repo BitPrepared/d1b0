@@ -36,8 +36,44 @@ Progetto Segreto
       - https://www.webfoobar.com/index.php/node/53
       - https://pantheon.io/docs/nginx-access-log/
       - http://vujade.co/monitoring-nginx-traffic-using-goaccess/
-[ ] aide, integrit or samhain 
+[ ] aide, integrit or samhain
 
+[ ] Please consider removing these system accounts.
+Check to see if you need them for your system applications before removing.
+Also, consult the securitylinks.txt file for more information.
+  sync
+  man
+  lp
+  news
+  uucp
+
+[ ] check
+        user 'lp': directory '/var/spool/lpd' does not exist
+        user 'news': directory '/var/spool/news' does not exist
+        user 'uucp': directory '/var/spool/uucp' does not exist
+        user 'www-data': directory '/var/www' does not exist
+        user 'list': directory '/var/list' does not exist
+        user 'irc': directory '/var/run/ircd' does not exist
+        user 'gnats': directory '/var/lib/gnats' does not exist
+        user 'nobody': directory '/nonexistent' does not exist
+        user 'systemd-resolve': directory '/run/systemd/resolve' does not exist
+
+[ ] Checks for sticky bits on tmp files
+      report.html is not chmod 644.
+      scripts is not chmod 644.
+      /var/log/wtmp is not chmod 644.
+      /etc/init.d/motd is not chmod 644.
+      /etc/mtab is not chmod 644.
+      report.html is not chmod 644.
+      scripts is not chmod 644.
+      Check above files for chmod 644.
+      Check above dirs to ensure root ownership.
+
+[ ] Protcol 2 not found in sshd config, or you are doing 1,2.
+
+[ ] su fail2ban inserire il controllo sui log di suhosin
+
+[ ] https://github.com/sovereign/sovereign
 
 ## COMANDI
 
@@ -60,3 +96,8 @@ Progetto Segreto
   * **npm run dist**: Prepara l'ambiente per un rilascio
 
   * **npm run open:dev**: Apre il browser sulla pagina di test
+
+
+## TEMPISTICA CREAZIONE SERVER
+
+  real	17m19.359s

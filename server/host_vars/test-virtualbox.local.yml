@@ -26,3 +26,7 @@ service_list:
  - { port: 443, proto: 'tcp' }
  - { port: 80, proto: 'tcp' }
  - { port: 9090, proto: 'tcp' }
+
+# vagrant internal ip
+fail2ban_ignoreip:
+  - 10.0.2.2

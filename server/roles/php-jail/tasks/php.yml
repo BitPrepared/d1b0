@@ -68,6 +68,9 @@
     - log
     - lib
 
+- name: permission php-fpm
+  file: path={{jail_root_dir}}/var/log/php/ owner=www-data group=www-data state=directory recurse=yes
+
 # cp /tmp/...php.ini-development /usr/local/php/php.ini
 - name: php.ini production
   copy: src=php/php.ini dest={{jail_root_dir}}/usr/local/php/etc/php.ini mode=0644
@@ -79,10 +82,13 @@
   file: path="{{jail_root_dir}}/tmp/{{item}}/"  state=directory mode=0755
   with_items:
     - sessions
-    - uploads 
+    - uploads
 
 - name: suhosin.ini production
   copy: src=php/conf.d/suhosin.ini dest={{jail_root_dir}}/usr/local/php/etc/conf.d/suhosin.ini mode=0644
+
+- name: protect config file suhosin.ini in conf.d
+  action: command chattr +i "{{jail_root_dir}}/usr/local/php/etc/conf.d/suhosin.ini"
 
 # cp sapi/fpm/php-fpm /usr/local/bin
 

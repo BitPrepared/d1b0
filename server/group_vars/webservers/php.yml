@@ -39,3 +39,17 @@ php_packages:
 
 composer_path: /usr/local/bin/composer
 composer_github_oauth_token: ''
+
+pools:
+  - name: workspace
+    user: www-data
+    group: www-data
+    php_enviroment:
+      - { key : "HOSTNAME" , value : "$HOSTNAME" }
+      - { key : "PATH" , value : "/usr/local/bin:/usr/bin:/bin" } #da valutare
+      # VALUTARE DI CAMBIARE LA /tmp IN MODO CHE NON SIA IN COMUNE!
+    php_enviroment_value:
+      - { key : "upload_max_filesize" , value : "13M" }
+      - { key : "post_max_size" , value : "13M" }
+    php_enviroment_admin_value:
+      - { key : "date.timezone" , value : "Europe/Rome" }

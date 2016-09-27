@@ -2,6 +2,9 @@
 # file: site.yml
 - hosts: all
 
+  vars:
+    date: "{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"
+
   tasks:
     # SE USI SELINUX
     # - shell: check-selinux-installation
@@ -10,20 +13,16 @@
     - { role: tersmitten.sudoers, tags: ["base"] }
     - { role: locale, tags: ["base"] }
     - { role: ansible-hostname, tags: ["base"] }
-    # - { role: ANXS.openssh, tags: ["base"] }
 
     #- { role: ansible-no-apparmor, tags: ["hardening"] }
 
-    # SOSPESI MOMENTANEAMENTE
-    #- { role: apparmor, tags: ["hardening"] }
-    #- { role: dev-sec.os-hardening, tags: ["hardening"] }
-    #- { role: dev-sec.ssh-hardening, tags: ["hardening"] }
-
-    # fa anche ntpudate! DA CONVERTIRE!
-    # https://github.com/lyrasis/ansible-linux-security-role
-    # - { role: linux-security-check, tags: ["hardening"] }
+    - { role: apparmor, tags: ["hardening"] }
+    - { role: dev-sec.os-hardening, tags: ["hardening"] }
+    - { role: dev-sec.ssh-hardening, tags: ["hardening"] }
 
     - { role: linux-security-check, tags: ["hardening"] }
+
+    # - { role: fail2ban, tags: ["hardening"] }
 
     - { role: base, tags: ["comodity"] }
 
@@ -37,3 +36,8 @@
 
 # post_tasks:
 # notifica a qualcuno?
+
+# PER STUDIO
+# - { role: ANXS.openssh, tags: ["base"] }
+# https://github.com/lyrasis/ansible-linux-security-role
+# - { role: linux-security-check, tags: ["hardening"] }

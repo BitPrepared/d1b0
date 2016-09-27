@@ -41,7 +41,7 @@ http {
 
         location ~ \.php$ {
             try_files $uri =404;
-            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_pass unix:/var/run/php5-fpm-chroot.sock;
             fastcgi_index index.php;
             include /usr/local/nginx/conf/fastcgi_params;
         }

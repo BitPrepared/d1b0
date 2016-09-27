@@ -36,6 +36,13 @@ base_application:
   - apt-rdepends
   - zip
 
+base_unwanted_application:
+  - bind9-host
+  - libbind9-90
+  - libnfsidmap2:amd64
+  - nfs-common
+  - rpcbind
+
 sudoers_sudoers:
   defaults:
     - env_reset
@@ -65,3 +72,9 @@ base_scripts:
   - apt-check-security.sh
 
 application_environment: production
+
+
+#admin_email: ???
+#cron_mail_to: root@localhost
+#alert_mail_to: root@localhost
+#fail2ban_destemail: 'root@{{ ansible_domain }}'
