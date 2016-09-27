@@ -11,6 +11,10 @@ use RedBeanPHP\Facade as R;
 class WorkspaceController implements ControllerProviderInterface
 {
 
+    public POINT_FOR_USING_A_CONQUERED_BADGE = 200;
+    public POINT_FOR_USING_A_BADGE = 100;
+    public POINT_DEFAULT = 50;
+
     private $app;
 
     public function connect(Application $app)
@@ -25,6 +29,8 @@ class WorkspaceController implements ControllerProviderInterface
         $factory->get('/{id}', array($this, 'getWorkspace'));
         $factory->get('/{id}/share', array($this, 'share'));
         $factory->post('/{id}/part', array($this, 'postPart'));
+        $factory->get('/{id}/part/$id_part', array($this, 'getPart'));
+        $factory->patch('/{id}/part/$id_part/checkin', array($this, 'checkin'));
         return $factory;
     }
     public function getSessionId() {
@@ -180,8 +186,120 @@ class WorkspaceController implements ControllerProviderInterface
     public function postPart($id, Request $request) {
         $user_id = $this->getSessionId();
 
-        $res = [];
+        $data = json_decode($request->getContent(), true);
+
+        $part = R::dispense("part");
+            $part->workspace = $id;
+            $part->user = $user_id;
+            $part->inserttime = date('Y-m-d H:i:s');
+            $part->lastupdatetime = date('Y-m-d H:i:s');
+            $part->totalpoint = 0;
+        $part_id = R::store($part);
+
+        foreach($data['part'] as $r){ //TODO va fixato nelle api
+            if($r->type != "badge"){
+                $resource = R::dispense("resource");
+                    $resource->part = $part_id;
+                    $resource->inserttime = date('Y-m-d H:i:s');
+                    $resource->updatetime = date('Y-m-d H:i:s');
+                    $resource->type = $r->type;
+                    $resource->ref = $r->ref;
+                    $resource->hash = $r->hash;
+                    $resource->totalpoint = 0;
+                $resource_id = R::store($resource);
+            }
+        }
+
+        foreach($data['badges'] as $badge_id){ //TODO va fixato nelle api
+            $pb = R::dispense("partbadge");
+                $pb->badge = $badge_id;
+                $pb->part = $part_id;
+                $pb->inserttime = date('Y-m-d H:i:s');
+            $tmp = R::store($pb);
+        }
+
+        $res = ["id"=>$part_id];
         $headers = [];
-        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+        return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
+    }
+
+    public function getPart($id,$part_id Request $request) {
+        $user_id = $this->getSessionId();
+
+        $data = json_decode($request->getContent(), true);
+
+        $part = R::finOne("part","id = ?",[$part_id]);
+
+        $resource = R::findAll("resource","part = ?",[$part_id]);
+
+        $partecipants = R::findAll("cero","part = ?",[$part_id]);
+
+        $badges = R::findAll("partbadge","part = ?",[$part_id]);
+
+        $res= [
+            "id"=>$part->id,
+            "creation"=>$part->inserttime,
+            "points"=>$part->points,
+            "checked"=>$part->checked,
+            "badges"=>[],
+            "part"=>[],
+            "partecipants"=>[]
+        ];
+
+        foreach($badges as $b){
+            array_push($res['badges'],$b->id);
+        }
+        foreach($resource as $r){
+            array_push($res['part'],[
+                "type"=>$r->type,
+                "hash"=>$r->hash,
+                "ref"=>$r->ref
+            ]);
+        }
+        foreach($partecipants as $p){
+            array_push($res['partecipants'],$p->user);//TODO forse va usato l'id del c'ero e non l'id dell'utente
+        }
+
+        $headers = [];
+        return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
+    }
+    private function getPoint($badge_id,$badges){
+        foreach($badges as $b){
+            if($b->id === $badge_id){
+                if($b->completed === True)
+                    return POINT_FOR_USING_A_CONQUERED_BADGE;
+                else
+                    return POINT_FOR_USING_A_BADGE;
+            }
+        }
+        return POINT_DEFAULT;
+    }
+    public function checkin($id,$part_id Request $request) {
+        $user_id = $this->getSessionId();
+
+        $badges = R::findAll("partbadge","part = ?",[$part_id]);
+        $u_badges = R::findAll("userbadge","user = ?",[$user_id]);
+
+        foreach($badges as $b){
+            $point = getPoint($b->id,$u_badges)
+            $pb = R::dispense("cero");
+                $pb->user = $user_id;
+                $pb->part = $part_id;
+                $pb->badge = $b->id;
+                $pb->inserttime = date('Y-m-d H:i:s');
+                $bp->points = $point;
+            $tmp = R::store($pb);
+
+            if($point === POINT_FOR_USING_A_BADGE){
+                $ubc = R::dispense("userbadgeclove");
+                    $ubc->user = $user_id;
+                    $ubc->badge = $b->id;
+                    $ubc->part = $part_id;
+                    $ubc->inserttime = date('Y-m-d H:i:s');
+                $tmp = R::store($ubc);
+            }
+        }
+
+
     }
 }
