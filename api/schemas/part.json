@@ -25,6 +25,13 @@
         "type": "integer"
       }
     },
+    "badges": {
+      "id": "badges",
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
     "points": {
       "id": "points",
       "type": "integer"
@@ -35,6 +42,11 @@
     }
   },
   "required": [
-    "id"
+    "id",
+    "creation",
+    "partecipants",
+    "points",
+    "badges",
+    "checked"
   ]
 }
