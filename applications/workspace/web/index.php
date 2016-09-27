@@ -11,13 +11,11 @@ use BitPrepared\Bundle\D1b0Workspace\Controller\V1\WorkspaceController;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Silex\Provider\MonologServiceProvider;
 use Ivoba\Silex\RedBeanServiceProvider;
 use Silex\Provider\SessionServiceProvider;
 use Carbon\Carbon;
 use Monolog\Logger;
-use RedBeanPHP\Facade as R;
 
 // FIXME va messo nel php.ini
 date_default_timezone_set('Europe/Rome');
@@ -37,14 +35,14 @@ $baseUrl = ''.$app['api.endpoint'].'/'.$app['api.version'];
 
 // @see: http://silex.sensiolabs.org/doc/providers/monolog.html
 $app->register(new MonologServiceProvider(), array(
-    "monolog.logfile" => ROOT_PATH . "/storage/logs/development_" . Carbon::now('Europe/Rome')->format("Y-m-d") . ".log",
+    "monolog.logfile" => ROOT_PATH."/storage/logs/development_".Carbon::now('Europe/Rome')->format("Y-m-d").".log",
     "monolog.level" => $app["log.level"],
     "monolog.name" => "application"
 ));
 
 // @see: https://github.com/ivoba/redbean-service-provider
 //'mysql:host=localhost;dbname=mydatabase', 'user', 'password'
-$app->register(new RedBeanServiceProvider(), array('db.options' => array( 'dsn' => 'sqlite:'.ROOT_PATH.'/../../database/workspace.sqlite' )));
+$app->register(new RedBeanServiceProvider(), array('db.options' => array('dsn' => 'sqlite:'.ROOT_PATH.'/../../database/workspace.sqlite')));
 $app->register(new SessionServiceProvider());
 
 // production (X-Forwarded-For*)
@@ -52,7 +50,7 @@ $app->register(new SessionServiceProvider());
 Request::enableHttpMethodParameterOverride();
 
 //handling CORS preflight request
-$app->before(function (Request $request) {
+$app->before(function(Request $request) {
     if ($request->getMethod() === "OPTIONS") {
         $response = new Response();
         $response->headers->set("Access-Control-Allow-Origin", "*");
@@ -64,12 +62,12 @@ $app->before(function (Request $request) {
 }, Application::EARLY_EVENT);
 
 //handling CORS respons with right headers
-$app->after(function (Request $request, Response $response) {
+$app->after(function(Request $request, Response $response) {
     $response->headers->set("Access-Control-Allow-Origin", "*");
     $response->headers->set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
 });
 
-$app->error(function (\Exception $e, Request $request, $code) use ($app) {
+$app->error(function(\Exception $e, Request $request, $code) use ($app) {
     // this handler will handle \Exception
     $app['monolog']->addError($e->getMessage());
     $app['monolog']->addError($e->getTraceAsString());
