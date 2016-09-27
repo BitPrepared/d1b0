@@ -31,7 +31,7 @@ securitySchemes:
         Layer di sicurezza per query
         Si può adottare solo nel caso che si riesca a ricondurre all'utente che
         fa la chiamata deducendolo da altri parametri (Es: idUtente), passando
-        l'hmac come queryParameters 
+        l'hmac come queryParameters
       describedBy:
         protocols: [ HTTPS ]
         responses:
@@ -378,6 +378,7 @@ schemas:
         body:
             application/json:
                 example: !include examples/workspace.post.json
+                #FIXME: manca lo schema!!! (in cui mettere anche TEAM)
         responses:
             201:
                 body:
