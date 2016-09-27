@@ -7,9 +7,12 @@
     - { role: geerlingguy.mysql, tags: ["database"] }
     - { role: geerlingguy.redis, tags: ["database"] }
     - { role: geerlingguy.nginx, tags: ["internalserver"] }
+    - { role: php,               tags: ["internalserver"] }
 
     # da fixare
     #- { role: haproxy, tags: ["frontend"] }
+
+    - { role: php-jail,          tags: ["application"] }
 
     # FIXME: php7 NO BUONO!
     #- { role: geerlingguy.php, tags: ["application"] }

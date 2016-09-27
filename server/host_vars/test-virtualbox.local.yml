@@ -1,4 +1,6 @@
 ---
+# override di quanto trovato in group_vars!
+
 descr_group: gruppo macchine di test (???)
 ntp_server: it.pool.ntp.org
 
@@ -17,3 +19,10 @@ ssh_print_motd: true #disabilitabile in produzione?
 ssh_use_pam: true #bug altrimenti
 
 # LoginGraceTime -> tempo per fare un login
+
+application_environment: developer
+
+service_list:
+ - { port: 443, proto: 'tcp' }
+ - { port: 80, proto: 'tcp' }
+ - { port: 9090, proto: 'tcp' }

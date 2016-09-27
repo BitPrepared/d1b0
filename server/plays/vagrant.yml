@@ -6,7 +6,67 @@
     - authorized_key: user=root key="{{ lookup('file', './ssh/root.key.pub') }}" exclusive=yes
     - user: name=developer shell=/bin/bash groups=users append=yes createhome=yes
     - authorized_key: user=developer key="{{ lookup('file', './ssh/developer.key.pub') }}" exclusive=yes
+    - apt: name={{item}} update_cache=yes cache_valid_time=3600
+      with_items:
+        - netcat
 
+
+
+    # - apt: name={{item}} update_cache=yes cache_valid_time=3600
+    #   with_items:
+    #     - binutils
+    #     - cpp-4.9
+    #     - gcc-4.9
+    #     - libasan1
+    #     - libatomic1
+    #     - libcilkrts5
+    #     - libcloog-isl4
+    #     - libgcc-4.9-dev
+    #     - libgomp1
+    #     - libisl10
+    #     - libitm1
+    #     - liblsan0
+    #     - libmpc3
+    #     - libmpfr4
+    #     - libquadmath0
+    #     - libtsan0
+    #     - libubsan0
+    #     - build-essential
+    #     - dpkg-dev
+    #     - g++-4.9
+    #     - libbz2-dev
+    #     - libc-dev-bin
+    #     - libc6-dev
+    #     - libdpkg-perl
+    #     - libpcre3-dev
+    #     - libpcrecpp0
+    #     - libssl-dev
+    #     - libstdc++-4.9-dev
+    #     - zlib1g-dev
+    #     - linux-libc-dev
+    #     - autoconf
+    #     - automake
+    #     - autotools-dev
+    #     - cpp-4.8
+    #     - gcc-4.8
+    #     - libasan0
+    #     - libgcc-4.8-dev
+    #     - linux-compiler-gcc-4.8-x86
+    #     - linux-headers-3.16.0-4-common
+    #     - linux-kbuild-3.16
+    # - copy: src=./files/VBoxGuestAdditions_5.0.18.iso dest=/root/VBoxGuestAdditions_5.0.18.iso owner=root group=root mode=0644
+    # - file: path=/mnt/dvd state=directory
+    # - mount: name=/mnt/dvd src=/root/VBoxGuestAdditions_5.0.18.iso fstype=iso9660 opts="ro,loop" state=mounted
+    # - action: command /mnt/dvd/VBoxLinuxAdditions.run
+    # - apt: name={{item}} state=absent
+    #   with_items:
+    #     - cpp-4.8
+    #     - gcc-4.8
+    #     - libasan0
+    #     - libgcc-4.8-dev
+    #     - linux-compiler-gcc-4.8-x86
+    #     - linux-headers-3.16.0-4-common
+    #     - linux-kbuild-3.16
 
     # - apt: name={{item}} update_cache=yes cache_valid_time=3600
     #   with_items:

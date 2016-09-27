@@ -23,6 +23,8 @@ Progetto Segreto
       - https://www.webfoobar.com/index.php/node/53
       - https://pantheon.io/docs/nginx-access-log/
       - http://vujade.co/monitoring-nginx-traffic-using-goaccess/
+[ ] aide, integrit or samhain 
+
 
 ## COMANDI
 

@@ -63,3 +63,5 @@ service_list:
 
 base_scripts:
   - apt-check-security.sh
+
+application_environment: production
