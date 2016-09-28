@@ -32,6 +32,8 @@ Progetto Segreto
 
 [ ] delete nei vari elementi
 
+[ ] validazione json schema API con https://github.com/epoberezkin/ajv
+
 [ ] goaccess :
       - https://www.webfoobar.com/index.php/node/53
       - https://pantheon.io/docs/nginx-access-log/

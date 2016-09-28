@@ -13,6 +13,7 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
+    "ajv": "^4.7.5",
     "favicons": "^4.8.2",
     "jshint": "^2.9.3",
     "mermaid": "^6.0.0",
@@ -51,7 +52,7 @@
     "ssh:root": "ssh -p 2222 root@127.0.0.1 -i server/plays/ssh/root.key",
     "start": "cd server && vagrant up",
     "test": "echo test",
-    "check:security" : "cd server && ansible-playbook -i $npm_package_config_enviroment.hosts security.check.yml",
+    "check:security": "cd server && ansible-playbook -i $npm_package_config_enviroment.hosts security.check.yml",
     "dist": "mkdirp dist/ && echo dist",
     "release": "",
     "deploy:prod": "s3-cli sync ./dist/ s3://example-com/prod-site/",
