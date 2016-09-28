@@ -1,16 +1,28 @@
+# Sep 28 16:37:56 [741] ALERT - use of eval is forbidden by configuration (attacker '10.0.2.2', file '/usr/local/nginx/html/fail.php', line 2)
+fail2ban_filters:
+  - name: 'suhosin-log'
+    failregex: ^.* \[(\d+)*\] ALERT - .* \(attacker '<HOST>', file '.*'(?:, line \d+)?\)$
+    state: 'present'
 
 fail2ban_jails:
   - name: 'ssh'
     enabled: 'true'
-    port: 'ssh'
     filter: 'sshd'
+    port: 'ssh'
     logpath: '/var/log/auth.log'
     maxretry: '3'
     usedns: 'warn'
   - name: 'ssh-ddos'
     enabled: 'true'
-    port: 'ssh'
     filter: 'sshd-ddos'
+    port: 'ssh'
     logpath: '/var/log/auth.log'
     maxretry: '3'
+    usedns: 'warn'
+  - name: 'suhosin-php'
+    enabled: 'true'
+    filter: 'suhosin-log'
+    port: 'https'
+    logpath: '/var/www/jail/var/log/php/suhosin.log'
+    maxretry: '2'
     usedns: 'warn'
