@@ -20,10 +20,12 @@
     - { role: dev-sec.os-hardening, tags: ["hardening"] }
     - { role: dev-sec.ssh-hardening, tags: ["hardening"] }
 
-    - { role: linux-security-check, tags: ["hardening"] }
     - { role: fail2ban, tags: ["hardening"] }
 
     - { role: base, tags: ["comodity"] }
+
+    # DEVE ESSERE L'ULTIMO!
+    - { role: linux-security-check, tags: ["hardening"] }
 
 # Testing (da valutare se usarlo o meno, locale o remoto)
 # - hosts: local-webservers
@@ -38,5 +40,3 @@
 
 # PER STUDIO
 # - { role: ANXS.openssh, tags: ["base"] }
-# https://github.com/lyrasis/ansible-linux-security-role
-# - { role: linux-security-check, tags: ["hardening"] }
