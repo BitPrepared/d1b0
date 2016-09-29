@@ -78,10 +78,15 @@
 - name: create php conf extension dir
   file: path="{{jail_root_dir}}/usr/local/php/etc/conf.d/"  state=directory mode=0755
 
-- name: create session and upload dir
+- name: create session and upload temp dir
   file: path="{{jail_root_dir}}/tmp/{{item}}/"  state=directory mode=0755
   with_items:
     - sessions
+    - uploads
+
+- name: create upload dir
+  file: path="{{jail_root_dir}}/var/www/{{item}}/" state=directory owner=www-data group=www-data mode=0755 
+  with_items:
     - uploads
 
 - name: suhosin.ini production
