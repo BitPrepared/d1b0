@@ -11,9 +11,9 @@ use RedBeanPHP\Facade as R;
 class WorkspaceController implements ControllerProviderInterface
 {
 
-    public POINT_FOR_USING_A_CONQUERED_BADGE = 200;
-    public POINT_FOR_USING_A_BADGE = 100;
-    public POINT_DEFAULT = 50;
+    public $POINT_FOR_USING_A_CONQUERED_BADGE = 200;
+    public $POINT_FOR_USING_A_BADGE = 100;
+    public $POINT_DEFAULT = 50;
 
     private $app;
 
@@ -223,7 +223,7 @@ class WorkspaceController implements ControllerProviderInterface
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
     }
 
-    public function getPart($id,$part_id Request $request) {
+    public function getPart($id,$part_id,$request) {
         $user_id = $this->getSessionId();
 
         $data = json_decode($request->getContent(), true);
@@ -274,14 +274,14 @@ class WorkspaceController implements ControllerProviderInterface
         }
         return POINT_DEFAULT;
     }
-    public function checkin($id,$part_id Request $request) {
+    public function checkin($id,$part_id,$request) {
         $user_id = $this->getSessionId();
 
         $badges = R::findAll("partbadge","part = ?",[$part_id]);
         $u_badges = R::findAll("userbadge","user = ?",[$user_id]);
 
         foreach($badges as $b){
-            $point = getPoint($b->id,$u_badges)
+            $point = getPoint($b->id,$u_badges);
             $pb = R::dispense("cero");
                 $pb->user = $user_id;
                 $pb->part = $part_id;
