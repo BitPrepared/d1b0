@@ -32,6 +32,7 @@ class WorkspaceController implements ControllerProviderInterface
         $factory->get('/{id}/part/{part_id}', array($this, 'getPart'));
         $factory->put('/{id}/part/{part_id}', array($this, 'putPart'));
         $factory->post('/{id}/part/{part_id}/checkin', array($this, 'checkin'));
+        $factory->delete('/{id}/part/{part_id}/checkin', array($this, 'deleteCheckin'));
         return $factory;
     }
     public function getSessionId() {
@@ -387,7 +388,26 @@ class WorkspaceController implements ControllerProviderInterface
                 $pb->points = $this->POINT_DEFAULT;
             $tmp = R::store($pb);
         }
+        $res = ["points"=>$point_earned];
+        $headers = [];
+        return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
 
+    }
+
+    public function deleteCheckin($id,$part_id, Request $request) {
+        $user_id = $this->getSessionId();
+
+        $u_badges = R::findAll("userbadge","user = ? AND part = ?",[$user_id,$part_id]);
+        R::trashAll($u_badges);
+
+        $cero = R::findAll("cero","user = ? AND part = ?",[$user_id,$part_id]);
+        R::trashAll($cero);
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/html');
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $response->setSharedMaxAge(300);
+        return $response;
 
     }
 }
