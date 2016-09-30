@@ -28,6 +28,7 @@ class WorkspaceController implements ControllerProviderInterface
         $factory->post('/', array($this, 'createWorkspace'));
         $factory->get('/{id}', array($this, 'getWorkspace'));
         $factory->get('/{id}/share', array($this, 'share'));
+        $factory->post('/{id}/join', array($this, 'join'));
         $factory->post('/{id}/part', array($this, 'postPart'));
         $factory->get('/{id}/part/{part_id}', array($this, 'getPart'));
         $factory->put('/{id}/part/{part_id}', array($this, 'putPart'));
@@ -183,6 +184,45 @@ class WorkspaceController implements ControllerProviderInterface
 
         $headers = [];
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+    }
+
+    public function join($id, Request $request) {
+
+
+        $headers = [];
+        $response = JsonResponse::create(["message"=>"No key found"], 400, $headers)->setSharedMaxAge(300);
+
+        //TODO verificare documentazione realtiva sulla reale entropia generata da questo sistema
+        $user_id = $this->getSessionId();
+        $data = json_decode($request->getContent(), true);
+
+        $key = $data['key'];
+
+        $share = R::findOne("share","key = ?",[$key]);
+        echo $share->inserttime;
+        if($share !== NULL){
+            $date = new \DateTime();
+            date_sub($date, date_interval_create_from_date_string('15 minutes'));
+
+            $wp_id=$share['workspace'];
+
+            $dateOld = new \DateTime($share->inserttime);
+            if($dateOld > $date){
+                $usw = R::dispense("userworkspace");
+                    $usw->user = $user_id;
+                    $usw->workspace = $wp_id;
+                    $usw->inserttime = date('Y-m-d H:i:s');
+                R::store($usw);
+                $headers = [];
+                $response = JsonResponse::create(["id"=>$wp_id], 200, $headers)->setSharedMaxAge(300);
+
+            }else{
+                $headers = [];
+                $response = JsonResponse::create(["message"=>"Key no more valid"], 498, $headers)->setSharedMaxAge(300);
+            }
+        }
+
+        return $response;
     }
 
     public function postPart($id, Request $request) {
@@ -355,12 +395,12 @@ class WorkspaceController implements ControllerProviderInterface
         $badges = R::findAll("partbadge","part = ?",[$part_id]);
         $u_badges = R::findAll("userbadge","user = ?",[$user_id]);
 
-        $point_earned = 0
+        $point_earned = 0;
         foreach($badges as $b){ //SE CI SONO DEI BADGE
             $point = $this->getPoint($b->id,$u_badges);
             if($point != $this->POINT_DEFAULT){ //SE SEI IN CAMMINO PER QUEI BADGE O SE LI POSSIEDI GIÀ
                 echo "PUNTI:".$point;
-                $point_earned = $point_earned + $point
+                $point_earned = $point_earned + $point;
                 $pb = R::dispense("cero");
                     $pb->user = $user_id;
                     $pb->part = $part_id;
