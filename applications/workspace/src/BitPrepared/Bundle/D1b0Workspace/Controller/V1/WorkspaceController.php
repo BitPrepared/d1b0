@@ -29,8 +29,9 @@ class WorkspaceController implements ControllerProviderInterface
         $factory->get('/{id}', array($this, 'getWorkspace'));
         $factory->get('/{id}/share', array($this, 'share'));
         $factory->post('/{id}/part', array($this, 'postPart'));
-        $factory->get('/{id}/part/$id_part', array($this, 'getPart'));
-        $factory->patch('/{id}/part/$id_part/checkin', array($this, 'checkin'));
+        $factory->get('/{id}/part/{part_id}', array($this, 'getPart'));
+        $factory->put('/{id}/part/{part_id}', array($this, 'putPart'));
+        $factory->post('/{id}/part/{part_id}/checkin', array($this, 'checkin'));
         return $factory;
     }
     public function getSessionId() {
@@ -197,17 +198,15 @@ class WorkspaceController implements ControllerProviderInterface
         $part_id = R::store($part);
 
         foreach($data['part'] as $r){ //TODO va fixato nelle api
-            if($r->type != "badge"){
-                $resource = R::dispense("resource");
-                    $resource->part = $part_id;
-                    $resource->inserttime = date('Y-m-d H:i:s');
-                    $resource->updatetime = date('Y-m-d H:i:s');
-                    $resource->type = $r->type;
-                    $resource->ref = $r->ref;
-                    $resource->hash = $r->hash;
-                    $resource->totalpoint = 0;
-                $resource_id = R::store($resource);
-            }
+            $resource = R::dispense("resource");
+                $resource->part = $part_id;
+                $resource->inserttime = date('Y-m-d H:i:s');
+                $resource->updatetime = date('Y-m-d H:i:s');
+                $resource->type = $r->type;
+                $resource->ref = $r->ref;
+                $resource->hash = $r->hash;
+                $resource->totalpoint = 0;
+            $resource_id = R::store($resource);
         }
 
         foreach($data['badges'] as $badge_id){ //TODO va fixato nelle api
@@ -223,12 +222,12 @@ class WorkspaceController implements ControllerProviderInterface
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
     }
 
-    public function getPart($id,$part_id,$request) {
+    public function getPart($id,$part_id, Request $request) {
         $user_id = $this->getSessionId();
 
         $data = json_decode($request->getContent(), true);
 
-        $part = R::finOne("part","id = ?",[$part_id]);
+        $part = R::findOne("part","id = ?",[$part_id]);
 
         $resource = R::findAll("resource","part = ?",[$part_id]);
 
@@ -263,41 +262,114 @@ class WorkspaceController implements ControllerProviderInterface
         $headers = [];
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
     }
+
+    private function getPositionInArray($array,$id){
+        $count =0;
+        foreach($array as $a){
+            if($a->id === $id){
+                return $count;
+            }
+            $count = $count + 1;
+        }
+    }
+
+    public function putPart($id,$part_id, Request $request) {
+        $user_id = $this->getSessionId();
+
+        $data = json_decode($request->getContent(), true);
+
+        $part = R::load("part",$part_id);
+            $part->workspace = $id;
+            $part->user = $user_id;
+            $part->lastupdatetime = date('Y-m-d H:i:s');
+            $part->totalpoint = 0;
+        $part_id = R::store($part);
+
+        $delete_res=R::findAll("resource","WHERE part = ?",[$part_id]);
+
+        foreach($data['part'] as $r){ //TODO va fixato nelle api
+            $resource = R::findOne("resource","WHERE hash =?",[$r->hash]);//TODO BISOGNA FARE IL DIFF TRA QUELLE PRESENTI E QUELLE NON PRESENTI
+                $resource->part = $part_id;
+                $resource->updatetime = date('Y-m-d H:i:s');
+                $resource->type = $r->type;
+                $resource->ref = $r->ref;
+                $resource->hash = $r->hash;
+                $resource->totalpoint = 0;
+            $resource_id = R::store($resource);
+            array_splice($delete_res,getPositionInArray($delete_res,$resource_id),1); //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
+        }
+
+        foreach($delete_res as $d){
+            //RIMUOVO REALMENTE DAL DB LE COSE CHE HO LASCIATO FUORI DALLA PUT (PRESENTI NEL DB MA NON NELLA NUOVA VERSIONE ODIO LE PUT)
+            $resource = R::load("resource",[$r->id]);
+            R::trash($resource);
+        }
+
+        foreach($data['badges'] as $badge_id){ //TODO VANNO CANCELLATI I BADGE RIMOSSI IN QUESTO MODO
+            $pb = R::load("partbadge",$badge_id);
+                $pb->badge = $badge_id;
+                $pb->part = $part_id;
+            $tmp = R::store($pb);
+        }
+
+        $res = ["id"=>$part_id];
+        $headers = [];
+        return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
+    }
+
     private function getPoint($badge_id,$badges){
         foreach($badges as $b){
             if($b->id === $badge_id){
-                if($b->completed === True)
-                    return POINT_FOR_USING_A_CONQUERED_BADGE;
-                else
-                    return POINT_FOR_USING_A_BADGE;
+                if($b->completed === True){
+                    echo "CASO 1;<BR />";
+                    return $this->$POINT_FOR_USING_A_CONQUERED_BADGE;
+                }else{
+                    echo "CASO 2;<BR />";
+                    return $this->POINT_FOR_USING_A_BADGE;
+                }
             }
         }
-        return POINT_DEFAULT;
+        echo "CASO 3;<BR />";
+        return $this->POINT_DEFAULT;
     }
-    public function checkin($id,$part_id,$request) {
+    public function checkin($id,$part_id, Request $request) {
         $user_id = $this->getSessionId();
 
         $badges = R::findAll("partbadge","part = ?",[$part_id]);
         $u_badges = R::findAll("userbadge","user = ?",[$user_id]);
 
-        foreach($badges as $b){
-            $point = getPoint($b->id,$u_badges);
+        $point_earned = 0
+        foreach($badges as $b){ //SE CI SONO DEI BADGE
+            $point = $this->getPoint($b->id,$u_badges);
+            if($point != $this->POINT_DEFAULT){ //SE SEI IN CAMMINO PER QUEI BADGE O SE LI POSSIEDI GIÀ
+                echo "PUNTI:".$point;
+                $point_earned = $point_earned + $point
+                $pb = R::dispense("cero");
+                    $pb->user = $user_id;
+                    $pb->part = $part_id;
+                    $pb->badge = $b->id;
+                    $pb->inserttime = date('Y-m-d H:i:s');
+                    $pb->points = $point;
+                $tmp = R::store($pb);
+
+                if($point === $this->POINT_FOR_USING_A_BADGE){ //SE SEI IN CAMMINO MA NON LI HAI ANCORA RAGGIUNTI
+                    $ubc = R::dispense("userbadgeclove");
+                        $ubc->user = $user_id;
+                        $ubc->badge = $b->id;
+                        $ubc->part = $part_id;
+                        $ubc->inserttime = date('Y-m-d H:i:s');
+                    $tmp = R::store($ubc);
+                }
+            }
+        }
+
+        if($point_earned <= 0){ //SE NON CI SONO BADGE O SE TU NON SEI IN CAMMINO PER NESSUNO DI LORO
             $pb = R::dispense("cero");
                 $pb->user = $user_id;
                 $pb->part = $part_id;
-                $pb->badge = $b->id;
                 $pb->inserttime = date('Y-m-d H:i:s');
-                $bp->points = $point;
+                $pb->points = $this->POINT_DEFAULT;
             $tmp = R::store($pb);
-
-            if($point === POINT_FOR_USING_A_BADGE){
-                $ubc = R::dispense("userbadgeclove");
-                    $ubc->user = $user_id;
-                    $ubc->badge = $b->id;
-                    $ubc->part = $part_id;
-                    $ubc->inserttime = date('Y-m-d H:i:s');
-                $tmp = R::store($ubc);
-            }
         }
 
 
