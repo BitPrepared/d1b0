@@ -305,12 +305,13 @@ class WorkspaceController implements ControllerProviderInterface
         foreach($delete_res as $d){
             //RIMUOVO REALMENTE DAL DB LE COSE CHE HO LASCIATO FUORI DALLA PUT (PRESENTI NEL DB MA NON NELLA NUOVA VERSIONE ODIO LE PUT)
             $resource = R::load("resource",[$d->id]);
-            R::trash($resource);
+            $resource->deleted=true;
+            R::store($resource);
         }
 
         $delete_badge=R::findAll("partbadge","WHERE part = ?",[$part_id]);
 
-        foreach($data['badges'] as $badge_id){ 
+        foreach($data['badges'] as $badge_id){
             $pb = R::load("partbadge",$badge_id);
                 $pb->badge = $badge_id;
                 $pb->part = $part_id;
@@ -323,7 +324,8 @@ class WorkspaceController implements ControllerProviderInterface
         foreach($delete_badge as $d){
             //RIMUOVO REALMENTE DAL DB LE COSE CHE HO LASCIATO FUORI DALLA PUT (PRESENTI NEL DB MA NON NELLA NUOVA VERSIONE ODIO LE PUT)
             $badge = R::load("partbadge",[$d->id]);
-            R::trash($badge);
+            $badge->deleted=true;
+            R::store($badge);
         }
 
         $res = ["id"=>$part_id];
