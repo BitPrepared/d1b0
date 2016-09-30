@@ -271,6 +271,7 @@ class WorkspaceController implements ControllerProviderInterface
             }
             $count = $count + 1;
         }
+        return -1;
     }
 
     public function putPart($id,$part_id, Request $request) {
@@ -296,20 +297,33 @@ class WorkspaceController implements ControllerProviderInterface
                 $resource->hash = $r->hash;
                 $resource->totalpoint = 0;
             $resource_id = R::store($resource);
-            array_splice($delete_res,getPositionInArray($delete_res,$resource_id),1); //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
+            $rem_id=getPositionInArray($delete_res,$resource_id);
+            if($rem_id != 0)
+                array_splice($delete_res,$rem_id,1); //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
         }
 
         foreach($delete_res as $d){
             //RIMUOVO REALMENTE DAL DB LE COSE CHE HO LASCIATO FUORI DALLA PUT (PRESENTI NEL DB MA NON NELLA NUOVA VERSIONE ODIO LE PUT)
-            $resource = R::load("resource",[$r->id]);
+            $resource = R::load("resource",[$d->id]);
             R::trash($resource);
         }
 
-        foreach($data['badges'] as $badge_id){ //TODO VANNO CANCELLATI I BADGE RIMOSSI IN QUESTO MODO
+        $delete_badge=R::findAll("partbadge","WHERE part = ?",[$part_id]);
+
+        foreach($data['badges'] as $badge_id){ 
             $pb = R::load("partbadge",$badge_id);
                 $pb->badge = $badge_id;
                 $pb->part = $part_id;
             $tmp = R::store($pb);
+            $rem_id=getPositionInArray($delete_badge,$tmp);
+            if($rem_id != 0)
+                array_splice($delete_badge,$rem_id,1); //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
+        }
+
+        foreach($delete_badge as $d){
+            //RIMUOVO REALMENTE DAL DB LE COSE CHE HO LASCIATO FUORI DALLA PUT (PRESENTI NEL DB MA NON NELLA NUOVA VERSIONE ODIO LE PUT)
+            $badge = R::load("partbadge",[$d->id]);
+            R::trash($badge);
         }
 
         $res = ["id"=>$part_id];
