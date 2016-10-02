@@ -27,11 +27,14 @@ class WorkspaceController implements ControllerProviderInterface
         $factory->get('/', array($this, 'getWorkspaceList'));
         $factory->post('/', array($this, 'createWorkspace'));
         $factory->get('/{id}', array($this, 'getWorkspace'));
+        $factory->put('/{id}', array($this, 'putWorkspace'));
+        $factory->delete('/{id}', array($this, 'deleteWorkspace'));
         $factory->get('/{id}/share', array($this, 'share'));
-        $factory->post('/{id}/join', array($this, 'join'));
+        $factory->post('/join', array($this, 'join'));
         $factory->post('/{id}/part', array($this, 'postPart'));
         $factory->get('/{id}/part/{part_id}', array($this, 'getPart'));
         $factory->put('/{id}/part/{part_id}', array($this, 'putPart'));
+        $factory->delete('/{id}/part/{part_id}', array($this, 'deletePart'));
         $factory->post('/{id}/part/{part_id}/checkin', array($this, 'checkin'));
         $factory->delete('/{id}/part/{part_id}/checkin', array($this, 'deleteCheckin'));
         return $factory;
@@ -70,7 +73,6 @@ class WorkspaceController implements ControllerProviderInterface
     public function createWorkspace(Request $request)
     {
         $user_id = $this->getSessionId();
-        $counter = 0;
         $data = json_decode($request->getContent(), true);
         //TODO validate json_decode
         $title = $data['title'];
@@ -130,6 +132,44 @@ class WorkspaceController implements ControllerProviderInterface
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
     }
 
+    public function putWorkspace($id,Request $request)
+    {
+        $user_id = $this->getSessionId();
+        $data = json_decode($request->getContent(), true);
+        //TODO validate json_decode
+
+        $title = $data['title'];
+        $description = $data['description'];
+        $environment = $data['environment'];
+
+        $patrol = $data['team']['patrol'];
+        $unit = $data['team']['unit'];
+        $group = $data['team']['group'];
+
+        $wp = R::load("workspace",$id);
+            $ws->title = $title;
+            $ws->description = $description;
+            $ws->environment = $environment;
+            $ws->completed = false;
+            $ws->lastupdatetime = date('Y-m-d H:i:s');
+        $id = R::store($ws);
+
+        //save the team
+        $team = R::findOne("team","workspace = ?",[$id]);
+            $team->patrol = $patrol;
+            $team->unit = $unit;
+            $team->group = $group;
+        $team_id = R::store($team);
+
+        //TODO WE DELIBERATLY IGNORE ANY CHANGE IN BADGES AND PARTS, THEY MUST NOT BE EDITED HERE!!!! AND IF YOU DID WE DONT CARE!
+
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/html');
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $response->setSharedMaxAge(300);
+    }
+
     public function getWorkspace($id, Request $request) {
         $user_id = $this->getSessionId();
         //TODO controllare che l'utente abbia diritto a vedere questo workspace
@@ -162,6 +202,21 @@ class WorkspaceController implements ControllerProviderInterface
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
     }
 
+    public function deleteWorkspace($id,Request $request)
+    {
+        $user_id = $this->getSessionId();
+
+        $wp = R::load("workspace",$id);
+        R::trash($ws); //TODO add soft delete!!!! we can not manage this one in production
+
+        //TODO soft delete all the part!!
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/html');
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $response->setSharedMaxAge(300);
+    }
+
     public function share($id, Request $request) {
         $generatedKey = hash("sha256", (mt_rand(10000, 99999).time().$id));
         //TODO verificare documentazione realtiva sulla reale entropia generata da questo sistema
@@ -186,7 +241,7 @@ class WorkspaceController implements ControllerProviderInterface
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
 
-    public function join($id, Request $request) {
+    public function join(Request $request) {
 
 
         $headers = [];
@@ -364,7 +419,7 @@ class WorkspaceController implements ControllerProviderInterface
 
         foreach($delete_badge as $d){
             //RIMUOVO REALMENTE DAL DB LE COSE CHE HO LASCIATO FUORI DALLA PUT (PRESENTI NEL DB MA NON NELLA NUOVA VERSIONE ODIO LE PUT)
-            $badge = R::load("partbadge",[$d->id]);
+            $badge = R::load("partbadge",[$d->id]);//FORSE RILOADARLI NON È NECESSARIO
             $badge->deleted=true;
             R::store($badge);
         }
@@ -372,6 +427,26 @@ class WorkspaceController implements ControllerProviderInterface
         $res = ["id"=>$part_id];
         $headers = [];
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
+    }
+
+    public function deletePart($id,$part_id, Request $request) {
+        $user_id = $this->getSessionId();
+        $part = R::load("part",$part_id);
+        R::trash($part);
+
+        //TODO soft delete all the part badge!!
+
+        $delete_badge=R::findAll("partbadge","WHERE part = ?",[$part_id]);
+        foreach($delete_badge as $d){
+            $badge = R::load("partbadge",[$d->id]);//FORSE RILOADARLI NON È NECESSARIO BASTA FARE $d->deleted=true; e store($d)
+                $badge->deleted=true;
+            R::store($badge);
+        }
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/html');
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $response->setSharedMaxAge(300);
     }
 
     private function getPoint($badge_id,$badges){
