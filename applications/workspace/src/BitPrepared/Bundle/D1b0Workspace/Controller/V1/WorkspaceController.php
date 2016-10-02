@@ -329,7 +329,7 @@ class WorkspaceController implements ControllerProviderInterface
 
         $partecipants = R::findAll("cero","part = ?",[$part_id]);
 
-        $badges = R::findAll("partbadge","part = ?",[$part_id]);
+        $badges = R::findAll("partbadge","part = ? AND deleted = 0",[$part_id]);
 
         $res= [
             "id"=>$part->id,
@@ -385,7 +385,7 @@ class WorkspaceController implements ControllerProviderInterface
         $delete_res=R::findAll("resource","WHERE part = ?",[$part_id]);
 
         foreach($data['part'] as $r){ //TODO va fixato nelle api
-            $resource = R::findOne("resource","WHERE hash =?",[$r->hash]);//TODO BISOGNA FARE IL DIFF TRA QUELLE PRESENTI E QUELLE NON PRESENTI
+            $resource = R::findOne("resource","WHERE hash = ? AND deleted = 0",[$r->hash]);//TODO BISOGNA FARE IL DIFF TRA QUELLE PRESENTI E QUELLE NON PRESENTI
                 $resource->part = $part_id;
                 $resource->updatetime = date('Y-m-d H:i:s');
                 $resource->type = $r->type;
@@ -405,7 +405,7 @@ class WorkspaceController implements ControllerProviderInterface
             R::store($resource);
         }
 
-        $delete_badge=R::findAll("partbadge","WHERE part = ?",[$part_id]);
+        $delete_badge=R::findAll("partbadge","WHERE part = ? AND deleted = 0",[$part_id]);
 
         foreach($data['badges'] as $badge_id){
             $pb = R::load("partbadge",$badge_id);
@@ -467,8 +467,8 @@ class WorkspaceController implements ControllerProviderInterface
     public function checkin($id,$part_id, Request $request) {
         $user_id = $this->getSessionId();
 
-        $badges = R::findAll("partbadge","part = ?",[$part_id]);
-        $u_badges = R::findAll("userbadge","user = ?",[$user_id]);
+        $badges = R::findAll("partbadge","part = ? AND deleted = 0",[$part_id]);
+        $u_badges = R::findAll("userbadge","user = ? AND deleted = 0",[$user_id]);
 
         $point_earned = 0;
         foreach($badges as $b){ //SE CI SONO DEI BADGE
