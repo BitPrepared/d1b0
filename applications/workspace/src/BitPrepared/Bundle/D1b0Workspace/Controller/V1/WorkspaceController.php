@@ -203,12 +203,11 @@ class WorkspaceController implements ControllerProviderInterface
 
     public function deleteWorkspace($id,Request $request)
     {
+        //Disassocia un utente da un workspace
         $user_id = $this->getSessionId();
 
-        $wp = R::load("workspace",$id);
-        R::trash($ws); //TODO add soft delete!!!! we can not manage this one in production
-
-        //TODO soft delete all the part!!
+        $wp = R::findOne("userworkspace",["workspace = ?"],[$id]);
+        R::trash($ws);
 
         $response = new Response();
         $response->headers->set('Content-Type', 'text/html');
@@ -431,9 +430,9 @@ class WorkspaceController implements ControllerProviderInterface
     public function deletePart($id,$part_id, Request $request) {
         $user_id = $this->getSessionId();
         $part = R::load("part",$part_id);
-        R::trash($part);
+            $part->deleted=true;
+        R::store($part);
 
-        //TODO soft delete all the part badge!!
 
         $delete_badge=R::findAll("partbadge","WHERE part = ?",[$part_id]);
         foreach($delete_badge as $d){
@@ -441,6 +440,8 @@ class WorkspaceController implements ControllerProviderInterface
                 $badge->deleted=true;
             R::store($badge);
         }
+
+        //TODO soft delete resource!
 
         $response = new Response();
         $response->headers->set('Content-Type', 'text/html');
