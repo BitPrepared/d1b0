@@ -112,7 +112,6 @@ class WorkspaceController implements ControllerProviderInterface
 
         //add the badge to the project
         foreach ($data['badges'] as $badge_id) {
-            //TODO insert those badge as first hidden post
             $pb = R::dispense("partbadge");
                 $pb->badge = $badge_id;
                 $pb->part = $part_id;
