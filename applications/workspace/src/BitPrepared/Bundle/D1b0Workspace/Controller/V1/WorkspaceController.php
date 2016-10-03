@@ -23,7 +23,7 @@ class WorkspaceController implements ControllerProviderInterface
         $factory = $app['controllers_factory'];
         # il mount point e' precedente e non serve prima
         $this->app['db'];
-        R::fancyDebug(TRUE);
+        //R::fancyDebug(TRUE);
         $factory->get('/', array($this, 'getWorkspaceList'));
         $factory->post('/', array($this, 'createWorkspace'));
         $factory->get('/{id}', array($this, 'getWorkspace'));
@@ -174,6 +174,7 @@ class WorkspaceController implements ControllerProviderInterface
         //TODO controllare che l'utente abbia diritto a vedere questo workspace
 
         $workspace = R::findOne("workspace", "id = ?", [$id]);
+        $team = R::findOne("team", "workspace = ?", [$id]);
         $part = R::findAll("part", "workspace = ?", [$id]);
 
         $badges = R::findAll("workspacebadge", "workspace = ?", [$id]);
@@ -188,14 +189,18 @@ class WorkspaceController implements ControllerProviderInterface
         }
 
         $res = [
-            'id'=> $workspace['id'],
+            'id'=> intval($workspace['id']),
             'title'=> $workspace['title'],
             'description'=> $workspace['description'],
-            'environment'=> $workspace['environment'],
-            'environment'=> $workspace['environment'],
+            'environment'=> intval($workspace['environment']),
             'completed'=> $workspace['completed'],
             'parts'=>$l_part,
-            'badges'=>$l_badges
+            'badges'=>$l_badges,
+            'team'=>[
+                'patrol'=>$team['patrol'],
+                'unit'=>$team['unit'],
+                'group'=>$team['group']
+            ]
         ];
         $headers = [];
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
