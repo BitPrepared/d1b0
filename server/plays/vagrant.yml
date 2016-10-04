@@ -1,16 +1,21 @@
 - hosts: all
   remote_user: vagrant
   #bug sudo
-  sudo: true
+  #sudo: true
+  #became: true
   tasks:
     - authorized_key: user=root key="{{ lookup('file', './ssh/root.key.pub') }}" exclusive=yes
     - user: name=developer shell=/bin/bash groups=users append=yes createhome=yes
     - authorized_key: user=developer key="{{ lookup('file', './ssh/developer.key.pub') }}" exclusive=yes
+    - name: Allow 'developer' to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%developer'
+        line: '%developer ALL=(ALL) NOPASSWD: ALL'
     - apt: name={{item}} update_cache=yes cache_valid_time=3600
       with_items:
         - netcat
-
-
 
     # - apt: name={{item}} update_cache=yes cache_valid_time=3600
     #   with_items:

@@ -22,7 +22,7 @@ defaults
 	option	dontlognull
 	option  forwardfor except 127.0.0.1
 	# deny client persistent connections without keepalive
-	option	http-server-close 
+	option	http-server-close
 
 	timeout http-request 5s
 	timeout connect 5s
@@ -38,7 +38,7 @@ defaults
 	errorfile 504 /etc/haproxy/errors/504.http
 
 
-listen stats 
+listen stats
 	bind {{bind_stat_ip}}:1936
 	mode http
 	stats enable
@@ -54,7 +54,7 @@ frontend www-http
    redirect scheme https code 301 if !{ ssl_fc }
 
 frontend www-https
-	bind {{bind_ip}}:443 ssl {%for d in domains %}{% if d.path_beg is not defined and d.backend is defined %}crt /etc/ssl/certificates/{{d.domain}}.combo.pem {% endif %}{% endfor %}
+	bind {{bind_ip}}:443 ssl {%for d in haproxy.domains %}{% if d.path_beg is not defined and d.backend is defined %}crt /etc/ssl/certificates/{{d.domain}}.combo.pem {% endif %}{% endfor %}
 
 	# DDOS defence
 	stick-table type ip size 100k expire 30s store conn_cur
@@ -66,13 +66,13 @@ frontend www-https
 	# Mandatory to build the URL:
 	capture request header Host len 32
 
-{% for d in domains %}
+{% for d in haproxy.domains %}
 {% if d.path_beg is not defined %}
 	acl {{d.acl}}     hdr(host) -i {{d.domain}}
 {% endif %}
 {% endfor %}
 
-{% for d in domains %}
+{% for d in haproxy.domains %}
 {% if d.path_beg is defined %}
 	acl has_{{d.path_beg}}_uri path_beg /{{d.path_beg}}/
 {% endif %}
@@ -97,11 +97,11 @@ frontend www-https
 	rspadd Public-Key-Pins:\ pin-sha256=\"tAGD4yG3YeEHoYAJRJQkcEppCISVfqtHepfw4EUd3/0=\";\ max-age=10;\ includeSubDomains;\ report-uri\ https://www.decrypto.it/csp-report.php if ! { capture.req.hdr(0) -i mail.decrypto.it }
 	rspadd Public-Key-Pins:\ pin-sha256=\"19Gcj52884omZyVzjeTDLIN9kz3a9k9Fhtk7qM3Wmmw=\";\ max-age=10;\ includeSubDomains;\ report-uri\ https://www.decrypto.it/csp-report.php if { capture.req.hdr(0) -i mail.decrypto.it }
 
-{% for r in redirects %}
+{% for r in haproxy.redirects %}
 	redirect prefix {{r.dest}} code {{r.code}} if {{r.acl}}
 {% endfor %}
 
-{% for d in domains %}
+{% for d in haproxy.domains %}
 {% if d.path_beg is not defined %}
 {% if d.backend is defined %}
 	use_backend {{d.backend.name}} if {{d.acl}}
@@ -109,7 +109,7 @@ frontend www-https
 {% endif %}
 {% endfor %}
 
-{% for d in domains %}
+{% for d in haproxy.domains %}
 {% if d.path_beg is defined %}
 {% if d.backend is defined %}
 	use_backend {{d.backend.name}} if has_{{d.path_beg}}_uri {{d.acl}}
@@ -117,9 +117,9 @@ frontend www-https
 {% endif %}
 {% endfor %}
 
-	default_backend {{default_backend}}
+	default_backend {{haproxy.default_backend}}
 
-{% for d in domains %}
+{% for d in haproxy.domains %}
 {% if d.backend is defined %}
 backend {{d.backend.name}}
 {% for b in d.backend.array %}

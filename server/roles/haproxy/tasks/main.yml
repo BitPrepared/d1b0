@@ -1,8 +1,27 @@
+---
 - name: install haproxy
-  apt: name=liblua5.3-0=5.3.1-1,haproxy=1.6.3-1
+  apt: name=liblua5.3-0=5.3.1-1~bpo8+1,haproxy=1.6.9-1~bpo8+1
+
 - name: setup haproxy
-  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes #templates/ non va messo nei roles
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes
   notify: restart haproxy
-#http://docs.ansible.com/ansible/haproxy_module.html  
+#http://docs.ansible.com/ansible/haproxy_module.html
 
+- name: GeoIp directory
+  file: path="/etc/haproxy/geoip" state=directory recurse=yes
 
+- name: Download geoip country
+  get_url:
+    url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+    dest: /etc/haproxy/geoip/
+
+- name: Download geoip city
+  get_url:
+    url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+    dest: /etc/haproxy/geoip/
+
+# - name: uncompress geoip country
+#   unarchive: remote_src=yes src=/etc/haproxy/geoip/GeoIP.dat.gz dest=/etc/haproxy/geoip/
+#
+# - name: Download geoip city
+#   unarchive: src="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz" dest=/etc/haproxy/geoip remote_src=yes
