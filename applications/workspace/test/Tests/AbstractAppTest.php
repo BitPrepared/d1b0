@@ -40,4 +40,19 @@ trait AbstractAppTest
         $validator->check(json_decode($data), $js_schema);
         return $validator;
     }
+
+    public function evalValidation($validator){
+        $assert = false;
+        if ($validator->isValid()) {
+            echo "The supplied JSON validates against the schema.\n";
+            $assert = true;
+        } else {
+            echo "JSON does not validate. Violations:\n";
+            foreach ($validator->getErrors() as $error) {
+                echo "[{$error['property']}] {$error['message']}\n";
+            }
+            $assert = false;
+        }
+        return $assert;
+    }
 }

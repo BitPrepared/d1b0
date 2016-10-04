@@ -14,7 +14,7 @@ class WorkspaceController implements ControllerProviderInterface
     public $POINT_FOR_USING_A_CONQUERED_BADGE = 200;
     public $POINT_FOR_USING_A_BADGE = 100;
     public $POINT_DEFAULT = 50;
-
+    public $DATE_FORMAT = 'Y-m-d\TH:i:s\Z';
     private $app;
 
     public function connect(Application $app)
@@ -59,12 +59,12 @@ class WorkspaceController implements ControllerProviderInterface
         $list = [];
         foreach ($workspaces as $ws) {
             array_push($list, [
-                "id"=>$ws['id'],
+                "id"=>intval($ws['id']),
                 "title"=>$ws['title'],
                 "description"=>$ws['description'],
-                "environment"=>$ws['environment'],
+                "environment"=>intval($ws['environment']),
                 "point"=>0, //TODO fare una view con i point già calcolati per il ws
-                "completed"=>$ws['completed'],
+                "completed"=>boolval($ws['completed']),
             ]);
         }
         $headers = [];
@@ -90,8 +90,8 @@ class WorkspaceController implements ControllerProviderInterface
             $ws->description = $description;
             $ws->environment = $environment;
             $ws->completed = false;
-            $ws->inserttime = date('Y-m-d H:i:s');
-            $ws->lastupdatetime = date('Y-m-d H:i:s');
+            $ws->inserttime = date($this->DATE_FORMAT);
+            $ws->lastupdatetime = date($this->DATE_FORMAT);
         $id = R::store($ws);
 
         //save the team
@@ -106,8 +106,8 @@ class WorkspaceController implements ControllerProviderInterface
         $part = R::dispense("part");
             $part->workspace = $id;
             $part->user = $user_id;
-            $part->inserttime = date('Y-m-d H:i:s');
-            $part->lastupdatetime = date('Y-m-d H:i:s');
+            $part->inserttime = date($this->DATE_FORMAT);
+            $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
         $part_id = R::store($part);
 
@@ -116,7 +116,7 @@ class WorkspaceController implements ControllerProviderInterface
             $pb = R::dispense("partbadge");
                 $pb->badge = $badge_id;
                 $pb->part = $part_id;
-                $pb->inserttime = date('Y-m-d H:i:s');
+                $pb->inserttime = date($this->DATE_FORMAT);
             $tmp = R::store($pb);
         }
 
@@ -124,7 +124,7 @@ class WorkspaceController implements ControllerProviderInterface
         $usw = R::dispense("userworkspace");
             $usw->user = $user_id;
             $usw->workspace = $id;
-            $usw->inserttime = date('Y-m-d H:i:s');
+            $usw->inserttime = date($this->DATE_FORMAT);
         R::store($usw);
 
         $res = ["id" => $id];
@@ -151,7 +151,7 @@ class WorkspaceController implements ControllerProviderInterface
             $ws->description = $description;
             $ws->environment = $environment;
             $ws->completed = false;
-            $ws->lastupdatetime = date('Y-m-d H:i:s');
+            $ws->lastupdatetime = date($this->DATE_FORMAT);
         $id = R::store($ws);
 
         //save the team
@@ -229,7 +229,7 @@ class WorkspaceController implements ControllerProviderInterface
             $share->user = $user_id;
             $share->workspace = $id;
             $share->key = $generatedKey;
-            $share->inserttime = date('Y-m-d H:i:s');
+            $share->inserttime = date($this->DATE_FORMAT);
         $share_id = R::store($share);
 
         $date = new \DateTime();
@@ -238,7 +238,7 @@ class WorkspaceController implements ControllerProviderInterface
         $res = [
             "id"=>$share_id,
             "key"=>$generatedKey,
-            "expire"=>$date->format('Y-m-d H:i:s')
+            "expire"=>$date->format($this->DATE_FORMAT)
         ];
 
         $headers = [];
@@ -270,7 +270,7 @@ class WorkspaceController implements ControllerProviderInterface
                 $usw = R::dispense("userworkspace");
                     $usw->user = $user_id;
                     $usw->workspace = $wp_id;
-                    $usw->inserttime = date('Y-m-d H:i:s');
+                    $usw->inserttime = date($this->DATE_FORMAT);
                 R::store($usw);
                 $headers = [];
                 $response = JsonResponse::create(["id"=>$wp_id], 200, $headers)->setSharedMaxAge(300);
@@ -292,16 +292,16 @@ class WorkspaceController implements ControllerProviderInterface
         $part = R::dispense("part");
             $part->workspace = $id;
             $part->user = $user_id;
-            $part->inserttime = date('Y-m-d H:i:s');
-            $part->lastupdatetime = date('Y-m-d H:i:s');
+            $part->inserttime = date($this->DATE_FORMAT);
+            $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
         $part_id = R::store($part);
 
         foreach($data['part'] as $r){ //TODO va fixato nelle api
             $resource = R::dispense("resource");
                 $resource->part = $part_id;
-                $resource->inserttime = date('Y-m-d H:i:s');
-                $resource->updatetime = date('Y-m-d H:i:s');
+                $resource->inserttime = date($this->DATE_FORMAT);
+                $resource->updatetime = date($this->DATE_FORMAT);
                 $resource->type = $r->type;
                 $resource->ref = $r->ref;
                 $resource->hash = $r->hash;
@@ -313,7 +313,7 @@ class WorkspaceController implements ControllerProviderInterface
             $pb = R::dispense("partbadge");
                 $pb->badge = $badge_id;
                 $pb->part = $part_id;
-                $pb->inserttime = date('Y-m-d H:i:s');
+                $pb->inserttime = date($this->DATE_FORMAT);
             $tmp = R::store($pb);
         }
 
@@ -335,11 +335,11 @@ class WorkspaceController implements ControllerProviderInterface
 
         $badges = R::findAll("partbadge","part = ? AND deleted = 0",[$part_id]);
 
+        $checked = false;
         $res= [
-            "id"=>$part->id,
+            "id"=>intval($part->id),
             "creation"=>$part->inserttime,
-            "points"=>$part->points,
-            "checked"=>$part->checked,
+            "points"=>intval($part->points),
             "badges"=>[],
             "part"=>[],
             "partecipants"=>[]
@@ -354,10 +354,14 @@ class WorkspaceController implements ControllerProviderInterface
                 "hash"=>$r->hash,
                 "ref"=>$r->ref
             ]);
+
         }
         foreach($partecipants as $p){
             array_push($res['partecipants'],$p->user);//TODO forse va usato l'id del c'ero e non l'id dell'utente
+            if($user_id == $r['id'])
+                $checked = true;
         }
+        $res['present'] = true;
 
         $headers = [];
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
@@ -382,7 +386,7 @@ class WorkspaceController implements ControllerProviderInterface
         $part = R::load("part",$part_id);
             $part->workspace = $id;
             $part->user = $user_id;
-            $part->lastupdatetime = date('Y-m-d H:i:s');
+            $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
         $part_id = R::store($part);
 
@@ -391,7 +395,7 @@ class WorkspaceController implements ControllerProviderInterface
         foreach($data['part'] as $r){ //TODO va fixato nelle api
             $resource = R::findOne("resource","WHERE hash = ? AND deleted = 0",[$r->hash]);//TODO BISOGNA FARE IL DIFF TRA QUELLE PRESENTI E QUELLE NON PRESENTI
                 $resource->part = $part_id;
-                $resource->updatetime = date('Y-m-d H:i:s');
+                $resource->updatetime = date($this->DATE_FORMAT);
                 $resource->type = $r->type;
                 $resource->ref = $r->ref;
                 $resource->hash = $r->hash;
@@ -460,7 +464,7 @@ class WorkspaceController implements ControllerProviderInterface
             if($b->id === $badge_id){
                 if($b->completed === True){
                     echo "CASO 1;<BR />";
-                    return $this->$POINT_FOR_USING_A_CONQUERED_BADGE;
+                    return $this->POINT_FOR_USING_A_CONQUERED_BADGE;
                 }else{
                     echo "CASO 2;<BR />";
                     return $this->POINT_FOR_USING_A_BADGE;
@@ -486,7 +490,7 @@ class WorkspaceController implements ControllerProviderInterface
                     $pb->user = $user_id;
                     $pb->part = $part_id;
                     $pb->badge = $b->id;
-                    $pb->inserttime = date('Y-m-d H:i:s');
+                    $pb->inserttime = date($this->DATE_FORMAT);
                     $pb->points = $point;
                 $tmp = R::store($pb);
 
@@ -495,7 +499,7 @@ class WorkspaceController implements ControllerProviderInterface
                         $ubc->user = $user_id;
                         $ubc->badge = $b->id;
                         $ubc->part = $part_id;
-                        $ubc->inserttime = date('Y-m-d H:i:s');
+                        $ubc->inserttime = date($this->DATE_FORMAT);
                     $tmp = R::store($ubc);
                 }
             }
@@ -505,7 +509,7 @@ class WorkspaceController implements ControllerProviderInterface
             $pb = R::dispense("cero");
                 $pb->user = $user_id;
                 $pb->part = $part_id;
-                $pb->inserttime = date('Y-m-d H:i:s');
+                $pb->inserttime = date($this->DATE_FORMAT);
                 $pb->points = $this->POINT_DEFAULT;
             $tmp = R::store($pb);
         }
