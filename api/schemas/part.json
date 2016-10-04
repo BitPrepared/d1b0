@@ -36,8 +36,8 @@
       "id": "points",
       "type": "integer"
     },
-    "checked": {
-      "id": "checked",
+    "present": {
+      "id": "present",
       "type": "boolean"
     }
   },
@@ -47,6 +47,6 @@
     "partecipants",
     "points",
     "badges",
-    "checked"
+    "present"
   ]
 }
