@@ -4,3 +4,6 @@
 
 - name: install php-fpm chroot as default service
   action: command update-rc.d php-fpm-chroot defaults
+
+- name: avvia php-fpm chroot as default service
+  action: command /etc/init.d/php-fpm-chroot start

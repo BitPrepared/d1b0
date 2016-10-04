@@ -1,23 +1,26 @@
-php_enable_webserver: true
-php_webserver_daemon: "nginx"
-php_enable_php_fpm: true
+# php_enable_webserver: true
+# php_webserver_daemon: "nginx"
+# php_enable_php_fpm: true
+#
+# php_date_timezone: "Europe/Rome"
+#
+# php_memory_limit: "128M"
+# php_max_execution_time: "90"
+# php_upload_max_filesize: "1M"
+#
+# php_opcache_enable: "1"
+# php_opcache_enable_cli: "0"
+# php_opcache_memory_consumption: "96"
+# php_opcache_interned_strings_buffer: "16"
+# php_opcache_max_accelerated_files: "4096"
+# php_opcache_max_wasted_percentage: "5"
+# php_opcache_validate_timestamps: "1"
+# php_opcache_revalidate_path: "0"
+# php_opcache_revalidate_freq: "2"
+# php_opcache_max_file_size: "0"
 
-php_date_timezone: "Europe/Rome"
-
-php_memory_limit: "128M"
-php_max_execution_time: "90"
-php_upload_max_filesize: "1M"
-
-php_opcache_enable: "1"
-php_opcache_enable_cli: "0"
-php_opcache_memory_consumption: "96"
-php_opcache_interned_strings_buffer: "16"
-php_opcache_max_accelerated_files: "4096"
-php_opcache_max_wasted_percentage: "5"
-php_opcache_validate_timestamps: "1"
-php_opcache_revalidate_path: "0"
-php_opcache_revalidate_freq: "2"
-php_opcache_max_file_size: "0"
+# composer_path: /usr/local/bin/composer
+# composer_github_oauth_token: ''
 
 php_packages:
   - php5-common
@@ -37,9 +40,6 @@ php_packages:
   #- php5-mysql
   - php5-redis
 
-composer_path: /usr/local/bin/composer
-composer_github_oauth_token: ''
-
 pools:
   - name: workspace
     user: www-data
@@ -51,5 +51,17 @@ pools:
     php_enviroment_value:
       - { key : "upload_max_filesize" , value : "13M" }
       - { key : "post_max_size" , value : "13M" }
+    php_enviroment_admin_value:
+      - { key : "date.timezone" , value : "Europe/Rome" }
+    #/var/run/php5-fpm.workspace.sock
+  - name: auth
+    user: www-data
+    group: www-data
+    php_enviroment:
+      - { key : "HOSTNAME" , value : "$HOSTNAME" }
+      - { key : "PATH" , value : "/usr/local/bin:/usr/bin:/bin" } #da valutare
+      # VALUTARE DI CAMBIARE LA /tmp IN MODO CHE NON SIA IN COMUNE!
+    php_enviroment_value:
+      - { key : "file_uploads" , value : "Off" }
     php_enviroment_admin_value:
       - { key : "date.timezone" , value : "Europe/Rome" }

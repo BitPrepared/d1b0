@@ -4,6 +4,11 @@
 Progetto Segreto
 
 
+# Vagrant image base
+
+ * https://atlas.hashicorp.com/debian/boxes/jessie64
+
+
 #TODO
 
 [ ] tolleranza validita token per utente

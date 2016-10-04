@@ -50,8 +50,8 @@
 - name: repository setup for unstable version
   apt_repository: repo='deb http://ftp.de.debian.org/debian sid main' state=present
 
-# - name: repository setup for jessie-backport version
-#   apt_repository: repo='deb http://httpredir.debian.org/debian jessie-backports main' state=present
+- name: repository setup for jessie-backport version
+  apt_repository: repo='deb http://httpredir.debian.org/debian jessie-backports main' state=present
 
 - name: validate ssh
   shell: "sshd -t"

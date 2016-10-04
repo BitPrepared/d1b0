@@ -1,0 +1,36 @@
+nginx_pidfile: /run/nginx.pid
+nginx_vhost_path: /etc/nginx/sites-enabled
+nginx_default_vhost_path: /etc/nginx/sites-enabled/default
+nginx_remove_default_vhost: false
+nginx_mime_file_path: /etc/nginx/mime.types
+nginx_vhosts_filename: "vhosts.conf"
+nginx_conf_file_path: /etc/nginx/nginx.conf
+nginx_conf_path: /etc/nginx/conf.d
+
+nginx_user: www-data
+nginx_group: www-data
+
+nginx_log_dir: "/var/log/nginx"
+nginx_error_log: "error.log warn"
+nginx_access_log: "access.log main buffer=16k"
+
+nginx_worker_processes: "1"
+nginx_worker_connections: "1024"
+nginx_multi_accept: "off"
+
+nginx_extra_conf_options: ""
+# Example extra main options, used within the main nginx's context:
+#   nginx_extra_conf_options: |
+#     env VARIABLE;
+#     include /etc/nginx/main.d/*.conf;
+
+nginx_sendfile: "on"
+nginx_tcp_nopush: "on"
+nginx_tcp_nodelay: "on"
+
+nginx_keepalive_timeout: "65"
+nginx_keepalive_requests: "100"
+
+nginx_client_max_body_size: "64m"
+
+nginx_server_names_hash_bucket_size: "64"

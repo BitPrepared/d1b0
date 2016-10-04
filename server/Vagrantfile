@@ -12,11 +12,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "debian/jessie64"
 
+  config.vm.box_version = "= 8.6.1"
+
   # bug chiave ssh
   # config.vm.box_version = "= 8.6.0"
 
   # WORKS
-  config.vm.box_version = "= 8.5.2"
+  #config.vm.box_version = "= 8.5.2"
 
   # WORKS
   # config.vm.box_version = "= 8.5.0"
@@ -28,6 +30,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 80, host: 8080, id: "http"
   config.vm.network "forwarded_port", guest: 443, host: 8443, id: "https"
   config.vm.network "forwarded_port", guest: 9090, host: 9090, id: "http-php-jail"
+  config.vm.network "forwarded_port", guest: 9081, host: 8081, id: "http-workspace"
+  config.vm.network "forwarded_port", guest: 9082, host: 8082, id: "http-auth"
+
+  config.vm.provider "virtualbox" do |v|
+    #v.memory = 1024
+    v.cpus = 2
+  end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

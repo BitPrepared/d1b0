@@ -1,0 +1,62 @@
+---
+- name: Update apt cache.
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: repository setup for jessie-backport version
+  apt_repository: repo='deb http://httpredir.debian.org/debian jessie-backports main' state=present
+
+- name: install nginx
+  apt: name={{item}} update_cache=yes cache_valid_time=3600 #la cache serve a non eseguire il comando se l'ho eseguito da poco
+  with_items:
+    - nginx=1.9.10-1~bpo8+3
+    - nginx-extras=1.9.10-1~bpo8+3
+    - nginx-common=1.9.10-1~bpo8+3
+    - libssl1.0.0=1.0.2j-1~bpo8+1
+
+# - name: Ensure nginx is installed.
+#   apt: name="nginx" state=installed
+
+# Vhost configuration.
+- name: Remove default nginx vhost config file (if configured).
+  file:
+    path: "{{ nginx_default_vhost_path }}"
+    state: absent
+  when: nginx_remove_default_vhost
+
+# - debug: msg="{{ item.server_name }}"
+#   with_items: "{{ nginx_vhosts }}"
+
+- name: Add managed vhost config file (if any vhosts are configured).
+  template:
+    src: vhosts.j2
+    dest: "{{ nginx_vhost_path }}/{{ item.server_name }}"
+    mode: 0644
+  when: nginx_vhosts|length > 0
+  with_items: "{{ nginx_vhosts }}"
+
+# Vhost directory
+- name: Exist vhost log directory
+  file: path="{{item.directory_log}}" state=directory recurse=yes owner="{{nginx_user}}" group="{{nginx_group}}"
+  when: nginx_vhosts|length > 0
+  with_items: "{{ nginx_vhosts }}"
+
+- name: Exist vhost root directory
+  file: path="{{item.root}}" state=directory recurse=yes owner="{{nginx_user}}" group="{{nginx_group}}"
+  when: nginx_vhosts|length > 0
+  with_items: "{{ nginx_vhosts }}"
+
+# Nginx setup.
+- name: Copy nginx configuration in place.
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_conf_file_path }}"
+    mode: 0644
+  notify:
+    - reload nginx
+
+- name: validate nginx configuration
+  command: nginx -t -c /etc/nginx/nginx.conf
+  changed_when: False
+
+- name: Ensure nginx is started and enabled to start at boot.
+  service: name=nginx state=started enabled=yes
