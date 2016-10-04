@@ -45,6 +45,7 @@ class WorkspaceController implements ControllerProviderInterface
     }
     public function getWorkspaceList(Request $request)
     {
+        print_r("sono qui");
         $user_id = $this->getSessionId();
         $workspaces = R::getAll("SELECT ws.id,
                                           ws.title,
