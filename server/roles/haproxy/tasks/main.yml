@@ -1,6 +1,9 @@
 ---
+- name: clean directory
+  file: path="/etc/haproxy/geoip" state=absent
+
 - name: install haproxy
-  apt: name=liblua5.3-0=5.3.1-1~bpo8+1,haproxy=1.6.9-1~bpo8+1
+  apt: name=liblua5.3-0=5.3.1-1~bpo8+1,haproxy=1.6.9-1~bpo8+1,libssl1.0.0=1.0.2j-1~bpo8+1
 
 - name: setup haproxy
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes
@@ -20,8 +23,12 @@
     url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
     dest: /etc/haproxy/geoip/
 
-# - name: uncompress geoip country
-#   unarchive: remote_src=yes src=/etc/haproxy/geoip/GeoIP.dat.gz dest=/etc/haproxy/geoip/
-#
-# - name: Download geoip city
-#   unarchive: src="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz" dest=/etc/haproxy/geoip remote_src=yes
+- name: uncompress geoip country
+  command: gunzip -d GeoIP.dat.gz
+  args:
+    chdir: /etc/haproxy/geoip/
+
+- name: uncompress geoip city
+  command: gunzip -d GeoLiteCity.dat.gz
+  args:
+    chdir: /etc/haproxy/geoip/
