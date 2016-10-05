@@ -1,8 +1,25 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "http://localhost:8080/schemas/singlePartList.json",
-  "type": "array",
-  "items": {
-      "$ref": "singlePart.json"
-  }
+  "type": "object",
+  "properties":{
+      "part":{
+          "id":"part",
+          "type":"array",
+          "items": {
+              "$ref": "singlePart.json"
+          }
+      },
+      "badges":{
+          "id":"badges",
+          "type":"array",
+          "items": {
+              "type": "integer"
+          }
+      }
+  },
+  "required": [
+    "part",
+    "badges"
+  ]
 }
