@@ -54,6 +54,8 @@ Also, consult the securitylinks.txt file for more information.
   news
   uucp
 
+ [ ] https://www.scalescale.com/tips/nginx/monitor-nginx-munin/
+
 [ ] check
         user 'lp': directory '/var/spool/lpd' does not exist
         user 'news': directory '/var/spool/news' does not exist

@@ -25,7 +25,6 @@
 php_packages:
   - php5-common
   - php5-fpm
-  - php5-dev
   - php5-curl
   - php5-gd
   - php5-intl
@@ -39,6 +38,7 @@ php_packages:
   # scegliere bene quali usare
   #- php5-mysql
   - php5-redis
+  # - php5-dev DA NON METTERE NON COMPATIBILE BACKPORT!
 
 pools:
   - name: workspace
