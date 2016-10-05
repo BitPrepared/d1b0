@@ -8,7 +8,7 @@ use JsonSchema\Validator;
 class WorkspaceTest extends WebTestCase
 {
     use AbstractAppTest;
-
+    /*Verifico che il Workspace si possa scaricare correttamente*/
     public function testGetWorkSpace(){
         $schema = __DIR__.'/../../../../api/schemas/workspace.json';
 
@@ -22,7 +22,10 @@ class WorkspaceTest extends WebTestCase
 
         $assert = $this->evalValidation($validator);
         $this->assertTrue($assert);
+
+        return $data;
     }
+    /*Verifico che l'elenco dei workspace si possa scaricare correttamente*/
     public function testGetWorkspaceList(){
         $schema = __DIR__.'/../../../../api/schemas/workspaceList.json';
 
@@ -37,8 +40,9 @@ class WorkspaceTest extends WebTestCase
 
         $assert = $this->evalValidation($validator);
         $this->assertTrue($assert);
+        return $data;
     }
-
+    /*verifico che si possa condividere il workspace */
     public function testGetWorkspaceShare(){
         $schema = __DIR__.'/../../../../api/schemas/workspaceShare.json';
 
@@ -46,22 +50,6 @@ class WorkspaceTest extends WebTestCase
         $client = $this->logIn($client);
 
         $crawler = $client->request('GET', '/api/v1/workspace/1/share');
-        $response = $client->getResponse();
-
-        //print_r($response);
-        $data = $client->getResponse()->getContent();
-        $validator = $this->askValidation($data,$schema);
-
-        $assert = $this->evalValidation($validator);
-        $this->assertTrue($assert);
-    }
-    public function testGetWorkspacePart(){
-        $schema = __DIR__.'/../../../../api/schemas/part.json';
-
-        $client = $this->createClient();
-        $client = $this->logIn($client);
-
-        $crawler = $client->request('GET', '/api/v1/workspace/6/part/1');
         $response = $client->getResponse();
 
         //print_r($response);
@@ -162,7 +150,16 @@ class WorkspaceTest extends WebTestCase
           '');
 
         $response = $client->getResponse();
-
         $this->assertTrue($response->isOk());
+
+        $data = $this->testGetWorkspaceList();
+        $js= json_decode($data);
+        $trovato = false;
+        foreach($js as $w){
+            if($w->id === $id){
+                $trovato=true;
+            }
+        }
+        $this->assertTrue(!$trovato);
     }
 }

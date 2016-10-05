@@ -210,7 +210,6 @@ class WorkspaceController implements ControllerProviderInterface
 
     public function deleteWorkspace($id,Request $request)
     {
-        print_r("\nDBG deleteWORKSPACE ".$id." \n");
         //Disassocia un utente da un workspace
         $user_id = $this->getSessionId();
 
