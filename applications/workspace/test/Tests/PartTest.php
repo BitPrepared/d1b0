@@ -5,7 +5,7 @@ namespace Tests;
 use Silex\WebTestCase;
 use JsonSchema\Validator;
 include WorkspaceTest;
-class PartTest extends WebTestCase
+class PartTest extends WorkspaceTest
 {
     use AbstractAppTest;
 
@@ -35,6 +35,7 @@ class PartTest extends WebTestCase
         $client = $this->createClient();
         $client = $this->logIn($client);
         $id = 50;
+        $id = $this->testPostWorkspace();
         $part ='{"part":[
                 {
                     "type": "image",
