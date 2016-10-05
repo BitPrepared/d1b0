@@ -110,3 +110,7 @@ Also, consult the securitylinks.txt file for more information.
 ## TEMPISTICA CREAZIONE SERVER
 
   real	17m19.359s
+
+## HOSTS config
+
+127.0.0.1 localhost www.d1b0.local
