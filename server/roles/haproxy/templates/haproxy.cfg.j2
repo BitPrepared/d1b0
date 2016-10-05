@@ -66,12 +66,12 @@ frontend www-https
 	# Mandatory to build the URL:
 	capture request header Host len 32
 
+  # acl host
 {% for d in haproxy.domains %}
-{% if d.path_beg is not defined %}
 	acl {{d.acl}}     hdr(host) -i {{d.domain}}
-{% endif %}
 {% endfor %}
 
+  # path_beg
 {% for d in haproxy.domains %}
 {% if d.path_beg is defined %}
 	acl has_{{d.path_beg}}_uri path_beg /{{d.path_beg}}/
@@ -90,13 +90,20 @@ frontend www-https
 	rspadd X-Content-Type-Options:\ nosniff
 
 {% for r in haproxy.redirects %}
+  {% if r.acl is defined %}
 	redirect prefix {{r.dest}} code {{r.code}} if {{r.acl}}
+  {% endif %}
+  {% if r.path_beg is defined %}
+  redirect prefix {{r.dest}} code {{r.code}} if {{r.path_beg}}
+  {% endif %}
 {% endfor %}
 
 {% for d in haproxy.domains %}
 {% if d.path_beg is not defined %}
 {% if d.backend is defined %}
+  {% if d.acl is defined %}
 	use_backend {{d.backend.name}} if {{d.acl}}
+  {% endif %}
 {% endif %}
 {% endif %}
 {% endfor %}

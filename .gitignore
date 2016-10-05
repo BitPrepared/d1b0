@@ -4,6 +4,7 @@
 *.key
 *.crt
 *.log
+*.retry
 npm-debug.log*
 vagrant.retry
 

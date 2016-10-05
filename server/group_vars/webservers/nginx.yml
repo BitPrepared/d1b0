@@ -47,6 +47,9 @@ nginx_vhosts:
     access_log: "access.log combined"
     error_log: "error.log"
     extra_parameters: |
+      location /workspace/ {
+         alias /var/www/workspace.local/public/;
+      }
       location ~ \.php$ {
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
               fastcgi_pass unix:/var/run/php5-fpm.workspace.sock;
@@ -64,6 +67,9 @@ nginx_vhosts:
     access_log: "access.log combined if=$loggable"
     error_log: "error.log"
     extra_parameters: |
+      location /auth/ {
+         alias /var/www/auth.local/public/;
+      }
       location ~ \.php$ {
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
               fastcgi_pass unix:/var/run/php5-fpm.auth.sock;
