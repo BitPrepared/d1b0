@@ -19,6 +19,7 @@
     - file: path=/etc/ssl/localcerts state=directory mode=755
     - copy: src=ssl/selfsigned.crt dest=/etc/ssl/localcerts/selfsigned.crt mode=0644
     - copy: src=ssl/selfsigned.key dest=/etc/ssl/localcerts/selfsigned.key mode=0644
+    - copy: src=ssl/selfsigned.combo.pem dest=/etc/ssl/localcerts/selfsigned.combo.pem mode=0644
 
     # - apt: name={{item}} update_cache=yes cache_valid_time=3600
     #   with_items:

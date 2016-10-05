@@ -3,6 +3,7 @@
 *.pub
 *.key
 *.crt
+*.pem
 *.log
 *.retry
 npm-debug.log*
