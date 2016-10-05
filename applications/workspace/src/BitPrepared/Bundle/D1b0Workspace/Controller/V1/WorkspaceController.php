@@ -3,6 +3,7 @@
 namespace BitPrepared\Bundle\D1b0Workspace\Controller\V1;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;
@@ -23,7 +24,7 @@ class WorkspaceController implements ControllerProviderInterface
         $factory = $app['controllers_factory'];
         # il mount point e' precedente e non serve prima
         $this->app['db'];
-        //R::fancyDebug(TRUE);
+        R::fancyDebug(TRUE);
         $factory->get('/', array($this, 'getWorkspaceList'));
         $factory->post('/', array($this, 'createWorkspace'));
         $factory->get('/{id}', array($this, 'getWorkspace'));
@@ -146,7 +147,7 @@ class WorkspaceController implements ControllerProviderInterface
         $unit = $data['team']['unit'];
         $group = $data['team']['group'];
 
-        $wp = R::load("workspace",$id);
+        $ws = R::load("workspace",intval($id));
             $ws->title = $title;
             $ws->description = $description;
             $ws->environment = $environment;
@@ -209,11 +210,12 @@ class WorkspaceController implements ControllerProviderInterface
 
     public function deleteWorkspace($id,Request $request)
     {
+        print_r("\nDBG deleteWORKSPACE ".$id." \n");
         //Disassocia un utente da un workspace
         $user_id = $this->getSessionId();
 
-        $wp = R::findOne("userworkspace",["workspace = ?"],[$id]);
-        R::trash($ws);
+        $wp = R::findOne("userworkspace","workspace = ? AND user = ?",[$id,$user_id]);
+        R::trash($wp);
 
         $response = new Response();
         $response->headers->set('Content-Type', 'text/html');
