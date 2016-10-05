@@ -4,10 +4,11 @@ namespace Tests;
 
 use Silex\WebTestCase;
 use JsonSchema\Validator;
-
+include WorkspaceTest;
 class PartTest extends WebTestCase
 {
     use AbstractAppTest;
+
 
     /*verifico che una parte si possa scaricare correttamente*/
     public function testGetWorkspacePart(){
@@ -38,29 +39,30 @@ class PartTest extends WebTestCase
                 {
                     "type": "image",
                     "ref": "afaifnanabnawnfawba",
-                    "hash":"'.hash($id."prova0").'"
+                    "hash":"'.hash("md5",$id."prova0").'"
                 },
                 {
                     "type": "image",
                     "ref": "awfaowapaegbgepng",
-                    "hash":"'.hash($id."prova1").'"
+                    "hash":"'.hash("md5",$id."prova1").'"
                 },
                 {
                     "type": "text",
                     "ref": "afaafaafafafifnanabnawnfawba",
-                    "hash":"'.hash($id."prova2").'"
+                    "hash":"'.hash("md5",$id."prova2").'"
                 },
                 {
                     "type": "video",
                     "ref": "aaafawafaggagaagegaa",
-                    "hash":"'.hash($id."prova3").'"
+                    "hash":"'.hash("md5",$id."prova3").'"
                 }
             ],
-            "badge":[13,28]}';
+            "badges":[13,28]}';
 
+        print_r("Sto per spedire la mia parte \n\n");
         $client->request(
           'POST',
-          '/api/v1/workspace/'.$id.'part',
+          '/api/v1/workspace/'.$id.'/part',
           [],
           [],
           ['CONTENT_TYPE' => 'application/json'],
@@ -68,11 +70,11 @@ class PartTest extends WebTestCase
 
         $response = $client->getResponse();
 
-        //print_r($response);
         $data = $client->getResponse()->getContent();
-        $validator = $this->askValidation($data,$schema);
+        $id = json_decode($data);
 
-        $assert = $this->evalValidation($validator);
-        $this->assertTrue($assert);
+        $id=$id->id;
+
+        $this->assertTrue(is_numeric($id));
     }
 }

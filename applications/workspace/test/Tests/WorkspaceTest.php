@@ -8,6 +8,7 @@ use JsonSchema\Validator;
 class WorkspaceTest extends WebTestCase
 {
     use AbstractAppTest;
+
     /*Verifico che il Workspace si possa scaricare correttamente*/
     public function testGetWorkSpace(){
         $schema = __DIR__.'/../../../../api/schemas/workspace.json';

@@ -46,7 +46,7 @@ class WorkspaceController implements ControllerProviderInterface
     }
     public function getWorkspaceList(Request $request)
     {
-        print_r("sono qui");
+        //print_r("sono qui");
         $user_id = $this->getSessionId();
         $workspaces = R::getAll("SELECT ws.id,
                                           ws.title,
@@ -289,7 +289,7 @@ class WorkspaceController implements ControllerProviderInterface
         $user_id = $this->getSessionId();
 
         $data = json_decode($request->getContent(), true);
-
+        var_dump($data);
         $part = R::dispense("part");
             $part->workspace = $id;
             $part->user = $user_id;
@@ -298,14 +298,16 @@ class WorkspaceController implements ControllerProviderInterface
             $part->totalpoint = 0;
         $part_id = R::store($part);
 
+
         foreach($data['part'] as $r){ //TODO va fixato nelle api
             $resource = R::dispense("resource");
                 $resource->part = $part_id;
                 $resource->inserttime = date($this->DATE_FORMAT);
                 $resource->updatetime = date($this->DATE_FORMAT);
-                $resource->type = $r->type;
-                $resource->ref = $r->ref;
-                $resource->hash = $r->hash;
+                $resource->type = $r['type'];
+                $resource->ref = $r['ref'];
+                $resource->hash = $r['hash'];
+                $resource->available = false;
                 $resource->totalpoint = 0;
             $resource_id = R::store($resource);
         }
