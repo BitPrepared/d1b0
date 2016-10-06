@@ -71,20 +71,22 @@ class PartTest extends WorkspaceTest
         $response = $client->getResponse();
 
         $data = $client->getResponse()->getContent();
-        $id = json_decode($data);
+        $part_id = json_decode($data);
 
-        $id=$id->id;
+        $part_id=$part_id->id;
 
         $this->assertTrue(is_numeric($id));
-        return $id;
+        return [$id,$part_id];
     }
 
     public function testPutWorkspacePart(){
         $client = $this->createClient();
         $client = $this->logIn($client);
 
-        $id = $this->testPostWorkspace();
-        $part_id = $this->testPostWorkspacePart();
+
+        $blob = $this->testPostWorkspacePart();
+        $id = $blob[0];
+        $part_id= $blob[1];
         $part ='{
                 "id":'.$part_id.',
                 "part":[
@@ -127,8 +129,9 @@ class PartTest extends WorkspaceTest
         $client = $this->createClient();
         $client = $this->logIn($client);
 
-        $id = $this->testPostWorkspace();
-        $part_id = $this->testPostWorkspacePart();
+        $blob = $this->testPostWorkspacePart();
+        $id = $blob[0];
+        $part_id= $blob[1];
 
         $client->request(
           'DELETE',
@@ -147,6 +150,8 @@ class PartTest extends WorkspaceTest
         $data = $client->getResponse()->getContent();
 
         $js = json_decode($data);
+
+        var_dump($data);
         $trovato = false;
 
         foreach($js->parts as $w){

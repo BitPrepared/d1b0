@@ -110,6 +110,7 @@ class WorkspaceController implements ControllerProviderInterface
             $part->inserttime = date($this->DATE_FORMAT);
             $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
+            $part->deleted = false;
         $part_id = R::store($part);
 
         //add the badge to the project
@@ -177,9 +178,9 @@ class WorkspaceController implements ControllerProviderInterface
 
         $workspace = R::findOne("workspace", "id = ?", [$id]);
         $team = R::findOne("team", "workspace = ?", [$id]);
-        $part = R::findAll("part", "workspace = ?", [$id]);
+        $part = R::findAll("part", "workspace = ? AND DELETED = 0", [$id]);
 
-        $badges = R::findAll("workspacebadge", "workspace = ?", [$id]);
+        $badges = R::findAll("workspacebadge", "workspace = ?", [$id]);//TODO controllare i deleted
 
         $l_part = [];
         foreach ($part as $p) {
@@ -285,7 +286,7 @@ class WorkspaceController implements ControllerProviderInterface
         return $response;
     }
 
-    public function postPart($id, Request $request) {
+    public function postPart($id, Request $request) {//TODO quando uno crea una parte bisognerebbe dire che lui c'era in quella parte
         $user_id = $this->getSessionId();
 
         $data = json_decode($request->getContent(), true);
@@ -296,6 +297,7 @@ class WorkspaceController implements ControllerProviderInterface
             $part->inserttime = date($this->DATE_FORMAT);
             $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
+            $part->deleted = false;
         $part_id = R::store($part);
 
 
@@ -392,6 +394,7 @@ class WorkspaceController implements ControllerProviderInterface
             $part->user = $user_id;
             $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
+            $part->deleted = false;
         $part_id = R::store($part);
 
         $delete_res=R::findAll("resource","WHERE part = ?",[$part_id]);
@@ -522,7 +525,7 @@ class WorkspaceController implements ControllerProviderInterface
                 $pb->points = $this->POINT_DEFAULT;
             $tmp = R::store($pb);
         }
-        $res = ["points"=>$point_earned];
+        $res = ["points"=>intval($point_earned)];
         $headers = [];
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
 
