@@ -2,7 +2,10 @@
 .DS_Store
 *.pub
 *.key
+*.crt
+*.pem
 *.log
+*.retry
 npm-debug.log*
 vagrant.retry
 

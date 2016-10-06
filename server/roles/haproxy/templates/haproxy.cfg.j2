@@ -54,7 +54,7 @@ frontend www-http
    redirect scheme https code 301 if !{ ssl_fc }
 
 frontend www-https
-	bind {{bind_ip}}:443 ssl {%for d in haproxy.domains %}{% if d.path_beg is not defined and d.backend is defined %}crt /etc/ssl/certificates/{{d.domain}}.combo.pem {% endif %}{% endfor %}
+  bind {{bind_ip}}:443 ssl crt {{ ssl_cert }}
 
 	# DDOS defence
 	stick-table type ip size 100k expire 30s store conn_cur
@@ -66,12 +66,12 @@ frontend www-https
 	# Mandatory to build the URL:
 	capture request header Host len 32
 
+  # acl host
 {% for d in haproxy.domains %}
-{% if d.path_beg is not defined %}
 	acl {{d.acl}}     hdr(host) -i {{d.domain}}
-{% endif %}
 {% endfor %}
 
+  # path_beg
 {% for d in haproxy.domains %}
 {% if d.path_beg is defined %}
 	acl has_{{d.path_beg}}_uri path_beg /{{d.path_beg}}/
@@ -89,22 +89,21 @@ frontend www-https
 	rspadd X-XSS-Protection:\ 1;\ mode=block
 	rspadd X-Content-Type-Options:\ nosniff
 
-	# DA PARAMETRIZZARE
-	rspadd Strict-Transport-Security:\ max-age=31536000;\ includeSubDomains
-	rspadd Content-Security-Policy:\ default-src\ 'self';\ script-src\ 'self'\ 'unsafe-inline';\ img-src\ 'self'\ data:;\ style-src\ 'self'\ 'unsafe-inline';\ font-src\ 'self'\ data:;\ frame-src\ 'self';\ connect-src\ 'self'\ https://apis.google.com;\ object-src\ 'none';\ report-uri\ https://www.decrypto.it/csp-report.php
-
-	# 15768000 -> 182 giorni
-	rspadd Public-Key-Pins:\ pin-sha256=\"tAGD4yG3YeEHoYAJRJQkcEppCISVfqtHepfw4EUd3/0=\";\ max-age=10;\ includeSubDomains;\ report-uri\ https://www.decrypto.it/csp-report.php if ! { capture.req.hdr(0) -i mail.decrypto.it }
-	rspadd Public-Key-Pins:\ pin-sha256=\"19Gcj52884omZyVzjeTDLIN9kz3a9k9Fhtk7qM3Wmmw=\";\ max-age=10;\ includeSubDomains;\ report-uri\ https://www.decrypto.it/csp-report.php if { capture.req.hdr(0) -i mail.decrypto.it }
-
 {% for r in haproxy.redirects %}
+  {% if r.acl is defined %}
 	redirect prefix {{r.dest}} code {{r.code}} if {{r.acl}}
+  {% endif %}
+  {% if r.path_beg is defined %}
+  redirect prefix {{r.dest}} code {{r.code}} if {{r.path_beg}}
+  {% endif %}
 {% endfor %}
 
 {% for d in haproxy.domains %}
 {% if d.path_beg is not defined %}
 {% if d.backend is defined %}
+  {% if d.acl is defined %}
 	use_backend {{d.backend.name}} if {{d.acl}}
+  {% endif %}
 {% endif %}
 {% endif %}
 {% endfor %}
