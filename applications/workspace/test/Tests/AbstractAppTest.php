@@ -32,6 +32,17 @@ trait AbstractAppTest
           '{"authMode":"Email","email":"ugo.ugo@ugo.it","name":"ugo","surname":"ugo","password":"cane"}');
         return $client;
     }
+    public function logIn2($client)
+    {
+        $client->request(
+          'POST',
+          '/api/v1/security/login',
+          [],
+          [],
+          ['CONTENT_TYPE' => 'application/json'],
+          '{"authMode":"Email","email":"ugo2","name":"ugo2","surname":"ugo2","password":"cane"}');
+        return $client;
+    }
 
     public function askValidation($data, $schema)
     {

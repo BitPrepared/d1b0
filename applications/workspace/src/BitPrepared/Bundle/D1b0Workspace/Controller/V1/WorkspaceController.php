@@ -46,7 +46,7 @@ class WorkspaceController implements ControllerProviderInterface
     }
     public function getWorkspaceList(Request $request)
     {
-        print_r("sono qui");
+        //print_r("sono qui");
         $user_id = $this->getSessionId();
         $workspaces = R::getAll("SELECT ws.id,
                                           ws.title,
@@ -110,6 +110,7 @@ class WorkspaceController implements ControllerProviderInterface
             $part->inserttime = date($this->DATE_FORMAT);
             $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
+            $part->deleted = false;
         $part_id = R::store($part);
 
         //add the badge to the project
@@ -177,9 +178,9 @@ class WorkspaceController implements ControllerProviderInterface
 
         $workspace = R::findOne("workspace", "id = ?", [$id]);
         $team = R::findOne("team", "workspace = ?", [$id]);
-        $part = R::findAll("part", "workspace = ?", [$id]);
+        $part = R::findAll("part", "workspace = ? AND DELETED = 0", [$id]);
 
-        $badges = R::findAll("workspacebadge", "workspace = ?", [$id]);
+        $badges = R::findAll("workspacebadge", "workspace = ?", [$id]);//TODO controllare i deleted
 
         $l_part = [];
         foreach ($part as $p) {
@@ -210,7 +211,6 @@ class WorkspaceController implements ControllerProviderInterface
 
     public function deleteWorkspace($id,Request $request)
     {
-        print_r("\nDBG deleteWORKSPACE ".$id." \n");
         //Disassocia un utente da un workspace
         $user_id = $this->getSessionId();
 
@@ -286,27 +286,30 @@ class WorkspaceController implements ControllerProviderInterface
         return $response;
     }
 
-    public function postPart($id, Request $request) {
+    public function postPart($id, Request $request) {//TODO quando uno crea una parte bisognerebbe dire che lui c'era in quella parte
         $user_id = $this->getSessionId();
 
         $data = json_decode($request->getContent(), true);
-
+        //var_dump($data);
         $part = R::dispense("part");
             $part->workspace = $id;
             $part->user = $user_id;
             $part->inserttime = date($this->DATE_FORMAT);
             $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
+            $part->deleted = false;
         $part_id = R::store($part);
+
 
         foreach($data['part'] as $r){ //TODO va fixato nelle api
             $resource = R::dispense("resource");
                 $resource->part = $part_id;
                 $resource->inserttime = date($this->DATE_FORMAT);
                 $resource->updatetime = date($this->DATE_FORMAT);
-                $resource->type = $r->type;
-                $resource->ref = $r->ref;
-                $resource->hash = $r->hash;
+                $resource->type = $r['type'];
+                $resource->ref = $r['ref'];
+                $resource->hash = $r['hash'];
+                $resource->available = false;
                 $resource->totalpoint = 0;
             $resource_id = R::store($resource);
         }
@@ -385,32 +388,39 @@ class WorkspaceController implements ControllerProviderInterface
 
         $data = json_decode($request->getContent(), true);
 
+
         $part = R::load("part",$part_id);
             $part->workspace = $id;
             $part->user = $user_id;
             $part->lastupdatetime = date($this->DATE_FORMAT);
             $part->totalpoint = 0;
+            $part->deleted = false;
         $part_id = R::store($part);
 
         $delete_res=R::findAll("resource","WHERE part = ?",[$part_id]);
 
         foreach($data['part'] as $r){ //TODO va fixato nelle api
-            $resource = R::findOne("resource","WHERE hash = ? AND deleted = 0",[$r->hash]);//TODO BISOGNA FARE IL DIFF TRA QUELLE PRESENTI E QUELLE NON PRESENTI
+            $resource = R::findOne("resource","WHERE hash = ? AND deleted = 0",[$r['hash']]);//TODO BISOGNA FARE IL DIFF TRA QUELLE PRESENTI E QUELLE NON PRESENTI
+                if($resource == 0){
+                    $resource = R::dispense("resource");
+                    $resource->available = false;
+                    $resource->inserttime = date($this->DATE_FORMAT);
+                }
                 $resource->part = $part_id;
                 $resource->updatetime = date($this->DATE_FORMAT);
-                $resource->type = $r->type;
-                $resource->ref = $r->ref;
-                $resource->hash = $r->hash;
+                $resource->type = $r['type'];
+                $resource->ref = $r['ref'];
+                $resource->hash = $r['hash'];
                 $resource->totalpoint = 0;
             $resource_id = R::store($resource);
-            $rem_id=getPositionInArray($delete_res,$resource_id);
+            $rem_id=$this->getPositionInArray($delete_res,$resource_id);
             if($rem_id != 0)
                 array_splice($delete_res,$rem_id,1); //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
         }
 
         foreach($delete_res as $d){
             //RIMUOVO REALMENTE DAL DB LE COSE CHE HO LASCIATO FUORI DALLA PUT (PRESENTI NEL DB MA NON NELLA NUOVA VERSIONE ODIO LE PUT)
-            $resource = R::load("resource",[$d->id]);
+            $resource = R::load("resource",$d->id);
             $resource->deleted=true;
             R::store($resource);
         }
@@ -422,14 +432,14 @@ class WorkspaceController implements ControllerProviderInterface
                 $pb->badge = $badge_id;
                 $pb->part = $part_id;
             $tmp = R::store($pb);
-            $rem_id=getPositionInArray($delete_badge,$tmp);
+            $rem_id=$this->getPositionInArray($delete_badge,$tmp);
             if($rem_id != 0)
                 array_splice($delete_badge,$rem_id,1); //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
         }
 
         foreach($delete_badge as $d){
             //RIMUOVO REALMENTE DAL DB LE COSE CHE HO LASCIATO FUORI DALLA PUT (PRESENTI NEL DB MA NON NELLA NUOVA VERSIONE ODIO LE PUT)
-            $badge = R::load("partbadge",[$d->id]);//FORSE RILOADARLI NON È NECESSARIO
+            $badge = R::load("partbadge",$d['id']);//FORSE RILOADARLI NON È NECESSARIO
             $badge->deleted=true;
             R::store($badge);
         }
@@ -515,7 +525,7 @@ class WorkspaceController implements ControllerProviderInterface
                 $pb->points = $this->POINT_DEFAULT;
             $tmp = R::store($pb);
         }
-        $res = ["points"=>$point_earned];
+        $res = ["points"=>intval($point_earned)];
         $headers = [];
         return JsonResponse::create($res, 201, $headers)->setSharedMaxAge(300);
 
