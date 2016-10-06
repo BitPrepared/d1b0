@@ -34,6 +34,8 @@ nginx_extra_login_options: |
       default 1;
   }
 
+nginx_fast_cgi_signature: false
+
 nginx_extra_http_options: |
   proxy_buffering    off;
 
@@ -47,8 +49,8 @@ nginx_vhosts:
     access_log: "access.log combined"
     error_log: "error.log"
     extra_parameters: |
-      location /workspace/ {
-         alias /var/www/workspace.local/public/;
+      location /assets/ {
+         alias /var/www/workspace.local/assets/;
       }
       location ~ \.php$ {
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
@@ -67,9 +69,6 @@ nginx_vhosts:
     access_log: "access.log combined if=$loggable"
     error_log: "error.log"
     extra_parameters: |
-      location /auth/ {
-         alias /var/www/auth.local/public/;
-      }
       location ~ \.php$ {
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
               fastcgi_pass unix:/var/run/php5-fpm.auth.sock;

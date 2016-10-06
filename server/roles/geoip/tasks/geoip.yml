@@ -1,0 +1,69 @@
+---
+
+- name: Install geoip-bin
+  apt: name=geoip-bin state=installed
+
+- name: GeoIp directory
+  file: path="{{ geoip_directory }}" state=directory recurse=yes
+
+- name: Download geoip country (http://dev.maxmind.com/geoip/legacy/geolite/)
+  get_url:
+    url: "{{ geoip_url }}"
+    dest: "{{ geoip_directory }}"
+
+- name: Download geoip country ipv6
+  get_url:
+    url: "{{ geoip_ipv6_url }}"
+    dest: "{{ geoip_directory }}"
+    #/etc/haproxy/geoip/
+
+- name: Download geoip country csv
+  get_url:
+    url: "{{ geoip_csv_url }}"
+    dest: "{{ geoip_directory }}"
+
+- name: Download geoip country ipv6 csv
+  get_url:
+    url: "{{ geoip_ipv6_csv_url }}"
+    dest: "{{ geoip_directory }}"
+
+- name: Download geoip city
+  get_url:
+    url: "{{ geoip_city_url }}"
+    dest: "{{ geoip_directory }}"
+
+- name: Download coutry continent mapping
+  get_url:
+    url: "{{ country_continent_url }}"
+    dest: "{{ geoip_directory }}"
+
+- name: uncompress geoip country
+  command: gunzip -f -d GeoIP.dat.gz
+  args:
+    chdir: "{{ geoip_directory }}"
+
+- name: uncompress geoip country ipv6
+  command: gunzip -f -d GeoIPv6.dat.gz
+  args:
+    chdir: "{{ geoip_directory }}"
+
+- name: uncompress geoip country csv
+  command: unzip GeoIPCountryCSV.zip
+  args:
+    chdir: "{{ geoip_directory }}"
+
+- name: remove geoip country csv zip
+  file: path="{{ geoip_directory }}/GeoIPCountryCSV.zip" state=absent
+
+- name: uncompress geoip country ipv6 csv
+  command: gunzip -f -d GeoIPv6.csv.gz
+  args:
+    chdir: "{{ geoip_directory }}"
+
+- name: uncompress geoip city
+  command: gunzip -f -d GeoLiteCity.dat.gz
+  args:
+    chdir: "{{ geoip_directory }}"
+
+- name: create cron update GeoIp
+  template: src=update_geoip_databases.j2 dest=/etc/cron.monthly/update_geoip_databases mode=0755

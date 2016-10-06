@@ -1,0 +1,7 @@
+geoip_url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+geoip_csv_url: http://geolite.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip
+geoip_ipv6_url: http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+geoip_ipv6_csv_url: http://geolite.maxmind.com/download/geoip/database/GeoIPv6.csv.gz
+geoip_city_url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+country_continent_url: http://dev.maxmind.com/static/csv/codes/country_continent.csv
+geoip_directory: /usr/share/GeoIP

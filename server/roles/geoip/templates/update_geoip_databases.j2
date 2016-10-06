@@ -1,0 +1,20 @@
+#!/bin/bash
+
+DAT_DIR="{{ geoip_directory }}"
+DAT_URLS="{{ geoip_url }} {{ geoip_city_url }} {{ geoip_ipv6_url }} {{ geoip_ipv6_csv_url }}"
+
+for FILE in $DAT_DIR/*.dat; do
+    cp $FILE $FILE.bak
+done;
+
+for URL in $DAT_URLS; do
+    FILE=${URL##*/}
+    curl $URL | gunzip > $DAT_DIR/${FILE%.gz}
+    #echo $URL $DAT_DIR/${FILE%.gz}
+done;
+
+for FILE in $DAT_DIR/*.csv; do
+    cp $FILE $FILE.bak
+done;
+
+curl "{{ geoip_csv_url }}" | gunzip > $DAT_DIR/GeoIPCountryWhois.csv

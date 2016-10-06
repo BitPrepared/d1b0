@@ -5,6 +5,7 @@ nginx_remove_default_vhost: false
 nginx_mime_file_path: /etc/nginx/mime.types
 nginx_vhosts_filename: "vhosts.conf"
 nginx_conf_file_path: /etc/nginx/nginx.conf
+nginx_fast_cgi_file_path: /etc/nginx/fastcgi_params
 nginx_conf_path: /etc/nginx/conf.d
 
 nginx_user: www-data
@@ -34,3 +35,5 @@ nginx_keepalive_requests: "100"
 nginx_client_max_body_size: "64m"
 
 nginx_server_names_hash_bucket_size: "64"
+
+nginx_fast_cgi_signature: true

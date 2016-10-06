@@ -1,34 +1,42 @@
 ---
-- name: clean directory
-  file: path="/etc/haproxy/geoip" state=absent
 
 - name: install haproxy
   apt: name=liblua5.3-0=5.3.1-1~bpo8+1,haproxy=1.6.9-1~bpo8+1,libssl1.0.0=1.0.2j-1~bpo8+1
 
+- name: Check if iprange is installed.
+  stat: "path=/usr/local/bin/iprange"
+  register: iprange
+
+- include: iprange.yml
+  when: not iprange.stat.exists
+
+- name: clean geoip directory
+  file: path=/etc/haproxy/geoip state=absent
+
+- name: create geoip directory
+  file: path=/etc/haproxy/geoip state=directory
+
 - name: setup haproxy
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes
   notify: restart haproxy
-#http://docs.ansible.com/ansible/haproxy_module.html
+  # http://docs.ansible.com/ansible/haproxy_module.html
 
-- name: GeoIp directory
-  file: path="/etc/haproxy/geoip" state=directory recurse=yes
-
-- name: Download geoip country
-  get_url:
-    url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-    dest: /etc/haproxy/geoip/
-
-- name: Download geoip city
-  get_url:
-    url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-    dest: /etc/haproxy/geoip/
-
-- name: uncompress geoip country
-  command: gunzip -d GeoIP.dat.gz
+- name: generate country continent
+  shell: for c in `fgrep -v '-' {{ geoip_directory }}/country_continent.csv | grep -v "country" | sort -t',' -k 2` ; do echo $c | awk -F',' '{ print $1 >> $2".continent" }' ; done
   args:
-    chdir: /etc/haproxy/geoip/
+    chdir: /etc/haproxy/geoip
 
-- name: uncompress geoip city
-  command: gunzip -d GeoLiteCity.dat.gz
+- name: generate subnet country
+  shell: cut -d, -f1,2,5 "{{ geoip_directory }}/GeoIPCountryWhois.csv" | /usr/local/bin/iprange |  sed 's/"//g' | awk -F' ' '{ print $1 >> $2".subnets" }'
   args:
-    chdir: /etc/haproxy/geoip/
+    chdir: /etc/haproxy/geoip
+
+- name: generate subnet county continent
+  shell: for f in `ls *.continent` ; do for c in $(cat $f) ; do cat ${c}.subnets >> ${f%%.*}.continent.subnets ; done ;  done
+  args:
+    chdir: /etc/haproxy/geoip
+
+- name: generate
+  shell: cut -d, -f1,2,5 "{{ geoip_directory }}/GeoIPCountryWhois.csv" | /usr/local/bin/iprange | sed 's/"//g' | awk -F' ' '{ print $1" "$2 }' > geoip.lst
+  args:
+    chdir: /etc/haproxy/geoip

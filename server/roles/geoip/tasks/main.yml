@@ -1,0 +1,6 @@
+- name: Check if GeoIP is installed.
+  stat: "path={{geoip_directory}}/GeoLiteCity.dat"
+  register: geo_ip_dat
+
+- include: geoip.yml
+  when: not geo_ip_dat.stat.exists

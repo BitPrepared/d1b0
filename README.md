@@ -11,6 +11,8 @@ Progetto Segreto
 
 #TODO
 
+[ ] rimuovere pacchetti compilazione alla fine del processo di instllazioni (di tutto e non singolo role!)
+
 [ ] tolleranza validita token per utente
 
 [ ] disabilitare TRACE su haproxy

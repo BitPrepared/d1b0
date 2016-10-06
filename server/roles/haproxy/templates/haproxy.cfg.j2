@@ -7,6 +7,8 @@ global
 	group haproxy
 	daemon
 
+  maxcompcpuusage 80
+
 	# Default SSL material locations
 	ca-base /etc/ssl/certs
 	crt-base /etc/ssl/private
@@ -66,10 +68,27 @@ frontend www-https
 	# Mandatory to build the URL:
 	capture request header Host len 32
 
+  # https://www.haproxy.com/doc/aloha/7.0/haproxy/acls.html
+
   # acl host
 {% for d in haproxy.domains %}
+{% if d.acl is defined %}
 	acl {{d.acl}}     hdr(host) -i {{d.domain}}
+{% endif %}
 {% endfor %}
+
+  # disabled for security
+  acl invalid_method method TRACE
+
+  acl AF src -f /etc/haproxy/geoip/AF.continent.subnets
+  acl AN src -f /etc/haproxy/geoip/AN.continent.subnets
+  acl AS src -f /etc/haproxy/geoip/AS.continent.subnets
+  acl EU src -f /etc/haproxy/geoip/EU.continent.subnets
+  acl NA src -f /etc/haproxy/geoip/NA.continent.subnets
+  acl OC src -f /etc/haproxy/geoip/OC.continent.subnets
+  acl SA src -f /etc/haproxy/geoip/SA.continent.subnets
+
+  #tcp-request content reject if XX
 
   # path_beg
 {% for d in haproxy.domains %}
@@ -77,6 +96,11 @@ frontend www-https
 	acl has_{{d.path_beg}}_uri path_beg /{{d.path_beg}}/
 {% endif %}
 {% endfor %}
+
+  http-request deny if invalid_method
+
+  # detect del coutry di provenienza
+  http-request set-header X-Country %[src,map_ip(/etc/haproxy/geoip/geoip.lst)]
 
 	reqadd X-Forwarded-Proto:\ https
 
@@ -111,7 +135,7 @@ frontend www-https
 {% for d in haproxy.domains %}
 {% if d.path_beg is defined %}
 {% if d.backend is defined %}
-	use_backend {{d.backend.name}} if has_{{d.path_beg}}_uri {{d.acl}}
+	use_backend {{d.backend.name}} if has_{{d.path_beg}}_uri {% if d.acl is defined %}{{d.acl}}{% endif %} #
 {% endif %}
 {% endif %}
 {% endfor %}
@@ -124,5 +148,11 @@ backend {{d.backend.name}}
 {% for b in d.backend.array %}
 	server www-{{loop.index}} {{b.ip}}:{{b.port}} check
 {% endfor %}
+{% if d.backend.reqirep is defined %}
+  reqirep {{d.backend.reqirep}}
+{% endif %}
+  compression algo gzip
+  compression type text/css text/html text/javascript application/javascript text/plain text/xml application/json
+  compression offload
 {% endif %}
 {% endfor %}

@@ -16,11 +16,19 @@
 #curl -o/dev/null -D - "http://127.0.0.1:8090/style.css" -H "Accept-Encoding: gzip"
 
 
-#solo uso interno?
-#bind_stat_ip: 127.0.0.1
+ssl_cert: /etc/ssl/localcerts/selfsigned.combo.pem
+bind_ip: 10.0.2.15
 
-# ^^^^?????^^^^^^^
-#bind_ip: "{{ansible_default_ipv4.address}}"
-#domains: "{{haproxy.domains}}"
-#default_backend: "{{haproxy.default_backend}}"
-#redirects: "{{haproxy.redirects}}"
+#solo uso interno?
+#bind_stat_ip: 127.0.0.1 - ricordarsi il firewall
+bind_stat_ip: 10.0.2.15
+
+haproxy:
+   default_backend: www-workspace
+   redirects:
+     - { acl: "no-www", dest: "http://www.d1b0.local", code: 301}
+   domains:
+     - { domain: "d1b0.local",  acl: "no-www" }
+     - { domain: "www.d1b0.local",  path_beg: "workspace",  backend: { name: "www-workspace" , reqirep: '^([^\ :]*)\ /workspace/(.*) \1\ /\2', array: [ { ip: "127.0.0.1", port: 9081} ] } }
+     - { domain: "www.d1b0.local", path_beg: "auth", backend: { name: "www-auth" , reqirep: '^([^\ :]*)\ /auth/(.*) \1\ /\2', array: [ { ip: "127.0.0.1", port: 9082} ] } }
+     - { domain: "www.d1b0.local", path_beg: "stream", backend: { name: "www-upload" , array: [ { ip: "127.0.0.1", port: 9090} ] } }

@@ -1,0 +1,23 @@
+---
+
+- name: tmp dir compile
+  file: path=/tmp/iprange state=directory
+
+- name: copy iprange
+  copy: src={{item}} dest=/tmp/iprange/{{item}}
+  with_items:
+    - iprange.c
+    - Makefile
+
+- name: compile
+  command: "{{ item }}"
+  args:
+    chdir: /tmp/iprange
+  with_items:
+    - make
+
+- name: copy to /usr/local/bin
+  copy: src=/tmp/iprange/iprange dest=/usr/local/bin/iprange remote_src=yes mode=0700
+
+- name: remove tmp dir compile
+  file: path=/tmp/iprange state=absent

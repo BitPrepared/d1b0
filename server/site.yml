@@ -28,6 +28,7 @@
 
 - include: plays/webservers.yml
 
+- include: plays/cleanCompiler.yml
 
 # post_tasks:
 # notifica a qualcuno?
