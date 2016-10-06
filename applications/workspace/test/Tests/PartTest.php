@@ -124,7 +124,6 @@ class PartTest extends WorkspaceTest
     }
 
     public function testDeleteWorkspacePart(){
-        print_r("COMINCIO IL TEST DI DELETE");
         $client = $this->createClient();
         $client = $this->logIn($client);
 
@@ -142,18 +141,16 @@ class PartTest extends WorkspaceTest
         $response = $client->getResponse();
         $this->assertTrue($response->isOk());
 
-        print_r("BOOOM BABY");
         $crawler = $client->request('GET', '/api/v1/workspace/'.$id);
 
         print_r($client->getResponse());
         $data = $client->getResponse()->getContent();
-        print_r("JIAMBALAYA!!!!!!!!!!!!!!!!!!");
-        print_r($data);
+
         $js = json_decode($data);
         $trovato = false;
-        var_dump($js['part']);
-        foreach($js['part'] as $w){
-            if($w->id === $part_id){
+
+        foreach($js->parts as $w){
+            if($w === $part_id){
                 $trovato=true;
             }
         }
