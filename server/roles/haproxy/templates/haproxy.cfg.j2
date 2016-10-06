@@ -1,6 +1,13 @@
 global
-	log /dev/log	local0 debug
+	#log /dev/log	local0 debug
+
+  # log <address> [len <length>] [format <format>] <facility> [max level [min level]]
+  # /dev/log server per rsyslod - facility local0
+  #log /dev/log local0 debug
+  log /dev/log local0 info
+
 	chroot /var/lib/haproxy
+
 	maxconn 2048
 	tune.ssl.default-dh-param 2048
 	user haproxy
@@ -15,21 +22,50 @@ global
 
 	#  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
 	ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
-	ssl-default-bind-options no-sslv3 no-tls-tickets force-tlsv12
+	ssl-default-bind-options no-sslv3 no-tlsv10 no-tls-tickets force-tlsv12
 
 defaults
 	log	global
 	mode	http
-	option	httplog
-	option	dontlognull
+
 	option  forwardfor except 127.0.0.1
-	# deny client persistent connections without keepalive
+
+  # deny client persistent connections without keepalive
 	option	http-server-close
+
+  # better for proxy http
+  option httplog
+
+  # Successful connections will not be logged
+  option dontlog-normal
+
+  option dontlognull
+
+  # Added to create separate error and access logs
+	option log-separate-errors
+
+  # any change of the health check status or to the server's health will be logged
+  option log-health-checks
+
+  # If sending a request to one server fails, try to send it to another, 3 times
+  # before aborting the request
+  retries 3
 
 	timeout http-request 5s
 	timeout connect 5s
+  timeout check   10s
+
+  # HTTP Socket timeout
 	timeout client  30s
 	timeout server  10s
+
+  # WebSocket timeout
+  timeout tunnel  3600s
+  timeout http-keep-alive  1s
+  timeout queue           30s
+
+  # Set the duration for which tarpitted connections will be maintained
+  timeout tarpit          60s
 
 	errorfile 400 /etc/haproxy/errors/400.http
 	errorfile 403 /etc/haproxy/errors/403.http
@@ -58,15 +94,25 @@ frontend www-http
 frontend www-https
   bind {{bind_ip}}:443 ssl crt {{ ssl_cert }}
 
+  # stick-table type {ip | integer | string [len <length>] | binary [len <length>]}
+  #          size <size> [expire <expire>] [nopurge] [peers <peersect>]
+  #          [store <data_type>]*
+  #Use General Purpose Couter (gpc) 0 in SC1 as a global abuse counter
+  #Monitors the number of request sent by an IP over a period of 10 seconds
 	# DDOS defence
-	stick-table type ip size 100k expire 30s store conn_cur
-
-	# Shut the new connection as long as the client has already 10 opened
-	tcp-request connection reject if { src_conn_cur ge 10 }
-	tcp-request connection track-sc1 src
+	stick-table type ip size 200k expire 30s store gpc0,conn_cur,http_req_rate(10s),http_err_rate(10s)
 
 	# Mandatory to build the URL:
 	capture request header Host len 32
+
+  # log the beginning of the referrer
+  capture request header Referer len 128
+
+  # User agent
+  capture request header User-Agent len 128
+
+  # log the URL location during a redirection
+  capture response header Location len 20
 
   # https://www.haproxy.com/doc/aloha/7.0/haproxy/acls.html
 
@@ -97,6 +143,28 @@ frontend www-https
 {% endif %}
 {% endfor %}
 
+  acl abuser hdr_sub(user-agent) -f /etc/haproxy/abuser.lst
+
+  acl abuse sc1_http_req_rate gt 100
+  acl kill sc1_inc_gpc0 gt 10
+  acl save sc1_clr_gpc0 ge 0
+
+  acl letsencrypt-acl path_beg /.well-known/acme-challenge/
+
+  # FIXME: valorizzare i badguys (botnet ecc)
+  acl badguys src 10.1.0.3 10.16.13.20/28
+
+  # Shut the new connection as long as the client has already 10 opened
+  tcp-request connection reject if { src_conn_cur ge 10 }
+  tcp-request connection track-sc1 src
+  tcp-request inspect-delay 1s
+
+  # Block connection
+  tcp-request content reject if abuser
+  tcp-request connection accept if !abuse save
+  tcp-request connection reject if abuse kill
+  tcp-request connection reject if { sc1_get_gpc0 gt 0 }
+
   http-request deny if invalid_method
 
   # detect del coutry di provenienza
@@ -109,9 +177,17 @@ frontend www-https
 	rspidel ^X-Powered-By:.*$
 	rspidel ^X-AspNet-Version:.*$
 
+  reqitarpit . if badguys
+
 	rspirep ^(set-cookie:.*)  \1;\ Secure
-	rspadd X-XSS-Protection:\ 1;\ mode=block
+
+  # HSTS
+  rspadd X-XSS-Protection:\ 1;\ mode=block
 	rspadd X-Content-Type-Options:\ nosniff
+  rspadd X-Frame-Options:\ SAMEORIGIN
+  rspadd Strict-Transport-Security:\ max-age={{ max_age_hsts }};\ includeSubDomains
+  rspadd Content-Security-Policy:\ default-src\ 'self';\ script-src\ 'self'\ 'unsafe-inline'\ 'unsafe-eval';\ img-src\ 'self'\ data:;\ style-src\ 'self'\ 'unsafe-inline';\ font-src\ 'self'\ data:;\ frame-src\ 'self';\ connect-src\ 'self'\ object-src\ 'none';\ report-uri\ {{ ocsp_report_uri }}
+  rspadd Public-Key-Pins:\ pin-sha256=\"tAGD4yG3YeEHoYAJRJQkcEppCISVfqtHepfw4EUd3/0=\";\ max-age=10;\ includeSubDomains;\ report-uri\ https://www.decrypto.it/csp-report.php if ! { capture.req.hdr(0) -i mail.decrypto.it }
 
 {% for r in haproxy.redirects %}
   {% if r.acl is defined %}
@@ -140,6 +216,9 @@ frontend www-https
 {% endif %}
 {% endfor %}
 
+  # FIXME: letsencrypt (da gestire)
+  # use_backend letsencrypt-backend if letsencrypt-acl
+
 	default_backend {{haproxy.default_backend}}
 
 {% for d in haproxy.domains %}
@@ -154,5 +233,11 @@ backend {{d.backend.name}}
   compression algo gzip
   compression type text/css text/html text/javascript application/javascript text/plain text/xml application/json
   compression offload
+
+  #If the source IP generated 10 or more http request over the defined period,
+  #flag the IP as abuser on the frontend
+  acl abuse sc1_http_err_rate gt 10
+  acl kill sc1_inc_gpc0 gt 0
+  tcp-request content reject if abuse kill
 {% endif %}
 {% endfor %}
