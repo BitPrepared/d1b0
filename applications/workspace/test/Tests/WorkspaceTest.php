@@ -118,7 +118,7 @@ class WorkspaceTest extends WebTestCase
         $client = $this->createClient();
         $client = $this->logIn($client);
 
-        print_r("\nID: ".$id."\n");
+        //print_r("\nID: ".$id."\n");
         $client->request(
           'PUT',
           '/api/v1/workspace/'.$id.'',

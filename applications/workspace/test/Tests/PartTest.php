@@ -4,7 +4,7 @@ namespace Tests;
 
 use Silex\WebTestCase;
 use JsonSchema\Validator;
-include WorkspaceTest;
+
 class PartTest extends WorkspaceTest
 {
     use AbstractAppTest;
@@ -34,7 +34,7 @@ class PartTest extends WorkspaceTest
 
         $client = $this->createClient();
         $client = $this->logIn($client);
-        $id = 50;
+
         $id = $this->testPostWorkspace();
         $part ='{"part":[
                 {
@@ -60,7 +60,6 @@ class PartTest extends WorkspaceTest
             ],
             "badges":[13,28]}';
 
-        print_r("Sto per spedire la mia parte \n\n");
         $client->request(
           'POST',
           '/api/v1/workspace/'.$id.'/part',
@@ -77,5 +76,88 @@ class PartTest extends WorkspaceTest
         $id=$id->id;
 
         $this->assertTrue(is_numeric($id));
+        return $id;
+    }
+
+    public function testPutWorkspacePart(){
+        $client = $this->createClient();
+        $client = $this->logIn($client);
+
+        $id = $this->testPostWorkspace();
+        $part_id = $this->testPostWorkspacePart();
+        $part ='{
+                "id":'.$part_id.',
+                "part":[
+                {
+                    "type": "image",
+                    "ref": "afaifnanabnawnfawba",
+                    "hash":"'.hash("md5",$id."prova0").'"
+                },
+                {
+                    "type": "image",
+                    "ref": "awfaowapaegbgepng",
+                    "hash":"'.hash("md5",$id."prova1").'"
+                },
+                {
+                    "type": "text",
+                    "ref": "blablablablabla",
+                    "hash":"'.hash("md5",$id."prova2").'"
+                }
+            ],
+            "badges":[13,30]}';
+
+        $client->request(
+          'PUT',
+          '/api/v1/workspace/'.$id.'/part/'.$part_id.'',
+          [],
+          [],
+          ['CONTENT_TYPE' => 'application/json'],
+          $part);
+
+        $response = $client->getResponse();
+        $data = $client->getResponse()->getContent();
+        $id = json_decode($data);
+
+        $res_id=$id->id;
+
+        $this->assertEquals($part_id,$res_id);
+    }
+
+    public function testDeleteWorkspacePart(){
+        print_r("COMINCIO IL TEST DI DELETE");
+        $client = $this->createClient();
+        $client = $this->logIn($client);
+
+        $id = $this->testPostWorkspace();
+        $part_id = $this->testPostWorkspacePart();
+
+        $client->request(
+          'DELETE',
+          '/api/v1/workspace/'.$id.'/part/'.$part_id.'',
+          [],
+          [],
+          [],
+          '');
+
+        $response = $client->getResponse();
+        $this->assertTrue($response->isOk());
+
+        print_r("BOOOM BABY");
+        $crawler = $client->request('GET', '/api/v1/workspace/'.$id);
+
+        print_r($client->getResponse());
+        $data = $client->getResponse()->getContent();
+        print_r("JIAMBALAYA!!!!!!!!!!!!!!!!!!");
+        print_r($data);
+        $js = json_decode($data);
+        $trovato = false;
+        var_dump($js['part']);
+        foreach($js['part'] as $w){
+            if($w->id === $part_id){
+                $trovato=true;
+            }
+        }
+        $this->assertTrue(!$trovato);
+
     }
 }
