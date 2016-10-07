@@ -28,11 +28,11 @@ class BadgeController implements ControllerProviderInterface
         $filter = $request->get('filterBy');
         echo $filter;
 
-        $badge = R::findAll("badge","type = ? AND enable = 1",[$filter]);
+        $badge = R::findAll("badge", "type = ? AND enable = 1", [$filter]);
 
         $res = [];
-        foreach($badge as $b){
-            array_push($res,[
+        foreach ($badge as $b) {
+            array_push($res, [
                 "id"=>$b->id,
                 "name"=>$b->name,
                 "descritpion"=>$b->description,
