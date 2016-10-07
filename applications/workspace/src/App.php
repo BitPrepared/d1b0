@@ -26,8 +26,10 @@ $app['debug'] = true;
 $app['log.level'] = Monolog\Logger::DEBUG; //ERROR in prod
 $app['api.version'] = "v1";
 $app['api.endpoint'] = "/api";
-if (!defined('ROOT_PATH'))
-    define('ROOT_PATH', __DIR__); //solo in dev va bene
+if (!defined('ROOT_PATH')) {
+    define('ROOT_PATH', __DIR__);
+}
+//solo in dev va bene
 // @remember: https://{enviroment}.{domain}/{contextPath}/api/v1
 
 // manca il contesto , FIXME: da pensare le ACL di haproxy come saranno da qui si decide come usare come mountpoint

@@ -2,11 +2,7 @@
 
 namespace Tests;
 
-use JsonSchema\Constraints\Constraint;
-use JsonSchema\SchemaStorage;
-use JsonSchema\Uri\UriResolver;
 use JsonSchema\Validator;
-use Prophecy\Argument;
 
 trait AbstractAppTest
 {
@@ -24,40 +20,43 @@ trait AbstractAppTest
     public function logIn($client)
     {
         $client->request(
-          'POST',
-          '/api/v1/security/login',
-          [],
-          [],
-          ['CONTENT_TYPE' => 'application/json'],
-          '{"authMode":"Email","email":"ugo.ugo@ugo.it","name":"ugo","surname":"ugo","password":"cane"}');
+            'POST',
+            '/api/v1/security/login',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '{"authMode":"Email","email":"ugo.ugo@ugo.it","name":"ugo","surname":"ugo","password":"cane"}');
         return $client;
     }
     public function logIn2($client)
     {
         $client->request(
-          'POST',
-          '/api/v1/security/login',
-          [],
-          [],
-          ['CONTENT_TYPE' => 'application/json'],
-          '{"authMode":"Email","email":"ugo2","name":"ugo2","surname":"ugo2","password":"cane"}');
+            'POST',
+            '/api/v1/security/login',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '{"authMode":"Email","email":"ugo2","name":"ugo2","surname":"ugo2","password":"cane"}');
         return $client;
     }
 
+    /**
+     * @param string $schema
+     */
     public function askValidation($data, $schema)
     {
         $validator = new \JsonSchema\Validator;
-        $js_schema =  (object)['$ref' => 'file://' . $schema];
+        $js_schema = (object)['$ref' => 'file://'.$schema];
         $validator->check(json_decode($data), $js_schema);
         return $validator;
     }
 
-    public function evalValidation($validator){
+    public function evalValidation($validator) {
         $assert = false;
         if ($validator->isValid()) {
             echo "The supplied JSON validates against the schema.\n";
             $assert = true;
-        } else {
+        }else {
             echo "JSON does not validate. Violations:\n";
             foreach ($validator->getErrors() as $error) {
                 echo "[{$error['property']}] {$error['message']}\n";
