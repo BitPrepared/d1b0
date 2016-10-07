@@ -1,7 +1,8 @@
 ---
 
 - name: install haproxy
-  apt: name=liblua5.3-0=5.3.1-1~bpo8+1,haproxy=1.6.9-1~bpo8+1,libssl1.0.0=1.0.2j-1~bpo8+1,hatop
+  apt: name="{{ item }}"
+  with_items: "{{ haproxy_pakage_to_install }}"
 
 - name: Check if iprange is installed.
   stat: "path=/usr/local/bin/iprange"
@@ -16,10 +17,8 @@
 - name: create geoip directory
   file: path=/etc/haproxy/geoip state=directory
 
-- name: setup haproxy
-  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes
-  notify: restart haproxy
-  # http://docs.ansible.com/ansible/haproxy_module.html
+- name: abuser list
+  file: path=/etc/haproxy/abuser.lst state=touch
 
 - name: generate country continent
   shell: for c in `fgrep -v '-' {{ geoip_directory }}/country_continent.csv | grep -v "country" | sort -t',' -k 2` ; do echo $c | awk -F',' '{ print $1 >> $2".continent" }' ; done
@@ -40,3 +39,8 @@
   shell: cut -d, -f1,2,5 "{{ geoip_directory }}/GeoIPCountryWhois.csv" | /usr/local/bin/iprange | sed 's/"//g' | awk -F' ' '{ print $1" "$2 }' > geoip.lst
   args:
     chdir: /etc/haproxy/geoip
+
+- name: setup haproxy
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes
+  notify: restart haproxy
+  # http://docs.ansible.com/ansible/haproxy_module.html

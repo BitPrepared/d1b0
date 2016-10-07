@@ -16,12 +16,14 @@
 #curl -o/dev/null -D - "http://127.0.0.1:8090/style.css" -H "Accept-Encoding: gzip"
 
 
-ssl_cert: /etc/ssl/localcerts/selfsigned.combo.pem
-bind_ip: 10.0.2.15
+haproxy_ssl_cert: /etc/ssl/localcerts/selfsigned.combo.pem
+haproxy_bind_ip: 10.0.2.15
 
-#solo uso interno?
-#bind_stat_ip: 127.0.0.1 - ricordarsi il firewall
-bind_stat_ip: 10.0.2.15
+# occhio al firewall
+haproxy_bind_stat_ip: 10.0.2.15
+
+#DEBUG
+#haproxy_dontlog_normal: false
 
 haproxy:
    default_backend: www-workspace

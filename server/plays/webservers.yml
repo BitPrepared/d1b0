@@ -6,22 +6,16 @@
   roles:
     - { role: geerlingguy.mysql, tags: ["database"] }
     - { role: geerlingguy.redis, tags: ["database"] }
-    - { role: php,               tags: ["internalserver"] }
     - { role: php-jail,          tags: ["internalserver"] }
-
     - { role: php,               tags: ["internalserver"] }
     - { role: nginx,             tags: ["internalserver"] }
     - { role: haproxy,           tags: ["frontend"] }
+
+    - { role: logrotate,         tags: ["logging"] }
+
     - { role: goaccess,          tags: ["monitoring"] }
 
-    # FIXME: php7 NO BUONO!
-    #- { role: geerlingguy.php, tags: ["application"] }
     #- { role: geerlingguy.composer, tags: ["application"] }
-    # - { role: geerlingguy.nginx, tags: ["internalserver"] }
-
-  #  - { role: ansible-role-nginx,        tags: ["nginx"] }
-  #  - { role: ansible-php-fpm,           tags: ["php"] }
-  #  - { role: base,                      tags: ["base"] }
 
   vars:
     param_generico: prova

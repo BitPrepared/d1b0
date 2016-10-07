@@ -1,0 +1,4 @@
+goaccess_report:
+   - name: workspace
+     report_dir: /var/www/workspace.local/report
+     access_log: /var/www/workspace.local/log/access.log

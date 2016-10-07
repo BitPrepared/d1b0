@@ -1,0 +1,38 @@
+# tasks file for rsyslog
+---
+- name: install
+  apt:
+    name: rsyslog
+    state: latest
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: update specific configuration files
+  template:
+    src: etc/rsyslog.d/rsyslog.conf.j2
+    dest: "/etc/rsyslog.d/{{ item.key }}.conf"
+    owner: root
+    group: root
+    mode: 0440
+  with_dict: "{{ rsyslog_rsyslog_d_files }}"
+  when: item.value.state | default('present') == 'present'
+
+- name: remove configurations
+  file:
+    dest: "/etc/rsyslog.d/{{ item.key }}.conf"
+    state: absent
+  with_dict: "{{ rsyslog_rsyslog_d_files }}"
+  when: item.value.state | default('present') == 'absent'
+
+- name: update global configuration file
+  template:
+    src: etc/rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+    validate: "rsyslogd -N1 -f %s"
+    owner: root
+    group: root
+    mode: 0440
+  notify: restart rsyslog
+
+- name: check configuration
+  action: command rsyslogd -N1

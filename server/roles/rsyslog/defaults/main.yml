@@ -1,0 +1,86 @@
+# defaults file for rsyslog
+---
+rsyslog_rsyslog_d_presets_20_ufw:
+  rules:
+    # Log kernel generated UFW log messages to file
+    - rule: ':msg,contains,"[UFW "'
+      logpath: '/var/log/ufw.log'
+
+rsyslog_rsyslog_d_presets_50_default:
+  rules:
+    #
+    # First some standard log files. Log by facility.
+    #
+    - rule: 'auth,authpriv.*'
+      logpath: '/var/log/auth.log'
+    - rule: '*.*;auth,authpriv.none'
+      logpath: '-/var/log/syslog'
+    # - rule: 'cron.*'
+    #   logpath: '/var/log/cron.log'
+    - rule: 'daemon.*'
+      logpath: '-/var/log/daemon.log'
+    - rule: 'kern.*'
+      logpath: '-/var/log/kern.log'
+    # - rule: 'lpr.*'
+    #   logpath: '-/var/log/lpr.log'
+    - rule: 'mail.*'
+      logpath: '-/var/log/mail.log'
+    - rule: 'user.*'
+      logpath: '-/var/log/user.log'
+
+    #
+    # Logging for the mail system. Split it up so that
+    # it is easy to write scripts to parse these files.
+    #
+    - rule: 'mail.info'
+      logpath: '-/var/log/mail.info'
+    - rule: 'mail.warn'
+      logpath: '-/var/log/mail.warn'
+    - rule: 'mail.err'
+      logpath: '/var/log/mail.err'
+
+    #
+    # Logging for INN news system.
+    #
+    - rule: 'news.crit'
+      logpath: '/var/log/news/news.crit'
+    - rule: 'news.err'
+      logpath: '/var/log/news/news.err'
+    - rule: 'news.notice'
+      logpath: '-/var/log/news/news.notice'
+
+    #
+    # Some "catch-all" log files.
+    #
+    - rule: '*.=debug;auth,authpriv.none;news.none;mail.none'
+      logpath: '-/var/log/debug'
+    - rule: '*.=info;*.=notice;*.=warn;auth,authpriv.none;cron,daemon.none;mail,news.none'
+      logpath: '-/var/log/messages'
+
+    #
+    # Emergencies are sent to everybody logged in.
+    #
+    - rule: '*.emerg'
+      logpath: ':omusrmsg:*'
+
+    # The named pipe /dev/xconsole is for the `xconsole' utility.  To use it,
+    # you must invoke `xconsole' with the `-file' option:
+    #
+    #    $ xconsole -file /dev/xconsole [...]
+    #
+    # NOTE: adjust the list below, or you'll go crazy if you have a reasonably
+    #      busy site..
+    #
+    - rule: 'daemon.*;mail.*;news.err;*.=debug;*.=info;*.=notice;*.=warn'
+      logpath: '|/dev/xconsole'
+
+rsyslog_rsyslog_d_presets_postfix:
+  validate: false
+  settings:
+    # Create an additional socket in postfix's chroot in order not to break
+    # mail logging when rsyslog is restarted.  If the directory is missing,
+    # rsyslog will silently skip creating the socket.
+    - '$AddUnixListenSocket /var/spool/postfix/dev/log'
+
+rsyslog_rsyslog_d_files:
+  50-default: "{{ rsyslog_rsyslog_d_presets_50_default }}"

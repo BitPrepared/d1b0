@@ -25,6 +25,19 @@
   tags:
     - config
 
+- name: prepare report dir
+  file: path="{{ item.report_dir }}" state=directory recurse=yes owner=www-data group=www-data
+  with_items: "{{ goaccess_report }}"
+
+- name: create report
+  cron:
+    name: "goaccess-{{ item.name }}"
+    minute: 0
+    user: "www-data"
+    job: "cat {{ item.access_log }} | goaccess --no-progress -a > {{ item.report_dir }}/report-today.html"
+    cron_file: "ansible_goaccess_{{ item.name }}"
+  with_items: "{{ goaccess_report }}"
+
 # - cron: name="goaccess" minute=5 hour=0
 #         user="root" job="zcat -f /var/log/nginx/access.log* | goaccess --no-progress -a > /var/www/report.html"
 #         cron_file=ansible_goaccess

@@ -4,34 +4,13 @@
 
   vars:
     date: "{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"
+    shortdate: "{{ lookup('pipe', 'date +%Y%m%d') }}"
 
-  tasks:
-    # SE USI SELINUX
-    # - shell: check-selinux-installation
-
-  roles:
-    - { role: tersmitten.sudoers, tags: ["base"] }
-    - { role: locale, tags: ["base"] }
-    - { role: ansible-hostname, tags: ["base"] }
-
-    #- { role: ansible-no-apparmor, tags: ["hardening"] }
-
-    - { role: apparmor, tags: ["hardening"] }
-    - { role: dev-sec.os-hardening, tags: ["hardening"] }
-    - { role: dev-sec.ssh-hardening, tags: ["hardening"] }
-    - { role: fail2ban, tags: ["hardening"] }
-
-    - { role: base, tags: ["comodity"] }
-
-    # DEVE ESSERE L'ULTIMO!
-    - { role: linux-security-check, tags: ["hardening"] }
+- include: plays/init.yml
 
 - include: plays/webservers.yml
 
-- include: plays/cleanCompiler.yml
+- include: plays/end.yml
 
 # post_tasks:
 # notifica a qualcuno?
-
-# PER STUDIO
-# - { role: ANXS.openssh, tags: ["base"] }

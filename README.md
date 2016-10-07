@@ -86,6 +86,8 @@ Also, consult the securitylinks.txt file for more information.
 
 [ ] https://github.com/sovereign/sovereign
 
+[ ] http://petrovs.info/2015/12/27/My-way-to-auto-update-Lets-Encrypt/ 
+
 ## COMANDI
 
   * **npm run init**: Prepara l'ambiente per sviluppo, (clean,install)

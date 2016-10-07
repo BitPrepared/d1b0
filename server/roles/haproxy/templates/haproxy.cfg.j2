@@ -2,9 +2,13 @@ global
 	#log /dev/log	local0 debug
 
   # log <address> [len <length>] [format <format>] <facility> [max level [min level]]
-  # /dev/log server per rsyslod - facility local0
-  #log /dev/log local0 debug
-  log /dev/log local0 info
+  # /dev/log server per rsyslod - facility: local0|local1 - log level : debug|info|notice
+
+  #ACCESSLOG
+  log /dev/log local0
+
+  # OTHER LOG
+  log /dev/log local1 notice
 
 	chroot /var/lib/haproxy
 
@@ -35,9 +39,11 @@ defaults
 
   # better for proxy http
   option httplog
+  {% if haproxy_dontlog_normal %}
 
-  # Successful connections will not be logged
+  # Successful connections will not be logged => non viene creato haproxy-access.log (configurato su rsyslog)
   option dontlog-normal
+  {% endif %}
 
   option dontlognull
 
@@ -77,7 +83,7 @@ defaults
 
 
 listen stats
-	bind {{bind_stat_ip}}:1936
+	bind {{haproxy_bind_stat_ip}}:1936
 	mode http
 	stats enable
 	stats refresh 30s
@@ -88,11 +94,11 @@ listen stats
 	stats auth user:pass
 
 frontend www-http
-   bind {{bind_ip}}:80
+   bind {{haproxy_bind_ip}}:80
    redirect scheme https code 301 if !{ ssl_fc }
 
 frontend www-https
-  bind {{bind_ip}}:443 ssl crt {{ ssl_cert }}
+  bind {{haproxy_bind_ip}}:443 ssl crt {{ haproxy_ssl_cert }}
 
   # stick-table type {ip | integer | string [len <length>] | binary [len <length>]}
   #          size <size> [expire <expire>] [nopurge] [peers <peersect>]

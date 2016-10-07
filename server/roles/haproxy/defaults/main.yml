@@ -1,0 +1,15 @@
+# 365 giorni (quanto dura il certificato!)
+max_age_hsts: 31536000
+
+# non serve loggare quando va tutto bene
+haproxy_dontlog_normal: true
+
+# FIXME: da sistemare l'url!
+ocsp_report_uri: https://miodominio.com/csp-report.php
+
+haproxy_version: 1.6.9-2~bpo8+1
+haproxy_pakage_to_install:
+ - "haproxy={{ haproxy_version }}"
+ - liblua5.3-0=5.3.1-1~bpo8+1
+ - libssl1.0.0=1.0.2j-1~bpo8+1
+ - hatop

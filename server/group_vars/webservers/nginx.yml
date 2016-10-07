@@ -10,15 +10,6 @@
 #  - use epoll
 #  - multi_accept on
 #
-# # A list of hashs that define the servers for nginx,
-# # as with http parameters. Any valid server parameters
-# # can be defined here.
-# nginx_sites:
-#  default:
-#       - listen 8080
-#       - server_name _
-#       - root "/usr/share/nginx/html"
-#       - index index.html
 #
 # # A list of hashs that define additional configuration
 # nginx_configs:
@@ -28,6 +19,7 @@
 
 nginx_remove_default_vhost: true
 
+# IMPEDISCO DI LOGGARE I 200/300 (caso auth non servono)
 nginx_extra_login_options: |
   map $status $loggable {
       ~^[23]  0;

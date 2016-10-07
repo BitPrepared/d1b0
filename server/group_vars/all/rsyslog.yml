@@ -1,0 +1,35 @@
+rsyslog_repeated_msg_reduction: true
+rsyslog_file_owner: root
+rsyslog_file_group: adm
+rsyslog_file_create_mode: '0640'
+rsyslog_dir_create_mode: '0755'
+rsyslog_umask: '0022'
+rsyslog_priv_drop_to_user: root
+rsyslog_priv_drop_to_group: root
+
+rsyslog_rsyslog_d_files:
+   50-default: "{{ rsyslog_rsyslog_d_presets_50_default }}"
+   20-ufw:
+     rules:
+       - rule: ':msg,contains,"[UFW "'
+         logpath: '/var/log/ufw.log'
+   49-haproxy:
+     settings:
+       # Create an additional socket in haproxy's chroot in order to allow logging via
+       # /dev/log to chroot'ed HAProxy processes
+       - '$AddUnixListenSocket /var/lib/haproxy/dev/log'
+     rules:
+       # Send HAProxy messages to a dedicated logfile
+       # local2.=info     /var/log/haproxy-access.log    #For Access Log
+       # local2.notice    /var/log/haproxy-info.log      #For Service Info - Backend, loadbalancer
+       # severity 6 => INFO, 5 => NOTICE, 7 => DEBUG
+       # acces log creato solo se si rimuove option dontlog-normal da haproxy
+       - rule: 'if ($programname startswith "haproxy" and $syslogfacility-text == "local0" and $syslogseverity > 5) then'
+         logpath: '/var/log/haproxy-access.log'
+       - rule: 'if ($programname startswith "haproxy" and $syslogfacility-text == "local0" and $syslogseverity < 5 ) then'
+         logpath: '/var/log/haproxy-error.log'
+       - rule: 'if ($programname startswith "haproxy" and $syslogfacility-text == "local1" and $syslogseverity == 5) then'
+         logpath: '/var/log/haproxy.log'
+     directives:
+       - '&~'
+   #postfix: "{{ rsyslog_rsyslog_d_presets_postfix }}"

@@ -1,0 +1,21 @@
+- hosts: all
+
+  tasks:
+    # SE USI SELINUX
+    # - shell: check-selinux-installation
+
+  roles:
+    - { role: tersmitten.sudoers,     tags: ["base"] }
+    - { role: locale,                 tags: ["base"] }
+    - { role: ansible-hostname,       tags: ["base"] }
+    - { role: rsyslog,                tags: ["base"] }
+    - { role: sysctl,                 tags: ["base"] }
+
+    #- { role: ansible-no-apparmor, tags: ["hardening"] }
+
+    - { role: apparmor,               tags: ["hardening"] }
+    - { role: dev-sec.os-hardening,   tags: ["hardening"] }
+    - { role: dev-sec.ssh-hardening,  tags: ["hardening"] }
+    - { role: fail2ban,               tags: ["hardening"] }
+
+    - { role: base,                   tags: ["comodity"] }

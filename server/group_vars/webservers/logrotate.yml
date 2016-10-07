@@ -1,0 +1,30 @@
+# http://www.linuxcommand.org/man_pages/logrotate8.html
+logrotate_scripts:
+   - name: nginx
+     path: /var/log/nginx/*.log
+     options:
+       - daily
+       - rotate 365
+       - missingok
+       - compress
+       - delaycompress
+       - copytruncate
+       - dateext
+       - dateformat .%Y-%m-%d
+       - maxage 365
+     scripts:
+       postrotate: "[ -s /run/nginx.pid ] && kill -USR1 `cat /run/nginx.pid`"
+   - name: haproxy
+     path: /var/log/haproxy*.log
+     options:
+       - daily
+       - rotate 365
+       - missingok
+       - compress
+       - delaycompress
+       - copytruncate
+       - dateext
+       - dateformat .%Y-%m-%d
+       - maxage 365
+     scripts:
+       postrotate: "invoke-rc.d rsyslog rotate >/dev/null 2>&1 || true"

@@ -14,21 +14,13 @@
   version: "3.1.0"
   name: dev-sec.ssh-hardening
 
-- src: git+https://github.com/Oefenweb/ansible-apparmor.git
-  version: "v1.0.1"
-  name: ansible-no-apparmor
+# - src: git+https://github.com/Oefenweb/ansible-apparmor.git
+#   version: "v1.0.1"
+#   name: ansible-no-apparmor
 
 - src: git+https://github.com/geerlingguy/ansible-role-mysql.git
   version: "2.3.2"
   name: geerlingguy.mysql
-
-- src: git+https://github.com/Servers-for-Hackers/ansible-php-fpm.git
-  version: master
-  name: ansible-php-fpm
-
-- src: git+https://github.com/geerlingguy/ansible-role-nginx.git
-  version: "1.9.4"
-  name: geerlingguy.nginx
 
 - src: git+https://github.com/geerlingguy/ansible-role-redis.git
   version: "1.3.0"
@@ -43,14 +35,26 @@
   name: geerlingguy.letsencrypt
 
 # da rimuovere
-- src: git+https://github.com/jdauphant/ansible-role-nginx.git
-  version: "v2.3.1"
-  name: ansible-role-nginx
+# - src: git+https://github.com/Servers-for-Hackers/ansible-php-fpm.git
+#   version: master
+#   name: ansible-php-fpm
+#
+# - src: git+https://github.com/geerlingguy/ansible-role-nginx.git
+#   version: "1.9.4"
+#   name: geerlingguy.nginx
 
-- src: git+https://github.com/ANXS/openssh.git
-  version: "v1.0.1"
-  name: ANXS.openssh
+# - src: git+https://github.com/jdauphant/ansible-role-nginx.git
+#   version: "v2.3.1"
+#   name: ansible-role-nginx
 
-- src: git+https://github.com/geerlingguy/ansible-role-php.git
-  version: "3.2.2"
-  name: geerlingguy.php
+# - src: git+https://github.com/ANXS/openssh.git
+#   version: "v1.0.1"
+#   name: ANXS.openssh
+
+# - src: git+https://github.com/geerlingguy/ansible-role-php.git
+#   version: "3.2.2"
+#   name: geerlingguy.php
+
+# - src: https://github.com/Oefenweb/ansible-rsyslog.git
+#   version: "v3.0.1"
+#   name: oefenweb.rsyslog
