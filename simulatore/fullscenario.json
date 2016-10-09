@@ -16,7 +16,7 @@
         "rejectUnauthorized": false
       },
       "phases": [
-        {"duration": 60, "arrivalRate": 2, "rampTo": 4, "name": "Warm-up - one every 30 seconds on average to 15 seconds on average" }
+        {"duration": 60, "arrivalRate": 2, "rampTo": 4, "name": "Warm-up - one every 30 seconds on average to 15 seconds on average" },
         {"pause": 1},
         {"duration": 60, "arrivalCount": 5, "name": "High load phase - one every 12 seconds on average" },
         {"pause": 1},
