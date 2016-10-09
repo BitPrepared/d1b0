@@ -6,7 +6,7 @@
   roles:
     - { role: geerlingguy.mysql, tags: ["database"] }
     - { role: geerlingguy.redis, tags: ["database"] }
-    - { role: php-jail,          tags: ["internalserver"] }
+    # - { role: php-jail,          tags: ["internalserver"] }
     - { role: php,               tags: ["internalserver"] }
     - { role: nginx,             tags: ["internalserver"] }
     - { role: haproxy,           tags: ["frontend"] }
@@ -16,6 +16,3 @@
     - { role: goaccess,          tags: ["monitoring"] }
 
     #- { role: geerlingguy.composer, tags: ["application"] }
-
-  vars:
-    param_generico: prova

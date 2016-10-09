@@ -4,6 +4,8 @@
   apt: name="{{ item }}"
   with_items: "{{ haproxy_pakage_to_install }}"
 
+# - apt: name=nginx state=latest default_release=squeeze-backports update_cache=yes
+
 - name: Check if iprange is installed.
   stat: "path=/usr/local/bin/iprange"
   register: iprange

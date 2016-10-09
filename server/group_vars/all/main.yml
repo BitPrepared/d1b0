@@ -45,7 +45,8 @@ base_scripts:
   - apt-check-security.sh
 
 application_environment: production
-
+report_dir: ../report
+live_check: false
 
 #admin_email: ???
 #cron_mail_to: root@localhost

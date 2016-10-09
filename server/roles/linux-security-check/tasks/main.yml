@@ -34,9 +34,6 @@
   command: rkhunter --propupd
   changed_when: False
 
-- name: rkhunter | Check
-  command: rkhunter -c --enable all --skip-keypress --rwo
-
 - name: add cron rkhunter
   cron: name="Run Rkhunter" hour="{{ 3|random}}" minute="{{ 59 |random}}" job="{{ rkhunter_cron }}" state=present
   changed_when: False
@@ -45,7 +42,8 @@
   cronvar: name="EMAIL" value="{{cron_mail_to}}"
 
 - name: create report dir
-  local_action: file path="report/{{ inventory_hostname }}/" state=directory
+  local_action: file path="{{ report_dir }}/{{ inventory_hostname }}/" state=directory
+  become: no
 
 - name: Copy original lsatmd5.out [{{use_md5_database}}]
   copy: src=lsatmd5.out dest=/root/lsatmd5.out
@@ -60,7 +58,7 @@
   when: lsatmd5_check.stat.exists and use_lsat == True
 
 - name: copy lsat diff
-  fetch: src=/root/lsatmd5.diff dest="report/{{ inventory_hostname }}/lsatmd5-{{date}}.diff" flat=yes
+  fetch: src=/root/lsatmd5.diff dest="{{ report_dir }}/{{ inventory_hostname }}/lsatmd5-{{date}}.diff" flat=yes
   when: use_lsat == True
 
 - name: lsat generate md5
@@ -68,11 +66,11 @@
   when: not lsatmd5_check.stat.exists and use_lsat == True
 
 - name: copy lsat report
-  fetch: src=/root/report-lsat.html dest="report/{{ inventory_hostname }}/report-{{date}}-lsat.html" flat=yes
+  fetch: src=/root/report-lsat.html dest="{{ report_dir }}/{{ inventory_hostname }}/report-{{date}}-lsat.html" flat=yes
   when: use_lsat == True
 
 - name: copy lsat md5 database
-  fetch: src=/root/lsatmd5.out dest="report/{{ inventory_hostname }}/lsatmd5-{{date}}.out" flat=yes
+  fetch: src=/root/lsatmd5.out dest="{{ report_dir }}/{{ inventory_hostname }}/lsatmd5-{{date}}.out" flat=yes
   when: use_lsat == True
 
 - name: clean lsat md5 report
@@ -94,12 +92,15 @@
   register: files_to_copy
 
 - name: copy tiger report
-  fetch: src=/var/log/tiger/{{ item }} dest="report/{{ inventory_hostname }}/{{ item }}" flat=yes
+  fetch: src=/var/log/tiger/{{ item }} dest="{{ report_dir }}/{{ inventory_hostname }}/{{ item }}" flat=yes
   with_items: "{{files_to_copy.stdout_lines}}"
 
 - name: clean tiger report
   file: path=/var/log/tiger/{{ item }} state=absent
   with_items: "{{files_to_copy.stdout_lines}}"
+
+- include: live_check.yml
+  when: live_check == True
 
 # - name: copy local lsatmd5.out to remote if exists
 #   local_action: stat path="files/lsatmd5.out"

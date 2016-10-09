@@ -45,7 +45,7 @@ defaults
   option dontlog-normal
   {% endif %}
 
-  option dontlognull
+  #option dontlognull
 
   # Added to create separate error and access logs
 	option log-separate-errors
@@ -175,6 +175,9 @@ frontend www-https
 
   # detect del coutry di provenienza
   http-request set-header X-Country %[src,map_ip(/etc/haproxy/geoip/geoip.lst)]
+
+  # posso anche monitorare determinate situazioni aggiungendo determinati header 
+  #http-request add-header X-Haproxy-Abuse %ci if connabuse
 
 	reqadd X-Forwarded-Proto:\ https
 

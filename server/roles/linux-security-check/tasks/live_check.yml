@@ -1,0 +1,3 @@
+
+- name: rkhunter | Check
+  command: rkhunter -c --enable all --skip-keypress --rwo

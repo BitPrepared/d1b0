@@ -16,6 +16,6 @@
     - { role: apparmor,               tags: ["hardening"] }
     - { role: dev-sec.os-hardening,   tags: ["hardening"] }
     - { role: dev-sec.ssh-hardening,  tags: ["hardening"] }
-    - { role: fail2ban,               tags: ["hardening"] }
+    # - { role: fail2ban,               tags: ["hardening"] }
 
     - { role: base,                   tags: ["comodity"] }

@@ -1,3 +1,14 @@
-- name: install compile application
+- name: "install compile application"
   apt: name={{item}} update_cache=yes cache_valid_time=3600 state="{{ compiler_mode }}"
   with_items: "{{ compiler_packages }}"
+  when: compiler_mode == 'present'
+
+- name: "remove compile application"
+  action: command apt remove "{{ item }}"
+  with_items: "{{ compiler_packages }}"
+  when: compiler_mode == 'absent'
+
+# register: apt_output
+# apt: name={{item}} update_cache=yes cache_valid_time=3600 state="{{ compiler_mode }}"
+# - name: stdout of previous command
+#   debug: msg="{{ apt_output }}"
