@@ -57,7 +57,7 @@
     "ssh:developer": "ssh -p 2222 developer@127.0.0.1 -i server/plays/ssh/developer.key",
     "ssh:root": "ssh -p 2222 root@127.0.0.1 -i server/plays/ssh/root.key",
     "start": "cd server && vagrant up",
-    "test": "parallelshell 'test:workspace' 'test:upload'",
+    "test": "parallelshell 'npm run test:workspace' 'npm run test:upload'",
     "test:upload": "echo upload",
     "test:workspace": "cd applications/workspace/ ; ./vendor/phpunit/phpunit/phpunit",
     "test:carico": "artillery run simulatore/fullscenario.json -e $npm_package_config_enviroment -o report_carico.json ; artillery report report_carico.json  -o carico.html ; rimraf report_carico.json",
