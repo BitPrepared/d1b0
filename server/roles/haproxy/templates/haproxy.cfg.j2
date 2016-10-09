@@ -12,7 +12,8 @@ global
 
 	chroot /var/lib/haproxy
 
-	maxconn 2048
+	maxconn {{ haproxy_max_connection }}
+
 	tune.ssl.default-dh-param 2048
 	user haproxy
 	group haproxy
@@ -27,6 +28,10 @@ global
 	#  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
 	ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
 	ssl-default-bind-options no-sslv3 no-tlsv10 no-tls-tickets force-tlsv12
+
+  # statistiche
+  stats socket /var/run/haproxy.sock mode 600 level admin
+  stats timeout 2m #Wait up to 2 minutes for input
 
 defaults
 	log	global
@@ -82,16 +87,16 @@ defaults
 	errorfile 504 /etc/haproxy/errors/504.http
 
 
-listen stats
-	bind {{haproxy_bind_stat_ip}}:1936
-	mode http
-	stats enable
-	stats refresh 30s
-	stats hide-version
-	stats scope .
-	stats realm Haproxy\ Statistics
-	stats uri /
-	stats auth user:pass
+#listen stats
+#	bind {{haproxy_bind_stat_ip}}:1936
+#	mode http
+#	stats enable
+#	stats refresh 30s
+#	stats hide-version
+#	stats scope .
+#	stats realm Haproxy\ Statistics
+#	stats uri /
+#	stats auth user:pass
 
 frontend www-http
    bind {{haproxy_bind_ip}}:80
@@ -176,7 +181,7 @@ frontend www-https
   # detect del coutry di provenienza
   http-request set-header X-Country %[src,map_ip(/etc/haproxy/geoip/geoip.lst)]
 
-  # posso anche monitorare determinate situazioni aggiungendo determinati header 
+  # posso anche monitorare determinate situazioni aggiungendo determinati header
   #http-request add-header X-Haproxy-Abuse %ci if connabuse
 
 	reqadd X-Forwarded-Proto:\ https

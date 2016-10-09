@@ -4,6 +4,8 @@ max_age_hsts: 31536000
 # non serve loggare quando va tutto bene
 haproxy_dontlog_normal: true
 
+haproxy_max_connection: 1024
+
 # FIXME: da sistemare l'url!
 ocsp_report_uri: https://miodominio.com/csp-report.php
 

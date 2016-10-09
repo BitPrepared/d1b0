@@ -8,6 +8,7 @@
 *.retry
 npm-debug.log*
 vagrant.retry
+artillery_report_*
 
 # directory
 node_modules

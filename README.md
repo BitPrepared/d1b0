@@ -86,7 +86,9 @@ Also, consult the securitylinks.txt file for more information.
 
 [ ] https://github.com/sovereign/sovereign
 
-[ ] http://petrovs.info/2015/12/27/My-way-to-auto-update-Lets-Encrypt/ 
+[ ] http://petrovs.info/2015/12/27/My-way-to-auto-update-Lets-Encrypt/
+
+[ ] artillery enviroment configuration dev/stage
 
 ## COMANDI
 

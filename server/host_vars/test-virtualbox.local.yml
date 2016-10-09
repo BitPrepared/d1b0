@@ -32,3 +32,6 @@ service_list:
 # vagrant internal ip
 fail2ban_ignoreip:
   - 10.0.2.2
+
+
+haproxy_max_connection: 5
