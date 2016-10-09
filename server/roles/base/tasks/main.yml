@@ -58,13 +58,17 @@
 
 - name: install base application
   apt: name={{item}} update_cache=yes cache_valid_time=3600
-  with_items: "{{base_application}}"
+  with_items: "{{ base_application }}"
+
+- name: install base ssl package
+  apt: name={{item}} update_cache=yes cache_valid_time=3600
+  with_items: "{{ base_ssl_package }}"
 
 - name: Set up vnstat config file
   template: src=vnstat.conf.j2 dest=/etc/vnstat.conf mode=0755 owner=root group=root backup=yes
   notify: restart vnstat
 - name: Ininitalize vnstat
-  command: vnstat -u -i {{interface}}
+  command: vnstat -u -i {{i nterface }}
 
 # UTENZE e PERMESSI
 
