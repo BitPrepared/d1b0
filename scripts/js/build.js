@@ -19,7 +19,7 @@ program
 
     if ( enviroment === 'dev' ){
 
-      var vagrantId = shell.exec("vagrant global-status | grep d1b0server | awk '{ print $1}'", {silent:true});
+      vagrantId = shell.exec("vagrant global-status | grep d1b0server | awk '{ print $1}'", {silent:true});
 
       var vagrantCode;
       if ( vagrantId.code !== 0 ){
@@ -39,7 +39,7 @@ program
 
         shell.cd('server/');
 
-        var upVagrant = shell.exec("vagrant up", {silent:true});
+        upVagrant = shell.exec("vagrant up", {silent:true});
         if ( upVagrant.code !== 0 ){
           //ERRORE
           process.stderr.write(chalk.red("Errore: "+upVagrant.stderr+ " - "+upVagrant.output));
@@ -49,7 +49,7 @@ program
         process.stdout.write("Vagrant server UP.\n");
 
         shell.echo('Install Server Required Package and Config');
-        var ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml');
+        ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml');
         if ( ansibleProc.code !== 0 ){
           //ERRORE
           process.stderr.write(chalk.red("Errore ... "));
@@ -67,7 +67,7 @@ program
 
         shell.cd('server/');
 
-        var upVagrant = shell.exec("vagrant up", {silent:true});
+        upVagrant = shell.exec("vagrant up", {silent:true});
         if ( upVagrant.code !== 0 ){
           //ERRORE
           process.stderr.write(chalk.red("Errore: "+upVagrant.stderr+ " - "+upVagrant.output));
@@ -82,7 +82,7 @@ program
     } else {
 
         shell.echo('Install Server Required Package and Config');
-        var ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent:true});
+        ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent:true});
         if ( ansibleProc.code !== 0 ){
           //ERRORE
           process.stderr.write(chalk.red("Errore ... "));

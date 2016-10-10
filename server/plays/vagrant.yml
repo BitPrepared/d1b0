@@ -5,7 +5,7 @@
   #became: true
   tasks:
     - authorized_key: user=root key="{{ lookup('file', './ssh/root.key.pub') }}" exclusive=yes
-    - user: name=developer shell=/bin/bash groups=users append=yes createhome=yes
+    - user: name=developer shell=/bin/bash groups="users,www-data" append=yes createhome=yes
     - authorized_key: user=developer key="{{ lookup('file', './ssh/developer.key.pub') }}" exclusive=yes
     - name: Allow 'developer' to have passwordless sudo
       lineinfile:

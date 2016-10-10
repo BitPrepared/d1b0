@@ -35,12 +35,12 @@
 
 # Vhost directory
 - name: Exist vhost log directory
-  file: path="{{item.directory_log}}" state=directory recurse=yes owner="{{nginx_user}}" group="{{nginx_group}}"
+  file: path="{{item.directory_log}}" state=directory recurse=yes owner="{{ item.user | default(nginx_user) }}" group="{{nginx_group}}" mode=0775
   when: nginx_vhosts|length > 0
   with_items: "{{ nginx_vhosts }}"
 
 - name: Exist vhost root directory
-  file: path="{{item.root}}" state=directory recurse=yes owner="{{nginx_user}}" group="{{nginx_group}}"
+  file: path="{{item.root}}" state=directory recurse=yes owner="{{ item.user | default(nginx_user) }}" group="{{nginx_group}}" mode=0775
   when: nginx_vhosts|length > 0
   with_items: "{{ nginx_vhosts }}"
 

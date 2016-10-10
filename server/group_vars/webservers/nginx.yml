@@ -31,11 +31,13 @@ nginx_fast_cgi_signature: false
 nginx_extra_http_options: |
   proxy_buffering    off;
 
+
 nginx_vhosts:
   - listen: "9081 default_server"
     server_name: "workspace.local"
     root: "/var/www/workspace.local/public"
     index: "index.php index.html index.htm"
+    user: developer
     #error_page: ""
     directory_log: "/var/www/workspace.local/log"
     access_log: "access.log combined"
@@ -56,6 +58,7 @@ nginx_vhosts:
     server_name: "auth.local"
     root: "/var/www/auth.local/public"
     index: "index.php index.html index.htm"
+    user: developer
     #error_page: ""
     directory_log: "/var/www/auth.local/log"
     access_log: "access.log combined if=$loggable"
