@@ -106,11 +106,11 @@ class UserController implements ControllerProviderInterface
                 $user->updatetime = date('Y-m-d G:i:s');
                 $id = R::store($user);
                 $res = (object)["id" => $id];
-            } catch (Exception $e) {
+            }catch (Exception $e) {
                 echo $e;
             }
 
-        } else {
+        }else {
 
         }
 
