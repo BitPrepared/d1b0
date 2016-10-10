@@ -11,6 +11,7 @@ vagrant.retry
 artillery_report_*
 
 # directory
+dist
 node_modules
 applications/assets/
 .vagrant

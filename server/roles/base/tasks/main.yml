@@ -68,7 +68,7 @@
   template: src=vnstat.conf.j2 dest=/etc/vnstat.conf mode=0755 owner=root group=root backup=yes
   notify: restart vnstat
 - name: Ininitalize vnstat
-  command: vnstat -u -i {{i nterface }}
+  command: vnstat -u -i {{ interface }}
 
 # UTENZE e PERMESSI
 

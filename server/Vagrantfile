@@ -26,16 +26,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # WORKS
   # config.vm.box_version = "= 8.4.0"
 
-  config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh"
-  config.vm.network "forwarded_port", guest: 80, host: 8080, id: "http"
-  config.vm.network "forwarded_port", guest: 443, host: 8443, id: "https"
-  config.vm.network "forwarded_port", guest: 9090, host: 9090, id: "http-php-jail"
-  config.vm.network "forwarded_port", guest: 9081, host: 9081, id: "http-workspace"
-  config.vm.network "forwarded_port", guest: 9082, host: 9082, id: "http-auth"
+  # VAGRANT SSH LIMIT
+  config.vm.network "forwarded_port", guest: 22,    host: 2222,   id: "ssh"
+  # REAL
+  config.vm.network "forwarded_port", guest: 80,    host: 8080,   id: "http"
+  config.vm.network "forwarded_port", guest: 443,   host: 8443,   id: "https"
+  # DEBUG
+  config.vm.network "forwarded_port", guest: 9090,  host: 9090,   id: "http-php-jail"
+  config.vm.network "forwarded_port", guest: 9081,  host: 9081,   id: "http-workspace"
+  config.vm.network "forwarded_port", guest: 9082,  host: 9082,   id: "http-auth"
+  config.vm.network "forwarded_port", guest: 3000,  host: 9000,   id: "ntop"
 
   config.vm.provider "virtualbox" do |v|
     #v.memory = 1024
     v.cpus = 2
+    # nome vm
+    v.name = "d1b0server"
+  end
+
+  config.vm.define "d1b0server" do |d1b0server|
   end
 
   # Disable automatic box update checking. If you disable this, then

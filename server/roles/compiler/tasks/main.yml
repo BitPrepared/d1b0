@@ -4,7 +4,7 @@
   when: compiler_mode == 'present'
 
 - name: "remove compile application"
-  action: command apt remove "{{ item }}"
+  action: command apt remove "{{ item }}" -y
   with_items: "{{ compiler_packages }}"
   when: compiler_mode == 'absent'
 
