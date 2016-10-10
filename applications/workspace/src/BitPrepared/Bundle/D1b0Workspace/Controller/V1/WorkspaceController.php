@@ -277,7 +277,7 @@ class WorkspaceController implements ControllerProviderInterface
                 $headers = [];
                 $response = JsonResponse::create(["id"=>$wp_id], 200, $headers)->setSharedMaxAge(300);
 
-            } else{
+            }else {
                 $headers = [];
                 $response = JsonResponse::create(["message"=>"Key no more valid"], 498, $headers)->setSharedMaxAge(300);
             }
@@ -350,20 +350,20 @@ class WorkspaceController implements ControllerProviderInterface
             "partecipants"=>[]
         ];
 
-        foreach($badges as $b){
-            array_push($res['badges'],$b->id);
+        foreach ($badges as $b) {
+            array_push($res['badges'], $b->id);
         }
-        foreach($resource as $r){
-            array_push($res['part'],[
+        foreach ($resource as $r) {
+            array_push($res['part'], [
                 "type"=>$r->type,
                 "hash"=>$r->hash,
                 "ref"=>$r->ref
             ]);
 
         }
-        foreach($partecipants as $p){
-            array_push($res['partecipants'],$p->user);//TODO forse va usato l'id del c'ero e non l'id dell'utente
-            if($user_id == $r['id']) {
+        foreach ($partecipants as $p) {
+            array_push($res['partecipants'], $p->user); //TODO forse va usato l'id del c'ero e non l'id dell'utente
+            if ($user_id == $r['id']) {
                             $checked = true;
             }
         }
@@ -415,8 +415,10 @@ class WorkspaceController implements ControllerProviderInterface
                 $resource->totalpoint = 0;
             $resource_id = R::store($resource);
             $rem_id = $this->getPositionInArray($delete_res, $resource_id);
-            if ($rem_id != 0)
-                array_splice($delete_res, $rem_id, 1); //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
+            if ($rem_id != 0) {
+                            array_splice($delete_res, $rem_id, 1);
+            }
+            //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
         }
 
         foreach ($delete_res as $d) {
@@ -434,8 +436,10 @@ class WorkspaceController implements ControllerProviderInterface
                 $pb->part = $part_id;
             $tmp = R::store($pb);
             $rem_id = $this->getPositionInArray($delete_badge, $tmp);
-            if ($rem_id != 0)
-                array_splice($delete_badge, $rem_id, 1); //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
+            if ($rem_id != 0) {
+                            array_splice($delete_badge, $rem_id, 1);
+            }
+            //RIMUOVO GLI ELEMENTI CHE HO MODIFICATO
         }
 
         foreach ($delete_badge as $d) {
@@ -472,13 +476,13 @@ class WorkspaceController implements ControllerProviderInterface
         $response->setSharedMaxAge(300);
     }
 
-    private function getPoint($badge_id,$badges){
-        foreach($badges as $b){
-            if($b->id === $badge_id){
-                if($b->completed === True){
+    private function getPoint($badge_id, $badges) {
+        foreach ($badges as $b) {
+            if ($b->id === $badge_id) {
+                if ($b->completed === True) {
                     echo "CASO 1;<BR />";
                     return $this->POINT_FOR_USING_A_CONQUERED_BADGE;
-                } else{
+                }else {
                     echo "CASO 2;<BR />";
                     return $this->POINT_FOR_USING_A_BADGE;
                 }
