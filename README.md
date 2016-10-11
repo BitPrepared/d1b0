@@ -50,6 +50,20 @@ Distribuzione
 
   * **npm run dist**: Prepara l'ambiente per un rilascio
 
+Setup setting override
+
+  * **npm config set PARAM VALUE**: setto l'enviroment
+
+
+## SETUP staging
+
+```
+npm config set impresa-luna:enviroment staging
+npm config set impresa-luna:database_host localhost
+npm config set impresa-luna:database_dbname workspace
+npm config set impresa-luna:database_username workspaceUser
+npm config set impresa-luna:database_password workspacePassword
+```
 
 ## TEMPISTICA CREAZIONE SERVER
 

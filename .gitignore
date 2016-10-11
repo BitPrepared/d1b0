@@ -1,5 +1,4 @@
 # files
-.DS_Store
 *.pub
 *.key
 *.crt
@@ -7,8 +6,12 @@
 *.log
 *.retry
 npm-debug.log*
-vagrant.retry
 artillery_report_*
+
+# files exact match
+.DS_Store
+applications/workspace/config.php
+vagrant.retry
 
 # directory
 dist

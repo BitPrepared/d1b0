@@ -30,7 +30,7 @@ ssh.connect({
               ssh: true,
               privateKey: './server/plays/ssh/developer.key',
               port: 2222,
-              exclude: [ 'test', '.DS_Store', 'phpunit.xml', 'README.md', 'vendor' ],
+              exclude: [ 'test', '.DS_Store', 'phpunit.xml', 'README.md', 'vendor', 'config.php.dist' ],
               recursive: true,
               deleteAll: false //senno elimina log!
           },function (error,stdout,stderr,cmd) {

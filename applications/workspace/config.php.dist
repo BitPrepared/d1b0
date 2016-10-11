@@ -1,16 +1,16 @@
 <?php
     return [
         'database'=>[
-            'host'=>'',
-            'dbname'=>'',
-            'username'=>'',
-            'password'=>'',
-            'type'=>'mysql'
+            'host' => ##HOST##,
+            'dbname' => '##DBNAME##',
+            'username' => '##USERNAME##',
+            'password' => '##PASSWORD##',
+            'type' => '##TYPE##'
         ],
         'logs'=>[
-            'monolog.logfile' => ROOT_PATH.'/storage/logs/development_'.Carbon::now('Europe/Rome')->format('Y-m-d').'.log',
-            'monolog.level' => Monolog\Logger::DEBUG,
+            'monolog.logfile' => ROOT_PATH.'/storage/logs/development_'.\Carbon\Carbon::now('Europe/Rome')->format('Y-m-d').'.log',
+            'monolog.level' => ##LOGLEVEL##,
             'monolog.name' => 'application'
         ],
-        'debug'=>true
+        'debug' => false
     ];
