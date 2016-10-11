@@ -40,8 +40,6 @@ class BadgeController implements ControllerProviderInterface
             ]);
         }
 
-
-
         $headers = [];
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
