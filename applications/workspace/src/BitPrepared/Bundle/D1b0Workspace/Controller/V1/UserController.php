@@ -48,7 +48,6 @@ class UserController implements ControllerProviderInterface
             'name'=>$user->name,
             'surname'=>$user->surname,
             'authmode'=>$user->authmode,
-            'authmode'=>$user->authmode,
             'skills'=>'',
         ];
 
@@ -58,13 +57,13 @@ class UserController implements ControllerProviderInterface
             array_push($badgeList,
                 [
                     'badge'=>[
-                        'id'=>$badge['id'],
+                        'id'=>intval($badge['id']),
                         'name'=>$badge['name'],
                         'description'=>$badge['description'],
                         'img'=>$badge['img']
                     ],
-                    'clove'=>$badge['clove'],
-                    'completed'=>$badge['completed']
+                    'clove'=>intval($badge['clove']),
+                    'completed'=>boolval($badge['completed'])
                 ]
             );
         }
