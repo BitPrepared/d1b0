@@ -33,5 +33,5 @@ service_list:
 fail2ban_ignoreip:
   - 10.0.2.2
 
-
 haproxy_max_connection: 5
+haproxy_core_number: 2

@@ -49,10 +49,11 @@ program
         process.stdout.write("Vagrant server UP.\n");
 
         shell.echo('Install Server Required Package and Config');
-        ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml');
+        ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent:true});
         if ( ansibleProc.code !== 0 ){
           //ERRORE
-          process.stderr.write(chalk.red("Errore ... "));
+          process.stderr.write("Output: "+ansibleProc.stdout+"\n");
+          process.stderr.write(chalk.red("Errore: "+ansibleProc.stderr+"\n"));
           process.exit(1);
         }
 

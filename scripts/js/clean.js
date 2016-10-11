@@ -12,21 +12,21 @@ program
 
     shell.mkdir('-p',['applications/assets/icons']);
 
-    shell.echo('Build Server Vagrant ('+enviroment+')');
+    shell.echo('Clean Server Vagrant ('+enviroment+')');
 
     if ( enviroment === 'dev' ){
 
       // SSH
-      rimraf('server/plays/ssh/*.key');
-      rimraf('server/plays/ssh/*.pub');
+      rimraf.sync('server/plays/ssh/*.key');
+      rimraf.sync('server/plays/ssh/*.pub');
 
       // SSL
-      rimraf('server/plays/ssl/*.key');
-      rimraf('server/plays/ssl/*.crt');
-      rimraf('server/plays/ssl/*.pem');
+      rimraf.sync('server/plays/ssl/*.key');
+      rimraf.sync('server/plays/ssl/*.crt');
+      rimraf.sync('server/plays/ssl/*.pem');
 
       // ANSIBLE ROLE
-      rimraf('server/roles/external/*');
+      rimraf.sync('server/roles/external/*');
 
       shell.cd('server');
 

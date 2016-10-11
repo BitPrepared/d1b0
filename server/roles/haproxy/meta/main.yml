@@ -2,3 +2,4 @@
 dependencies:
   - geoip
   - compiler
+  - rsyslog

@@ -44,7 +44,7 @@ Server:
 
   * **npm restart** (prerestart, restart, postrestart): riavvio server di prova; Note: npm restart will run the stop and start scripts if no restart script is provided. [DA FARE]
 
-  * **npm run clean:server**: Destroy del server 
+  * **npm run clean:server**: Destroy del server
 
 Distribuzione
 
@@ -53,7 +53,7 @@ Distribuzione
 
 ## TEMPISTICA CREAZIONE SERVER
 
-  real	17m19.359s
+  real	17m42.269s
 
 ## HOSTS config
 

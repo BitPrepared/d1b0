@@ -77,6 +77,7 @@
 
 - name: fix root ssh permission
   file: path=/root/.ssh owner=root group=root mode=0700
+  
 - name: bashrc
   copy: src=bashrc dest=~/.bashrc mode=0644
 
@@ -87,16 +88,18 @@
   copy: src=scripts/{{item}} dest=/root/scripts/ mode=0700
   with_items: "{{base_scripts}}"
 
-# - name: fix {{no_root_user}} ssh permission
-#   file: path=/home/{{no_root_user}}/.ssh owner={{no_root_user}} group=admin mode=0700
-# - name: bashrc
-#   copy: src=bashrc dest=/home/{{no_root_user}}/.bashrc mode=0644 group=admin owner={{no_root_user}}
-#
-# - name: scripts {{no_root_user}} dir
-#   file: path=/home/{{no_root_user}}/scripts state=directory owner={{no_root_user}} group=admin mode=0700
-# - name: copy scripts
-#   copy: src=scripts/{{item}} dest=/home/{{no_root_user}}/scripts/ owner={{no_root_user}} group=admin mode=0700
-#   with_items: "{{base_scripts}}"
+- name: "fix {{no_root_user}} ssh permission"
+  file: path=/home/{{no_root_user}}/.ssh owner={{no_root_user}} group=admin mode=0700
+
+- name: bashrc
+  copy: src=bashrc dest="/home/{{no_root_user}}/.bashrc" mode=0644 group=admin owner="{{no_root_user}}"
+
+- name: "scripts {{no_root_user}} dir"
+  file: path=/home/{{no_root_user}}/scripts state=directory owner="{{no_root_user}}" group=admin mode=0700
+
+- name: copy scripts
+  copy: src=scripts/{{item}} dest=/home/{{no_root_user}}/scripts/ owner="{{no_root_user}}" group=admin mode=0700
+  with_items: "{{base_scripts}}"
 
 # https://fitzcarraldoblog.wordpress.com/2014/09/20/change-systemds-binary-logging-to-text-logging-in-sabayon-linux/
 # LOGGING

@@ -6,6 +6,8 @@ haproxy_dontlog_normal: true
 
 haproxy_max_connection: 1024
 
+haproxy_core_number: 1
+
 # FIXME: da sistemare l'url!
 ocsp_report_uri: https://miodominio.com/csp-report.php
 

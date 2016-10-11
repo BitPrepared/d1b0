@@ -31,8 +31,14 @@ base_unwanted_application:
   - bind9-host
   - libbind9-90
   - libnfsidmap2:amd64
+  - nfs-kernel-server
   - nfs-common
+  - portmap
   - rpcbind
+  - exim4
+  - exim4-base
+  - exim4-config
+  - exim4-daemon-light
 
 apt_version_name: jessie
 interface: "{{ansible_default_ipv4.interface}}"
@@ -42,11 +48,12 @@ hostname_avahi: no
 no_root_user: developer
 
 service_list:
- - { port: 443, proto: 'tcp' }
- - { port: 80, proto: 'tcp' }
+  - { port: 443, proto: 'tcp' }
+  - { port: 80, proto: 'tcp' }
 
 base_scripts:
   - apt-check-security.sh
+  - checkIP.sh
 
 application_environment: production
 report_dir: ../report

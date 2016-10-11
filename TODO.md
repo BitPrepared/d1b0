@@ -1,16 +1,14 @@
 #TODO
 
-[ ] rimuovere pacchetti compilazione alla fine del processo di instllazioni (di tutto e non singolo role!)
-
 [ ] tolleranza validita token per utente
 
-[ ] disabilitare TRACE su haproxy
-
-[ ] haproxy gzip, https, anti ddos, anti info server (500 e header)
+[ ] disabilitare TRACE su haproxy (manca il test)
 
 [ ] rivedere i gelf message verso l'utente
 
 [ ] finire la review di schema e example
+
+[ ] per l'enviroment valutare: https://github.com/weareinteractive/ansible-environment
 
 [ ] in ansible-role-nginx bug: https://github.com/jdauphant/ansible-role-nginx/issues/28 da risolvere per DO e co
 
@@ -19,8 +17,6 @@
 [ ] rsnapshot (log) ed eventualmente file caricati (=> crittografia)
 
 [ ] automatic backup mysql
-
-[ ] log rotation
 
 [ ] in test: mail catcher !!!! come config di base , in prod settare ssmtp o qualcosa per l'invio serio di mail! (mailgun??) MATRAIL?
 
@@ -71,10 +67,16 @@ Also, consult the securitylinks.txt file for more information.
 
 [ ] Protcol 2 not found in sshd config, or you are doing 1,2.
 
-[ ] su fail2ban inserire il controllo sui log di suhosin
-
 [ ] https://github.com/sovereign/sovereign
 
 [ ] http://petrovs.info/2015/12/27/My-way-to-auto-update-Lets-Encrypt/
 
 [ ] artillery enviroment configuration dev/stage
+
+[ ] piwiki analisi https://github.com/piwik/piwik-log-analytics
+
+[ ] nginx firewall https://www.rtcx.net/nginx-application-firewall.html
+
+[ ] configurazione ntop "dpkg-reconfigure ntop" che di default non legge l'interfaccia e la porta 3000 non è aperta (giustamente)
+
+[ ] http://dev.maxmind.com/geoip/legacy/geolite/ e http://dev.maxmind.com/geoip/geoip2/geolite2/ e https://github.com/maxmind/GeoIP2-php

@@ -68,7 +68,7 @@
     "dist:applications": "echo dist application",
     "release": "",
     "deploy": "npm run deploy:$npm_package_config_enviroment",
-    "deploy:dev": "node scripts/js/workspace.deploy.svil.js",
+    "deploy:dev": "node scripts/js/workspace.deploy.dev.js && node scripts/js/auth.deploy.dev.js",
     "deploy:prod": "s3-cli sync ./dist/ s3://example-com/prod-site/",
     "deploy:stage": "s3-cli sync ./dist/ s3://example-com/stage-site/",
     "open:dev": "opener https://$npm_package_config_server:8443/workspace/"

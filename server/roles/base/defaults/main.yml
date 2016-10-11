@@ -1,2 +1,6 @@
 base_application: []
 base_unwanted_application: []
+base_scripts:
+  - apt-check-security.sh
+  - checkIP.sh
+  - ocspGenerate.sh

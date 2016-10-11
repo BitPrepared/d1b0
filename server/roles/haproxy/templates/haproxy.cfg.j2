@@ -14,6 +14,8 @@ global
 
 	maxconn {{ haproxy_max_connection }}
 
+  nbproc {{ haproxy_core_number }}
+
 	tune.ssl.default-dh-param 2048
 	user haproxy
 	group haproxy
@@ -200,8 +202,8 @@ frontend www-https
 	rspadd X-Content-Type-Options:\ nosniff
   rspadd X-Frame-Options:\ SAMEORIGIN
   rspadd Strict-Transport-Security:\ max-age={{ max_age_hsts }};\ includeSubDomains
-  rspadd Content-Security-Policy:\ default-src\ 'self';\ script-src\ 'self'\ 'unsafe-inline'\ 'unsafe-eval';\ img-src\ 'self'\ data:;\ style-src\ 'self'\ 'unsafe-inline';\ font-src\ 'self'\ data:;\ frame-src\ 'self';\ connect-src\ 'self'\ object-src\ 'none';\ report-uri\ {{ ocsp_report_uri }}
-  rspadd Public-Key-Pins:\ pin-sha256=\"tAGD4yG3YeEHoYAJRJQkcEppCISVfqtHepfw4EUd3/0=\";\ max-age=10;\ includeSubDomains;\ report-uri\ https://www.decrypto.it/csp-report.php if ! { capture.req.hdr(0) -i mail.decrypto.it }
+  #rspadd Content-Security-Policy:\ default-src\ 'self';\ script-src\ 'self'\ 'unsafe-inline'\ 'unsafe-eval';\ img-src\ 'self'\ data:;\ style-src\ 'self'\ 'unsafe-inline';\ font-src\ 'self'\ data:;\ frame-src\ 'self';\ connect-src\ 'self'\ object-src\ 'none';\ report-uri\ {{ ocsp_report_uri }}
+  #rspadd Public-Key-Pins:\ pin-sha256=\"tAGD4yG3YeEHoYAJRJQkcEppCISVfqtHepfw4EUd3/0=\";\ max-age=10;\ includeSubDomains;\ report-uri\ https://miodominio.com/csp-report.php if ! { capture.req.hdr(0) -i mail.miodominio.com }
 
 {% for r in haproxy.redirects %}
   {% if r.acl is defined %}
