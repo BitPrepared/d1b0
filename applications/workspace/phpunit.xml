@@ -12,7 +12,7 @@
          stopOnFailure="false"
          syntaxCheck="false"
          colors="true"
-         bootstrap="./vendor/autoload.php"
+         bootstrap="./test/bootstrap.php"
         >
     <testsuites>
         <testsuite name="general">

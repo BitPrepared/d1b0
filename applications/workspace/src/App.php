@@ -22,13 +22,9 @@ date_default_timezone_set('Europe/Rome');
 $app = new D1b0Application();
 
 // config developing (da portare fuori!)
-$app['debug'] = true;
-$app['log.level'] = Monolog\Logger::DEBUG; //ERROR in prod
+$app['debug'] = $config['debug'];
 $app['api.version'] = "v1";
 $app['api.endpoint'] = "/api";
-if (!defined('ROOT_PATH')) {
-    define('ROOT_PATH', __DIR__);
-}
 //solo in dev va bene
 // @remember: https://{enviroment}.{domain}/{contextPath}/api/v1
 
@@ -36,16 +32,23 @@ if (!defined('ROOT_PATH')) {
 $baseUrl = ''.$app['api.endpoint'].'/'.$app['api.version'];
 
 // @see: http://silex.sensiolabs.org/doc/providers/monolog.html
-$app->register(new MonologServiceProvider(), array(
-    "monolog.logfile" => ROOT_PATH."/storage/logs/development_".Carbon::now('Europe/Rome')->format("Y-m-d").".log",
-    "monolog.level" => $app["log.level"],
-    "monolog.name" => "application"
-));
+$app->register(new MonologServiceProvider(), $config['logs']);
 
 // @see: https://github.com/ivoba/redbean-service-provider
 //'mysql:host=localhost;dbname=mydatabase', 'user', 'password'
 
-$app->register(new RedBeanServiceProvider(), array('db.options' => array('dsn' => 'sqlite:'.ROOT_PATH.'/../../database/workspace.sqlite')));
+if($config['database']['type']==='sqlite'){
+    $app->register(new RedBeanServiceProvider(), array('db.options' => array('dsn' => 'sqlite:'.$config['database']['host'])));
+}
+if($config['database']['type']==='mysql'){
+    $app->register(new RedBeanServiceProvider(), ['db.options' =>
+                                                    [
+                                                        'dsn' => 'mysql:'.$config['database']['host'].';dbname='.$config['database']['dbname'],
+                                                        'user'=>$config['database']['username'],
+                                                        'password'=>$config['database']['password']
+                                                    ]
+                                                ]);
+}
 $app->register(new SessionServiceProvider());
 
 

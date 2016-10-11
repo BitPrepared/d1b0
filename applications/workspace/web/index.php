@@ -2,7 +2,12 @@
 // web/index.php
 require_once __DIR__.'/../vendor/autoload.php';
 
-$app = require_once __DIR__.'/../src/App.php';
+if (!defined('ROOT_PATH')) {
+    define('ROOT_PATH', realpath(__DIR__.'/../'));
+}
+
+$config = require_once ROOT_PATH.'/config.php';
+$app = require_once ROOT_PATH.'/src/App.php';
 
 $app->run();
 

@@ -2,10 +2,10 @@
 
 namespace Tests;
 
+
+
 class PartTest extends WorkspaceTest
 {
-    use AbstractAppTest;
-
 
     /*verifico che una parte si possa scaricare correttamente*/
     public function testGetWorkspacePart() {

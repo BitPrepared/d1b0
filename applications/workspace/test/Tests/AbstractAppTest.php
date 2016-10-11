@@ -4,13 +4,15 @@ namespace Tests;
 
 use JsonSchema\Validator;
 
+
 trait AbstractAppTest
 {
     public function createApplication()
     {
         // print_r("DBG creao app");
         //$app = require_once __DIR__.'/../../src/App.php';
-        $app = require __DIR__.'/../../src/App.php';
+        $config = require_once ROOT_PATH.'/config.php';
+        $app = require_once ROOT_PATH.'/src/App.php';
         $app['debug'] = true;
         $app['session.test'] = true;
         #unset($app['exception_handler']);
