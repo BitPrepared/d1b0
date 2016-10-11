@@ -61,7 +61,7 @@ class UserTest extends WebTestCase
         //print_r($response);
         $data = $client->getResponse()->getContent();
 
-        print_r($data);
+        //print_r($data);
         $validator = $this->askValidation($data, $schema);
 
         $assert = $this->evalValidation($validator);
