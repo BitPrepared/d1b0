@@ -16,7 +16,9 @@ class WorkspaceTest extends WebTestCase
         $client = $this->createClient();
         $client = $this->logIn($client);
 
-        $crawler = $client->request('GET', '/api/v1/workspace/1');
+        $id = $this->testPostWorkspace();
+
+        $crawler = $client->request('GET', '/api/v1/workspace/'.$id);
         $response = $client->getResponse();
         $data = $client->getResponse()->getContent();
         $validator = $this->askValidation($data, $schema);

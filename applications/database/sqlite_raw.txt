@@ -1,0 +1,159 @@
+PRAGMA synchronous = OFF;
+PRAGMA journal_mode = MEMORY;
+BEGIN TRANSACTION;
+CREATE TABLE "badge" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "name" varchar(25) NOT NULL,
+  "description" varchar(255) NOT NULL,
+  "img" varchar(255) NOT NULL,
+  "lastyear" smallint(4) NOT NULL,
+  "type" text  NOT NULL,
+  "enable" tinyint(1) NOT NULL DEFAULT '1'
+);
+CREATE TABLE "cero" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "user" int(11) NOT NULL,
+  "part" int(11) NOT NULL,
+  "badge" int(11) NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "points" int(11) NOT NULL
+);
+CREATE TABLE "history" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "user" int(11) NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "ip" varchar(255) NOT NULL,
+  "marker" text NOT NULL,
+  "confirmed" tinyint(1) NOT NULL
+);
+CREATE TABLE "part" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "workspace" int(11) NOT NULL,
+  "user" int(11) NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "lastupdatetime" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  "totalpoint" int(11) NOT NULL DEFAULT '0',
+  "deleted" tinyint(1) NOT NULL DEFAULT '0'
+);
+CREATE TABLE "partbadge" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "badge" int(11) NOT NULL,
+  "part" int(11) NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "deleted" tinyint(1) NOT NULL DEFAULT '0'
+);
+CREATE TABLE "resource" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "part" int(11) NOT NULL,
+  "type" varchar(255) NOT NULL,
+  "ref" varchar(255) NOT NULL,
+  "hash" varchar(64) NOT NULL,
+  "available" tinyint(1) NOT NULL,
+  "deleted" tinyint(1) NOT NULL DEFAULT '0',
+  "inserttime" timestamp NOT NULL ,
+  "updatetime" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+);
+CREATE TABLE "share" (
+  "user" int(11) NOT NULL,
+  "workspace" int(11) NOT NULL,
+  "key" varchar(255) NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+);
+CREATE TABLE "team" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "workspace" int(11) NOT NULL,
+  "patrol" varchar(255) NOT NULL,
+  "unit" varchar(255) NOT NULL,
+  "group" varchar(255) NOT NULL
+);
+CREATE TABLE "ticket" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "user" int(11) NOT NULL,
+  "message" text NOT NULL,
+  "url" varchar(255) NOT NULL,
+  "priority" text  NOT NULL,
+  "status" text  NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "lastupdatetime" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  "owner" varchar(255) NOT NULL
+);
+CREATE TABLE "user" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "authmode" text  NOT NULL,
+  "name" varchar(255) NOT NULL,
+  "surname" varchar(255) NOT NULL,
+  "email" varchar(255) NOT NULL,
+  "pwd" varchar(255) DEFAULT NULL,
+  "salt" varchar(255) DEFAULT NULL,
+  "status" text  NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "updatetime" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+);
+CREATE TABLE "userbadge" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "user" int(11) NOT NULL,
+  "badge" int(11) NOT NULL,
+  "completed" tinyint(1) NOT NULL DEFAULT '0',
+  "inserttime" timestamp NOT NULL ,
+  "updatetime" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  "deleted" tinyint(1) NOT NULL DEFAULT '0'
+);
+CREATE TABLE "userbadgeclove" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "user" int(11) NOT NULL,
+  "badge" int(11) NOT NULL,
+  "parte" int(11) NOT NULL,
+  "inserttime" timestamp NOT NULL
+);
+CREATE TABLE "userworkspace" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "workspace" int(11) NOT NULL,
+  "user" int(11) NOT NULL,
+  "inserttime" timestamp NOT NULL
+);
+CREATE TABLE "verify" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "user" int(11) NOT NULL,
+  "key" varchar(255) NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "action" varchar(255) NOT NULL
+);
+CREATE TABLE "workspace" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "title" varchar(255) NOT NULL,
+  "description" text NOT NULL,
+  "environment" varchar(255) NOT NULL,
+  "completed" tinyint(1) NOT NULL,
+  "inserttime" timestamp NOT NULL ,
+  "lastupdatetime" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+);
+CREATE VIEW userbadgeclovetot AS SELECT user,badge,COUNT(parte) AS tot from userbadgeclove GROUP BY user,badge;
+
+CREATE VIEW userbadgecomplete AS SELECT
+                            userbadge.id,
+			    userbadge.user,
+                            userbadge.badge,
+                            userbadge.completed,
+                            userbadge.inserttime,
+                            badge.name,
+                            badge.description,
+                            badge.img,
+			    IFNULL(userbadgeclovetot.tot,0) AS clove
+			    FROM userbadge
+                            LEFT JOIN badge
+                            ON userbadge.badge = badge.id
+                            LEFT JOIN userbadgeclovetot
+                            ON userbadgeclovetot.badge = badge.id
+                            AND
+                            userbadgeclovetot.user = userbadge.user
+			    WHERE deleted=0;
+CREATE VIEW workspacebadge AS SELECT pb.id,pb.badge,p.workspace FROM partbadge as pb JOIN part as p ON pb.part = p.id;
+
+
+
+CREATE INDEX "userworkspace_UNIQUE" ON "userworkspace" ("workspace","user");
+CREATE INDEX "verify_key" ON "verify" ("key");
+CREATE INDEX "user_users" ON "user" ("name","surname","email");
+CREATE INDEX "partbadge_Not duplicate" ON "partbadge" ("badge","part");
+END TRANSACTION;

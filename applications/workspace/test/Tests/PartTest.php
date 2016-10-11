@@ -14,7 +14,11 @@ class PartTest extends WorkspaceTest
         $client = $this->createClient();
         $client = $this->logIn($client);
 
-        $crawler = $client->request('GET', '/api/v1/workspace/6/part/1');
+        $blob = $this->testPostWorkspacePart();
+        $id = $blob[0];
+        $part_id = $blob[1];
+
+        $crawler = $client->request('GET', '/api/v1/workspace/'.$id.'/part/'.$part_id);
         $response = $client->getResponse();
 
         //print_r($response);
@@ -143,7 +147,7 @@ class PartTest extends WorkspaceTest
 
         $crawler = $client->request('GET', '/api/v1/workspace/'.$id);
 
-        print_r($client->getResponse());
+        //print_r($client->getResponse());
         $data = $client->getResponse()->getContent();
 
         $js = json_decode($data);

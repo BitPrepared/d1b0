@@ -15,8 +15,6 @@ class WorkspaceCheckinTest extends PartTest
         $id = $blob[0];
         $part_id= $blob[1];
 
-        print_r("FANFARA!");
-        var_dump($blob);
         $client = $this->createClient();
         $client = $this->logIn2($client);
         $client->request(
@@ -28,8 +26,7 @@ class WorkspaceCheckinTest extends PartTest
           '');
         $response = $client->getResponse();
         $data = $client->getResponse()->getContent();
-        print_r("ROBAGROSSA");
-        var_dump($data);
+
         $js = json_decode($data);
         $points = $js->points;
 
@@ -43,8 +40,6 @@ class WorkspaceCheckinTest extends PartTest
         $id = $blob[0];
         $part_id= $blob[1];
 
-        print_r("FANFARA!");
-        var_dump($blob);
         $client = $this->createClient();
         $client = $this->logIn2($client);
         $client->request(
