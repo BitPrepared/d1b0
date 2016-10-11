@@ -8,7 +8,7 @@
             'type' => '##TYPE##'
         ],
         'logs'=>[
-            'monolog.logfile' => ROOT_PATH.'/storage/logs/development_'.\Carbon\Carbon::now('Europe/Rome')->format('Y-m-d').'.log',
+            'monolog.logfile' => ROOT_PATH.'/log/development_'.\Carbon\Carbon::now('Europe/Rome')->format('Y-m-d').'.log',
             'monolog.level' => ##LOGLEVEL##,
             'monolog.name' => 'application'
         ],

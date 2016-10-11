@@ -28,14 +28,14 @@ program
         result = result.replace(/##DBNAME##/g, '');
         result = result.replace(/##PASSWORD##/g, '');
         result = result.replace(/##USERNAME##/g, '');
-        result = result.replace(/##LOGLEVEL##/g, 'Monolog\Logger::DEBUG');
+        result = result.replace(/##LOGLEVEL##/g, '\\Monolog\\Logger::DEBUG');
       } else if ( enviroment === 'vagrant' ){
         result = data.replace(/##TYPE##/g, 'mysql');
         result = result.replace(/##HOST##/g, '\'localhost\'');
         result = result.replace(/##DBNAME##/g, 'workspace');
         result = result.replace(/##PASSWORD##/g, 'workspace');
         result = result.replace(/##USERNAME##/g, 'workspace');
-        result = result.replace(/##LOGLEVEL##/g, 'Monolog\Logger::DEBUG');
+        result = result.replace(/##LOGLEVEL##/g, '\\Monolog\\Logger::DEBUG');
       } else {
         // STAGING / PROD
         result = data.replace(/##TYPE##/g, 'mysql');
@@ -53,7 +53,7 @@ program
         result = result.replace(/##DBNAME##/g, process.env.npm_package_config_database_dbname);
         result = result.replace(/##PASSWORD##/g, process.env.npm_package_config_database_password);
         result = result.replace(/##USERNAME##/g, process.env.npm_package_config_database_username);
-        result = result.replace(/##LOGLEVEL##/g, 'Monolog\Logger::INFO');
+        result = result.replace(/##LOGLEVEL##/g, '\\Monolog\\Logger::INFO');
       }
 
 
