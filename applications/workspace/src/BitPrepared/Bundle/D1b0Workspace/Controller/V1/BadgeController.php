@@ -33,14 +33,12 @@ class BadgeController implements ControllerProviderInterface
         $res = [];
         foreach ($badge as $b) {
             array_push($res, [
-                "id"=>$b->id,
+                "id"=>intval($b->id),
                 "name"=>$b->name,
                 "descritpion"=>$b->description,
                 "img"=>$b->img
             ]);
         }
-
-
 
         $headers = [];
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);

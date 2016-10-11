@@ -13,8 +13,10 @@ use BitPrepared\Bundle\D1b0Workspace\Exception\UnauthorizedException;
 
 class UserController implements ControllerProviderInterface
 {
+    public $DATE_FORMAT = 'Y-m-d\TH:i:s\Z';
 
     private $app;
+
 
     public function connect(Application $app)
     {
@@ -48,7 +50,6 @@ class UserController implements ControllerProviderInterface
             'name'=>$user->name,
             'surname'=>$user->surname,
             'authmode'=>$user->authmode,
-            'authmode'=>$user->authmode,
             'skills'=>'',
         ];
 
@@ -58,13 +59,13 @@ class UserController implements ControllerProviderInterface
             array_push($badgeList,
                 [
                     'badge'=>[
-                        'id'=>$badge['id'],
+                        'id'=>intval($badge['id']),
                         'name'=>$badge['name'],
                         'description'=>$badge['description'],
                         'img'=>$badge['img']
                     ],
-                    'clove'=>$badge['clove'],
-                    'completed'=>$badge['completed']
+                    'clove'=>intval($badge['clove']),
+                    'completed'=>boolval($badge['completed'])
                 ]
             );
         }
@@ -102,7 +103,7 @@ class UserController implements ControllerProviderInterface
                 $user->email = $data['email'];
                 $user->surname = $data['surname'];
                 $user->authmode = $data['authMode'];
-                $user->inserttime = date('Y-m-d H:i:s');
+                $user->inserttime = date($this->DATE_FORMAT);
                 $user->updatetime = date('Y-m-d G:i:s');
                 $id = R::store($user);
                 $res = (object)["id" => $id];
@@ -127,8 +128,8 @@ class UserController implements ControllerProviderInterface
         $userbadge = R::dispense('userbadge');
         $userbadge->user = $id;
         $userbadge->badge = $data['id'];
-        $userbadge->inserttime = date('Y-m-d H:i:s');
-        $userbadge->updatetime = date('Y-m-d H:i:s');
+        $userbadge->inserttime = date($this->DATE_FORMAT);
+        $userbadge->updatetime = date($this->DATE_FORMAT);
         $id = R::store($userbadge);
 
         $res = (object)["id" => $id];
@@ -141,32 +142,35 @@ class UserController implements ControllerProviderInterface
         $badge = R::findOne('userbadgecomplete', 'WHERE user = ? AND badge = ?', [$id, $id_badge]);
         $res = [
                     'badge'=>[
-                        'id'=>$badge['badge'],
+                        'id'=>intval($badge['badge']),
                         'name'=>$badge['name'],
                         'description'=>$badge['description'],
                         'img'=>$badge['img']
                     ],
-                    'clove'=>$badge['clove'],
-                    'completed'=>$badge['completed']
+                    'clove'=>intval($badge['clove']),
+                    'completed'=>boolval($badge['completed'])
                 ];
         $headers = [];
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
     public function markBadgeAsCompleted($id, $id_badge, Request $request) {
-        $userbadge = R::load('userbadge', $id_badge);
+        $userbadge = R::findOne('userbadge',"WHERE user = ? AND badge = ?",[$id,$id_badge]);
         $userbadge->user = $id;
         $userbadge->badge = $id_badge;
-        $userbadge->updatetime = date('Y-m-d H:i:s');
+        $userbadge->updatetime = date($this->DATE_FORMAT);
         $userbadge->completed = 1;
         $id = R::store($userbadge);
-        $res = (object)["id" => $id];
         $headers = [];
-        return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/html');
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $response->setSharedMaxAge(300);
+        return $response;
     }
     public function deleteUserBadge($id, $id_badge, Request $request) {
         $userbadge = R::load('userbadge', $id_badge);
         $userbadge->deleted = 1;
-        $userbadge->updatetime = date('Y-m-d H:i:s');
+        $userbadge->updatetime = date($this->DATE_FORMAT);
         $id = R::store($userbadge);
         $headers = [];
         $response = new Response();
@@ -181,7 +185,7 @@ class UserController implements ControllerProviderInterface
         $tickets = [];
         foreach ($ticketRaw as $ticket) {
             array_push($tickets, [
-                "id"=>$ticket['id'],
+                "id"=>intval($ticket['id']),
                 "message"=>$ticket['message'],
                 "url"=>$ticket['url'],
                 "priority"=>$ticket['priority']
