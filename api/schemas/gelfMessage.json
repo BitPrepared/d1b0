@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://localhost:8080/schemas/gelfMessage.json",
+  "id": "http://localhost:9999/schemas/gelfMessage.json",
   "type": "object",
   "description" : "Messaggio GELF di log",
   "properties": {

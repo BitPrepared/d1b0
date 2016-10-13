@@ -1,1 +1,9 @@
 haproxy_max_connection: 4096
+
+# external ip o vpn ip
+fail2ban_ignoreip:
+  - 10.0.0.20
+
+# VPN ??
+influxdb_ip: 10.0.2.2
+grafana_ip: 10.0.2.15

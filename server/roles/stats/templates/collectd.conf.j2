@@ -1,0 +1,113 @@
+
+Hostname "{{ main_domain | default('localhost') }}"
+
+FQDNLookup true
+
+TypesDB "/usr/share/collectd/types.db"
+
+Interval 5
+ReadThreads 10
+
+LoadPlugin syslog
+
+<Plugin syslog>
+	LogLevel info
+</Plugin>
+
+LoadPlugin cpu
+
+<Plugin cpu>
+  ReportByCpu true
+  ReportByState true
+  ValuesPercentage true
+</Plugin>
+
+LoadPlugin load
+LoadPlugin memory
+LoadPlugin swap
+
+LoadPlugin df
+
+<Plugin df>
+	FSType rootfs
+	FSType sysfs
+	FSType proc
+	FSType devtmpfs
+	FSType devpts
+	FSType tmpfs
+	FSType fusectl
+	FSType cgroup
+	IgnoreSelected true
+</Plugin>
+
+
+LoadPlugin disk
+LoadPlugin entropy
+LoadPlugin interface
+
+<Plugin interface>
+	Interface "eth0"
+	IgnoreSelected false
+</Plugin>
+
+LoadPlugin processes
+
+#<Plugin processes>
+#	Process "name"
+#	ProcessMatch "foobar" "/usr/bin/perl foobar\\.pl.*"
+#</Plugin>
+
+LoadPlugin rrdtool
+
+<Plugin rrdtool>
+	DataDir "/var/lib/collectd/rrd"
+</Plugin>
+
+LoadPlugin mysql
+
+# FIXME : devo monitorare tutti i DB!
+
+<Plugin "mysql">
+  <Database "workspace">
+    Host "localhost"
+    Socket "/var/run/mysqld/mysqld.sock"
+    SlaveStats true
+    SlaveNotifications true
+  </Database>
+</Plugin>
+
+LoadPlugin nginx
+
+<Plugin nginx>
+	URL "http://localhost/status?auto"
+	User "www-user"
+	Password "secret"
+	VerifyPeer false
+	VerifyHost false
+	CACert "/etc/ssl/ca.crt"
+</Plugin>
+
+LoadPlugin redis
+
+<Plugin redis>
+  <Node "local">
+    Host "localhost"
+    Port "6379"
+    Timeout 2000
+  </Node>
+</Plugin>
+
+LoadPlugin vmem
+
+<Plugin vmem>
+  Verbose false
+</Plugin>
+
+LoadPlugin network
+<Plugin "network">
+    Server "{{ influxdb_ip }}" "{{ influx_collectd_port }}"
+</Plugin>
+
+<Include "/etc/collectd/collectd.conf.d">
+	Filter "*.conf"
+</Include>

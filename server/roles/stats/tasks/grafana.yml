@@ -1,0 +1,45 @@
+---
+- name: make grafana dir
+  file: path={{ grafana_root_path }} state=directory owner={{ grafana_owner }} recurse=yes
+
+- name: check grafana data dir exist
+  file: path=/var/lib/grafana state=directory owner={{ grafana_owner }} recurse=yes
+
+- name: download grafana
+  get_url: dest="/tmp/grafana_{{ grafana_version }}.deb" url="https://grafanarel.s3.amazonaws.com/builds/grafana_{{ grafana_version }}.deb"
+
+- name: install dependency
+  apt: package="{{ item }}" state=present
+  with_items:
+    - libfontconfig1
+
+- name: install grafana
+  action: command dpkg -i "grafana_{{ grafana_version }}.deb"
+  args:
+    chdir: /tmp
+
+- name: copy application
+  action: command cp -r . "{{ grafana_root_path }}"
+  args:
+    chdir: /usr/share/grafana/
+
+- name: configurazione /etc/default/grafana-server
+  lineinfile: dest=/etc/default/grafana-server regexp=^GRAFANA_HOME= line="GRAFANA_HOME={{ grafana_root_path }}"
+
+- name: make config for grafana
+  template: src=grafana.ini.j2 dest=/etc/grafana/grafana.ini owner={{ grafana_owner }}
+
+- name: config mysql
+  mysql_db: name="{{ grafana_mysql_dbname }}" state=present
+
+- name: config user mysql
+  mysql_user: name="{{ grafana_mysql_username }}" password="{{ grafana_mysql_password }}" priv="{{ grafana_mysql_dbname }}.*:ALL" state=present
+
+- name: start grafana
+  service: name=grafana-server state=restarted
+
+# systemctl daemon-reload
+# systemctl enable grafana-server
+
+- name: update system boot
+  action: command update-rc.d grafana-server defaults

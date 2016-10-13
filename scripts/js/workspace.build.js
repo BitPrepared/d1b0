@@ -6,9 +6,10 @@ var prompt = require('co-prompt');
 var fs = require('fs');
 
 program
-  .usage('[options] <enviroment ...>')
-  .arguments('<enviroment>')
-  .action(function(enviroment) {
+  // .usage('')
+  .action(function() {
+
+    var enviroment = process.env.npm_package_config_enviroment;
 
     shell.echo('Compile Workspace ('+enviroment+')');
 
@@ -69,10 +70,10 @@ program
   .parse(process.argv);
 
 
-if (!process.argv.slice(2).length) {
-  program.outputHelp(make_red);
-}
-
-function make_red(txt) {
-  return chalk.red(txt);
-}
+// if (!process.argv.slice(2).length) {
+//   program.outputHelp(make_red);
+// }
+//
+// function make_red(txt) {
+//   return chalk.red(txt);
+// }

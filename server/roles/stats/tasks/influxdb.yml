@@ -1,0 +1,52 @@
+#- name: installazine InfluxDB
+
+- name: Import InfluxDB GPG signing key
+  apt_key: url=https://repos.influxdata.com/influxdb.key state=present
+
+- name: Add InfluxDB repository
+  apt_repository: repo='deb https://repos.influxdata.com/debian jessie stable' state=present
+
+- name: Install InfluxDB packages
+  apt: name=influxdb state=present
+
+- name: Config InfluxDB
+  template: src=influxdb.conf.j2 dest=/etc/influxdb/influxdb.conf
+
+- name: Start the InfluxDB service
+  service: name=influxdb state=restarted
+
+# /var/lib/influxdb/
+- name: Create user admin database (SelfSigned SSL)
+  command: /usr/bin/influx -host "{{ influxdb_ip }}" -ssl -unsafeSsl -execute "CREATE USER "{{ influxdb_admin_username }}" WITH PASSWORD '{{ influxdb_admin_password }}' WITH ALL PRIVILEGES"
+  when: influxdb_selfsigned
+
+- name: Create user admin database (SSL)
+  command: /usr/bin/influx -host "{{ influxdb_ip }}" -ssl -execute "CREATE USER "{{ influxdb_admin_username }}" WITH PASSWORD '{{ influxdb_admin_password }}' WITH ALL PRIVILEGES"
+  when: not influxdb_selfsigned
+
+- name: Reload the InfluxDB service
+  service: name=influxdb state=restarted
+
+- name: enable auth
+  lineinfile: dest=/etc/influxdb/influxdb.conf regexp="^auth-enabled" line="auth-enabled = true"
+
+- name: Reload the InfluxDB service
+  service: name=influxdb state=restarted
+
+  # /var/lib/influxdb/
+- name: Create sample database (SelfSigned SSL)
+  command: /usr/bin/influx -host "{{ influxdb_ip }}" -ssl -unsafeSsl -execute 'CREATE DATABASE sample_database'
+  when: influxdb_selfsigned
+
+- name: Create sample database (SSL)
+  command: /usr/bin/influx -host "{{ influxdb_ip }}" -ssl -execute 'CREATE DATABASE sample_database'
+  when: not influxdb_selfsigned
+
+- name: Load some test data into sample database
+  uri:
+    url: "https://{{ influxdb_ip }}:8086/write?db=sample_database"
+    method: POST
+    validate_certs: no
+    body: "random_ints,host=server_{{ 10 | random }} value={{ 100 | random }}"
+    status_code: 204
+  with_sequence: start=1 end=10

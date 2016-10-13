@@ -1,0 +1,24 @@
+---
+grafana_owner: www-data
+grafana_version: 3.1.1-1470047149_amd64
+grafana_root_path: /var/www/grafana
+grafana_ip: 127.0.0.1
+grafana_port: 4000
+grafana_domain: localhost
+grafana_cert: /etc/ssl/local.pem
+grafana_key: /etc/ssl/local.pem
+grafana_mysql_dbname: grafana
+grafana_mysql_username: grafana
+grafana_mysql_password: grafana
+grafana_admin_user: admin
+grafana_admin_password: SecureAdminPass
+grafana_influxdb_username: grafana
+grafana_influxdb_password: grafana
+grafana_influxdb_database_name: grafana
+
+influxdb_ssl: /etc/ssl/local.pem
+influxdb_ip: 127.0.0.1
+influxdb_selfsigned: true
+influxdb_admin_username: admininfluxdb
+influxdb_admin_password: admininfluxdb
+influx_collectd_port: 25826

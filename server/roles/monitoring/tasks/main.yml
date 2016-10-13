@@ -8,7 +8,6 @@
     - snmpd
     - mtr
     - nmon
-
-# - name: Monitoring | Config application
+    - dnstop
 
 # https://www.unixmen.com/how-to-monitor-linux-clients-using-shinken/

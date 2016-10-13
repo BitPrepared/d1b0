@@ -35,3 +35,8 @@ fail2ban_ignoreip:
 
 haproxy_max_connection: 5
 haproxy_core_number: 2
+
+influxdb_ip: 10.0.2.15
+grafana_ip: 10.0.2.15
+
+grafana_domain: "{{ inventory_hostname }}"

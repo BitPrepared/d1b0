@@ -1,0 +1,74 @@
+reporting-disabled = false
+
+[meta]
+  dir = "/var/lib/influxdb/meta"
+  retention-autocreate = true
+  logging-enabled = true
+  pprof-enabled = false
+  lease-duration = "1m0s"
+
+[data]
+  enabled = true
+  dir = "/var/lib/influxdb/data"
+  wal-dir = "/var/lib/influxdb/wal"
+  wal-logging-enabled = true
+
+[coordinator]
+  write-timeout = "10s"
+  max-concurrent-queries = 0
+  query-timeout = "0"
+  log-queries-after = "0"
+  max-select-point = 0
+  max-select-series = 0
+  max-select-buckets = 0
+
+[retention]
+  enabled = true
+  check-interval = "30m"
+
+[shard-precreation]
+  enabled = true
+  check-interval = "10m"
+  advance-period = "30m"
+
+[monitor]
+
+[admin]
+  enabled = true
+  bind-address = "{{ influxdb_ip }}:8083"
+  https-enabled = true
+  https-certificate = "{{ influxdb_ssl }}"
+
+[http]
+  enabled = true
+  bind-address = "{{ influxdb_ip }}:8086"
+  auth-enabled = false
+  log-enabled = true
+  write-tracing = false
+  pprof-enabled = false
+  https-enabled = true
+  https-certificate = "{{ influxdb_ssl }}"
+  max-row-limit = 10000
+  realm = "InfluxDB"
+
+[subscriber]
+  enabled = true
+
+[[graphite]]
+  enabled = false
+
+[[collectd]]
+  enabled = true
+  port = {{ influx_collectd_port }}
+  database = "collectd_db"
+  typesdb = "/usr/share/collectd/types.db"
+
+[[opentsdb]]
+  enabled = false
+
+[[udp]]
+  enabled = false
+
+[continuous_queries]
+  log-enabled = true
+  enabled = true

@@ -65,10 +65,16 @@ npm config set impresa-luna:database_username workspaceUser
 npm config set impresa-luna:database_password workspacePassword
 ```
 
+## CHECK
+
+~~~
+curl -kin https://www.d1b0.local:8443/workspace/
+~~~
+
 ## TEMPISTICA CREAZIONE SERVER
 
   real	17m42.269s
 
 ## HOSTS config
 
-127.0.0.1 localhost www.d1b0.local
+127.0.0.1 localhost dev.d1b0.local

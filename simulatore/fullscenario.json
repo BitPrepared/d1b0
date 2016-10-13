@@ -9,7 +9,7 @@
           "target": "https://wontresolve.stage"
         },
         "dev": {
-          "target": "https://www.d1b0.local:8443"
+          "target": "https://dev.d1b0.local:8443"
         }
       },
       "tls": {

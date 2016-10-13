@@ -1,0 +1,90 @@
+
+
+- include: collectd.yml
+
+- include: influxdb.yml
+
+# pip2.7 install influxdb (macosx bug)
+# - name: Create database using custom credentials
+#   influxdb_database:
+#     hostname: "{{ influxdb_ip }}"
+#     username: "{{ grafana_influxdb_username }}"
+#     password: "{{ grafana_influxdb_password }}"
+#     database_name: "{{ grafana_influxdb_database_name }}"
+#     state: present
+
+# /var/lib/influxdb/
+- name: Create grafana database (SelfSigned SSL)
+  command: /usr/bin/influx -host "{{ influxdb_ip }}" -ssl -unsafeSsl -username {{ influxdb_admin_username }} -password {{ influxdb_admin_password }} -execute 'CREATE DATABASE {{ grafana_influxdb_database_name }}'
+  when: influxdb_selfsigned
+
+- name: Create grafana database (SSL)
+  command: /usr/bin/influx -host "{{ influxdb_ip }}" -ssl -username {{ influxdb_admin_username }} -password {{ influxdb_admin_password }} -execute 'CREATE DATABASE {{ grafana_influxdb_database_name }}'
+  when: not influxdb_selfsigned
+
+- include: grafana.yml
+
+# register: login
+- name: get datasource influxdb
+  uri:
+    url: "https://{{ grafana_domain }}:{{ grafana_port }}/api/datasources"
+    method: GET
+    user: "{{ grafana_admin_user }}"
+    password: "{{ grafana_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: no
+    status_code: 200
+  register: datasource_list
+
+
+# - set_fact: myvar="{{ datasource_list | from_json }}"
+#
+# - debug: msg="Current Datasource {{ datasource_list.json }}"
+#
+# - name: submit datasource influxdb
+#   uri:
+#     url: "https://{{ grafana_domain }}:{{ grafana_port }}/api/datasources"
+#     method: POST
+#     user: "{{ grafana_admin_user }}"
+#     password: "{{ grafana_admin_password }}"
+#     force_basic_auth: yes
+#     validate_certs: no
+#     body_format: json
+#     body: |
+#       {
+#         "name": "test",
+#         "type": "influxdb",
+#         "url": "http://{{ influxdb_ip }}:8086",
+#         "access": "proxy"
+#       }
+#     status_code: 200
+#   register: datasource_post
+#
+# - debug: msg="{{ datasource_post }}"
+#
+# - name: config datasource influxdb
+#   uri:
+#     url: "https://{{ grafana_domain }}:{{ grafana_port }}/api/datasources/{{ datasource.id }}"
+#     method: PUT
+#     user: "{{ grafana_admin_user }}"
+#     password: "{{ grafana_admin_password }}"
+#     force_basic_auth: yes
+#     validate_certs: no
+#     body_format: json
+#     body: |
+#       {
+#         "name": "test",
+#         "type": "influxdb",
+#         "url": "http://{{ influxdb_ip }}:8086",
+#         "basicAuth": "true",
+#         "basicAuthUser": "{{ grafana_admin_user }}",
+#         "basicAuthPassword": "{{ grafana_admin_password }} ",
+#         "isDefault": true,
+#         "database": "{{ grafana_influxdb_database_name }}",
+#         "user": "{{ grafana_influxdb_username }}",
+#         "password": "{{ grafana_influxdb_password }}"
+#       }
+#     status_code: 200
+
+
+# - name: Monitoring | Config application

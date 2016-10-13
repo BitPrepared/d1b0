@@ -8,6 +8,11 @@ haproxy_max_connection: 1024
 
 haproxy_core_number: 1
 
+haproxy_bind_ip: "{{ ansible_default_ipv4.address }}"
+
+# occhio al firewall
+haproxy_bind_stat_ip: "{{ ansible_default_ipv4.address }}"
+
 # FIXME: da sistemare l'url!
 ocsp_report_uri: https://miodominio.com/csp-report.php
 

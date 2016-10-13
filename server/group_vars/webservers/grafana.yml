@@ -1,0 +1,3 @@
+grafana_root_path: /var/www/grafana.local
+grafana_cert: /etc/ssl/localcerts/selfsigned.crt
+grafana_key: /etc/ssl/localcerts/selfsigned.key

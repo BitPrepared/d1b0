@@ -14,5 +14,6 @@
     - { role: logrotate,         tags: ["logging"] }
 
     - { role: goaccess,          tags: ["monitoring"] }
+    # - { role: stats,             tags: ["monitoring"] }
 
     #- { role: geerlingguy.composer, tags: ["application"] }

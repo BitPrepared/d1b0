@@ -5,9 +5,10 @@
     # - shell: check-selinux-installation
 
   roles:
+    - { role: apt,                    tags: ["base"] }
     - { role: tersmitten.sudoers,     tags: ["base"] }
     - { role: locale,                 tags: ["base"] }
-    - { role: ansible-hostname,       tags: ["base"] }
+    - { role: hostname,               tags: ["base"] }
     - { role: rsyslog,                tags: ["base"] }
     - { role: sysctl,                 tags: ["base"] }
 

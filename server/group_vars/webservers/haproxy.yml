@@ -17,10 +17,6 @@
 
 
 haproxy_ssl_cert: /etc/ssl/localcerts/selfsigned.combo.pem
-haproxy_bind_ip: 10.0.2.15
-
-# occhio al firewall
-haproxy_bind_stat_ip: 10.0.2.15
 
 #DEBUG
 #haproxy_dontlog_normal: false
@@ -28,9 +24,9 @@ haproxy_bind_stat_ip: 10.0.2.15
 haproxy:
    default_backend: www-workspace
    redirects:
-     - { acl: "no-www", dest: "http://www.d1b0.local", code: 301}
+     - { acl: "no-www", dest: "http://{{ inventory_hostname }}", code: 301}
    domains:
-     - { domain: "d1b0.local",  acl: "no-www" }
-     - { domain: "www.d1b0.local",  path_beg: "workspace",  backend: { name: "www-workspace" , reqirep: '^([^\ :]*)\ /workspace/(.*) \1\ /\2', array: [ { ip: "127.0.0.1", port: 9081} ] } }
-     - { domain: "www.d1b0.local", path_beg: "auth", backend: { name: "www-auth" , reqirep: '^([^\ :]*)\ /auth/(.*) \1\ /\2', array: [ { ip: "127.0.0.1", port: 9082} ] } }
-     - { domain: "www.d1b0.local", path_beg: "stream", backend: { name: "www-upload" , array: [ { ip: "127.0.0.1", port: 9090} ] } }
+     - { domain: "{{ inventory_hostname | regex_replace('^(.*).','') }}",  acl: "no-www" }
+     - { domain: "{{ inventory_hostname }}",  path_beg: "workspace",  backend: { name: "www-workspace" , reqirep: '^([^\ :]*)\ /workspace/(.*) \1\ /\2', array: [ { ip: "127.0.0.1", port: 9081} ] } }
+     - { domain: "{{ inventory_hostname }}", path_beg: "auth", backend: { name: "www-auth" , reqirep: '^([^\ :]*)\ /auth/(.*) \1\ /\2', array: [ { ip: "127.0.0.1", port: 9082} ] } }
+     - { domain: "{{ inventory_hostname }}", path_beg: "stream", backend: { name: "www-upload" , array: [ { ip: "127.0.0.1", port: 9090} ] } }
