@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Silex\WebTestCase;
-use Carbon\Carbon;
 
 class WorkspaceTest extends WebTestCase
 {

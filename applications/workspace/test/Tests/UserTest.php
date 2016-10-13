@@ -3,13 +3,12 @@
 namespace Tests;
 
 use Silex\WebTestCase;
-use JsonSchema\Validator;
 
 class UserTest extends WebTestCase
 {
     use AbstractAppTest;
 
-    public function testGetUser(){
+    public function testGetUser() {
         $schema = __DIR__.'/../../../../api/schemas/userInfo.json';
 
         $client = $this->createClient();
@@ -26,11 +25,11 @@ class UserTest extends WebTestCase
         $this->assertTrue($assert);
     }
 
-    public function testPostBadge(){
+    public function testPostBadge() {
         $client = $this->createClient();
         $client = $this->logIn($client);
 
-        $badge_id=5;
+        $badge_id = 5;
 
         $badge = '{
               "id": '.$badge_id.'
@@ -45,10 +44,10 @@ class UserTest extends WebTestCase
             $badge);
 
         $response = $client->getResponse();
-        $this->assertEquals(200,$response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
         return $badge_id;
     }
-    public function testGetBadge(){
+    public function testGetBadge() {
         $schema = __DIR__.'/../../../../api/schemas/badgeUser.json';
 
         $badge_id = $this->testPostBadge();
@@ -68,7 +67,7 @@ class UserTest extends WebTestCase
         $this->assertTrue($assert);
     }
 
-    public function testDeleteBadge(){
+    public function testDeleteBadge() {
         $client = $this->createClient();
         $client = $this->logIn($client);
 
@@ -83,11 +82,11 @@ class UserTest extends WebTestCase
             '');
 
         $response = $client->getResponse();
-        $this->assertEquals(204,$response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
         return $badge_id;
     }
 
-    public function testPostBadgeCompleted(){
+    public function testPostBadgeCompleted() {
         $client = $this->createClient();
         $client = $this->logIn($client);
 
@@ -102,11 +101,11 @@ class UserTest extends WebTestCase
             '');
 
         $response = $client->getResponse();
-        $this->assertEquals(204,$response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
         return $badge_id;
     }
 
-    public function testGetUserTicket(){
+    public function testGetUserTicket() {
         $schema = __DIR__.'/../../../../api/schemas/ticketList.json';
 
         $client = $this->createClient();

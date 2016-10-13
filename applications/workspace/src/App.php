@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Silex\Provider\MonologServiceProvider;
 use Ivoba\Silex\RedBeanServiceProvider;
 use Silex\Provider\SessionServiceProvider;
-use Carbon\Carbon;
-use Monolog\Logger;
 
 // FIXME va messo nel php.ini
 date_default_timezone_set('Europe/Rome');
@@ -37,10 +35,10 @@ $app->register(new MonologServiceProvider(), $config['logs']);
 // @see: https://github.com/ivoba/redbean-service-provider
 //'mysql:host=localhost;dbname=mydatabase', 'user', 'password'
 
-if($config['database']['type']==='sqlite'){
+if ($config['database']['type'] === 'sqlite') {
     $app->register(new RedBeanServiceProvider(), array('db.options' => array('dsn' => 'sqlite:'.$config['database']['host'])));
 }
-if($config['database']['type']==='mysql'){
+if ($config['database']['type'] === 'mysql') {
     $app->register(new RedBeanServiceProvider(), ['db.options' =>
                                                     [
                                                         'dsn' => 'mysql:'.$config['database']['host'].';dbname='.$config['database']['dbname'],
