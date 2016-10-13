@@ -53,14 +53,14 @@ class SecurityController implements ControllerProviderInterface
                         "clientId"=>$user->id
                 ];
                 $response = JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
-            }else {
+            } else {
                 $headers = [];
                 $res = [
                         "errore"=>"sbagliato password o user" //TODO roba
                 ];
                 $response = JsonResponse::create($res, 401, $headers)->setSharedMaxAge(300);
             }
-        }else {
+        } else {
             //Facebook Redirect
         }
         return $response; // JsonResponse::create($output, 200, $headers)->setSharedMaxAge(300);
@@ -81,14 +81,14 @@ class SecurityController implements ControllerProviderInterface
             if (!$bean->id) {
                 //TODO mettere un controllo agli IP che forzano le richieste di token falsi
                 $response = "<html><head></head><body>Token non esistente!</body></html>";
-            }else {
+            } else {
                 if (strtotime($verify->inserttime) < strtotime("-15 minutes")) {
                     $user = R::load('user', $verify->user);
                     $user->status = "enabled";
                     $user->updatetime = date('Y-m-d H:i:s');
                     $id = R::store($user);
                     $response = "<html><head></head><body>Account attivato complimenti!</body></html>";
-                }else {
+                } else {
                     $response = "<html><head></head><body>Impossibile attivare account inserire mail e password per richiedere un nuovo token!</body></html>";
                 }
             }

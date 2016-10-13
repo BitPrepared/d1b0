@@ -107,11 +107,11 @@ class UserController implements ControllerProviderInterface
                 $user->updatetime = date('Y-m-d G:i:s');
                 $id = R::store($user);
                 $res = (object)["id" => $id];
-            }catch (Exception $e) {
+            } catch (Exception $e) {
                 echo $e;
             }
 
-        }else {
+        } else {
 
         }
 
@@ -154,7 +154,7 @@ class UserController implements ControllerProviderInterface
         return JsonResponse::create($res, 200, $headers)->setSharedMaxAge(300);
     }
     public function markBadgeAsCompleted($id, $id_badge, Request $request) {
-        $userbadge = R::findOne('userbadge',"WHERE user = ? AND badge = ?",[$id,$id_badge]);
+        $userbadge = R::findOne('userbadge', "WHERE user = ? AND badge = ?", [$id, $id_badge]);
         $userbadge->user = $id;
         $userbadge->badge = $id_badge;
         $userbadge->updatetime = date($this->DATE_FORMAT);

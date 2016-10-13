@@ -10,50 +10,50 @@ class WorkspaceCheckinTest extends PartTest
     use AbstractAppTest;
 
 
-    public function testPostWorkspaceCheck(){
+    public function testPostWorkspaceCheck() {
         $blob = $this->testPostWorkspacePart();
         $id = $blob[0];
-        $part_id= $blob[1];
+        $part_id = $blob[1];
 
         $client = $this->createClient();
         $client = $this->logIn2($client);
         $client->request(
-          'POST',
-          '/api/v1/workspace/'.$id.'/part/'.$part_id.'/checkin',
-          [],
-          [],
-          ['CONTENT_TYPE' => 'application/json'],
-          '');
+            'POST',
+            '/api/v1/workspace/'.$id.'/part/'.$part_id.'/checkin',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '');
         $response = $client->getResponse();
         $data = $client->getResponse()->getContent();
 
         $js = json_decode($data);
         $points = $js->points;
 
-        $this->assertTrue(is_numeric($points));  //TODO verificare che il numero sia adeguato ai punti attesi
+        $this->assertTrue(is_numeric($points)); //TODO verificare che il numero sia adeguato ai punti attesi
 
-        return [$id,$part_id];
+        return [$id, $part_id];
     }
 
-    public function testDeletePostWorkspaceCheck(){
+    public function testDeletePostWorkspaceCheck() {
         $blob = $this->testPostWorkspaceCheck();
         $id = $blob[0];
-        $part_id= $blob[1];
+        $part_id = $blob[1];
 
         $client = $this->createClient();
         $client = $this->logIn2($client);
         $client->request(
-          'DELETE',
-          '/api/v1/workspace/'.$id.'/part/'.$part_id.'/checkin',
-          [],
-          [],
-          ['CONTENT_TYPE' => 'application/json'],
-          '');
+            'DELETE',
+            '/api/v1/workspace/'.$id.'/part/'.$part_id.'/checkin',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '');
         $response = $client->getResponse();
 
 
-        $this->assertEquals(204,$response->getStatusCode());  //TODO verificare che il dato non sia più presente sul server
+        $this->assertEquals(204, $response->getStatusCode()); //TODO verificare che il dato non sia più presente sul server
 
-        return [$id,$part_id];
+        return [$id, $part_id];
     }
 }
