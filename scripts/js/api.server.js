@@ -11,11 +11,11 @@ var enviroment = process.env.npm_package_config_enviroment;
 var apiDir = path.join(__dirname, '../../api/');
 var ramlFile = path.join(__dirname, '../../api/api.raml');
 
-process.stdout.write(chalk.gray(emoji.emojify('[  ] Server Documentazione API (' + enviroment + ") from "+ ramlFile +"\n")));
+process.stdout.write(chalk.gray(emoji.emojify('[  ] Server Documentazione API (' + enviroment + ") from "+ ramlFile))+ "\n");
 
 var server = http.createServer(function (req, res) {
   // console.log(`${req.method} ${req.url}`);
-  process.stdout.write(chalk.gray(emoji.emojify('[  ] Request ' + `${req.method} ${req.url}` +"\n")));
+  process.stdout.write(chalk.gray(emoji.emojify('[  ] Request ' + `${req.method} ${req.url}`))+ "\n");
 
   // parse URL
   var parsedUrl = url.parse(req.url);
@@ -65,4 +65,4 @@ var server = http.createServer(function (req, res) {
 
 server.listen(9999, '127.0.0.1');
 
-process.stdout.write(chalk.gray(emoji.emojify('[  ] Server listening ' + apiDir + ' on port ' + 9999 +"\n")));
+process.stdout.write(chalk.gray(emoji.emojify('[  ] Server listening ' + apiDir + ' on port ' + 9999))+ "\n");

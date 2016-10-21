@@ -14,6 +14,7 @@ global
 
 	maxconn {{ haproxy_max_connection }}
 
+  # not good idea with global stick!
   nbproc {{ haproxy_core_number }}
 
 	tune.ssl.default-dh-param 2048
@@ -32,8 +33,12 @@ global
 	ssl-default-bind-options no-sslv3 no-tlsv10 no-tls-tickets force-tlsv12
 
   # statistiche
-  stats socket /var/run/haproxy.sock mode 600 level admin
+  # stats socket <path> [{uid | user} <uid>] [{gid | group} <gid>] [mode <mode>] [level <level>]
+  stats socket /var/run/haproxy.sock mode 600 level user
   stats timeout 2m #Wait up to 2 minutes for input
+
+  #stats socket /var/lib/haproxy/stats1 uid 0 gid 0 mode 0440 level admin process 1
+
 
 defaults
 	log	global
@@ -106,6 +111,9 @@ frontend www-http
 
 frontend www-https
   bind {{haproxy_bind_ip}}:443 ssl crt {{ haproxy_ssl_cert }}
+
+  # per evitare problemi con la stick-table
+  bind-process 1
 
   # stick-table type {ip | integer | string [len <length>] | binary [len <length>]}
   #          size <size> [expire <expire>] [nopurge] [peers <peersect>]
@@ -186,14 +194,14 @@ frontend www-https
   # posso anche monitorare determinate situazioni aggiungendo determinati header
   #http-request add-header X-Haproxy-Abuse %ci if connabuse
 
-	reqadd X-Forwarded-Proto:\ https
-
 	# Remove headers that expose security-sensitive information.
 	rspidel ^Server:.*$
 	rspidel ^X-Powered-By:.*$
 	rspidel ^X-AspNet-Version:.*$
 
   reqitarpit . if badguys
+
+  reqadd X-Forwarded-Proto:\ https
 
 	rspirep ^(set-cookie:.*)  \1;\ Secure
 

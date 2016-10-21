@@ -80,3 +80,41 @@ Also, consult the securitylinks.txt file for more information.
 [ ] configurazione ntop "dpkg-reconfigure ntop" che di default non legge l'interfaccia e la porta 3000 non è aperta (giustamente)
 
 [ ] http://dev.maxmind.com/geoip/legacy/geolite/ e http://dev.maxmind.com/geoip/geoip2/geolite2/ e https://github.com/maxmind/GeoIP2-php
+
+[ ] pimpa analisys :
+
+    - http://engineering.dailymotion.com/php-7-deployment-at-dailymotion/
+
+    - https://github.com/tony2001/pinba_engine
+
+    - http://emeryberger.github.io/Hoard/
+
+    - https://howto.biapy.com/en/debian-gnu-linux/system/software/install-hoard-on-debian
+
+ [ ] digital ocean integration
+
+     - https://github.com/Wiredcraft/dopy/issues/41
+
+     - https://github.com/phillbaker/digitalocean-node
+
+     - https://github.com/matt-major/do-wrapper
+
+     - https://www.digitalocean.com/community/tutorials/how-to-use-doctl-the-official-digitalocean-command-line-client
+
+[ ] https://github.com/Stevie-Ray/referrer-spam-blocker
+
+[ ] php security
+
+    - https://github.com/Maikuolan/phpMussel
+
+    - http://nintechnet.com/ninjafirewall/pro-edition/?download
+
+    - https://websectools.com/
+
+    - https://github.com/psecio/versionscan
+
+    - https://github.com/psecio/iniscan
+
+    - ELENCO: https://wwphp-fb.github.io/faq/security/php-security-issues/
+
+    - https://github.com/koalaman/shellcheck

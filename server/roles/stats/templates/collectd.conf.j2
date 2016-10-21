@@ -15,11 +15,25 @@ LoadPlugin syslog
 </Plugin>
 
 LoadPlugin cpu
-
 <Plugin cpu>
   ReportByCpu true
   ReportByState true
   ValuesPercentage true
+</Plugin>
+
+LoadPlugin aggregation
+
+<Plugin "aggregation">
+  <Aggregation>
+    Plugin "cpu"
+    Type "cpu"
+
+    GroupBy "Host"
+    GroupBy "TypeInstance"
+
+    CalculateSum true
+    CalculateAverage true
+  </Aggregation>
 </Plugin>
 
 LoadPlugin load
@@ -29,23 +43,18 @@ LoadPlugin swap
 LoadPlugin df
 
 <Plugin df>
-	FSType rootfs
-	FSType sysfs
-	FSType proc
-	FSType devtmpfs
-	FSType devpts
-	FSType tmpfs
-	FSType fusectl
-	FSType cgroup
-	IgnoreSelected true
+	Device "/dev/sda"
+  FSType "ext3"
+  IgnoreSelected false
+  ReportInodes false
 </Plugin>
-
 
 LoadPlugin disk
 LoadPlugin entropy
 LoadPlugin interface
 
 <Plugin interface>
+  Interface "lo"
 	Interface "eth0"
 	IgnoreSelected false
 </Plugin>
@@ -57,11 +66,11 @@ LoadPlugin processes
 #	ProcessMatch "foobar" "/usr/bin/perl foobar\\.pl.*"
 #</Plugin>
 
-LoadPlugin rrdtool
+#LoadPlugin rrdtool
 
-<Plugin rrdtool>
-	DataDir "/var/lib/collectd/rrd"
-</Plugin>
+#<Plugin rrdtool>
+#	DataDir "/var/lib/collectd/rrd"
+#</Plugin>
 
 LoadPlugin mysql
 
@@ -79,7 +88,7 @@ LoadPlugin mysql
 LoadPlugin nginx
 
 <Plugin nginx>
-	URL "http://localhost/status?auto"
+	URL "http://localhost:8083/status?auto"
 	User "www-user"
 	Password "secret"
 	VerifyPeer false

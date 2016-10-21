@@ -28,7 +28,7 @@ if ( enviroment === 'dev' ){
 
   shell.cd('server');
 
-  destroyVagrantServer = shell.exec('vagrant destroy -f');
+  destroyVagrantServer = shell.exec('vagrant destroy -f', {silent:true});
 
   if ( destroyVagrantServer.code !== 0 ){
     process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore vagrant destroy")));

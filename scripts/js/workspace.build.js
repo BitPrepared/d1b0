@@ -18,7 +18,7 @@ program
     fs.readFile('config.php.dist', 'utf8', function (err,data) {
 
       if (err) {
-        process.stderr.write(chalk.red("Errore in lettura: "+err));
+        process.stderr.write(chalk.red("Errore in lettura: "+err) + "\n");
         process.exit(1);
       }
 
@@ -47,7 +47,7 @@ program
           !process.env.npm_package_config_database_password ||
           !process.env.npm_package_config_database_username
         ) {
-          process.stderr.write(chalk.red("Errore manca la configurazione in .npmrc"));
+          process.stderr.write(chalk.red("Errore manca la configurazione in .npmrc") + "\n");
           process.exit(1);
         }
         result = result.replace(/##HOST##/g, '\''+process.env.npm_package_config_database_host+'\'');

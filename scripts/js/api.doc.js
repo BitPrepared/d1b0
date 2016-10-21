@@ -18,7 +18,7 @@ var childProcessInstance = childProcess.fork(scriptPath, options);
 // listen for errors as they may prevent the exit event from firing
 childProcessInstance.on('error', function (err) {
   if ( err ){
-    process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore server documentazione API (raml)\n")));
+    process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore server documentazione API (raml)"))+ "\n");
     process.stderr.write(chalk.red(err+"\n"));
     process.exit(1);
   }
@@ -28,7 +28,7 @@ var enviroment = process.env.npm_package_config_enviroment;
 
 var apiDir = path.join(__dirname, '../../api/');
 
-process.stdout.write(chalk.gray(emoji.emojify('[  ] Generazione Documentazione API (' + enviroment + ") from "+ ramlFile +"\n")));
+process.stdout.write(chalk.gray(emoji.emojify('[  ] Generazione Documentazione API (' + enviroment + ") from "+ ramlFile))+ "\n");
 
 var ramlFile = path.join(__dirname, '../../api/api.raml');
 
@@ -46,7 +46,7 @@ raml2html.render(ramlFile, configWithCustomTemplates).then(function(result) {
   fs.writeFile(ramlHtml, result, function(err) {
       if(err) {
         process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione documentazione API (raml)\n")));
-        process.stderr.write(chalk.red(err+"\n"));
+        process.stderr.write(chalk.red(err)+ "\n");
         process.exit(1);
       }
 
@@ -68,8 +68,8 @@ raml2html.render(ramlFile, configWithCustomTemplates).then(function(result) {
 
       reqCloseServer.on('error', (e) => {
         error = `${e.message}`;
-        process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione documentazione API (raml)\n")));
-        process.stderr.write(chalk.red(error+"\n"));
+        process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione documentazione API (raml)"))+ "\n");
+        process.stderr.write(chalk.red(error)+ "\n");
         process.exit(1);
       });
 
@@ -79,7 +79,7 @@ raml2html.render(ramlFile, configWithCustomTemplates).then(function(result) {
 
 }, function(error) {
   console.log(error);
-  process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione documentazione API (raml)\n")));
-  process.stderr.write(chalk.red(error+"\n"));
+  process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione documentazione API (raml)"))+ "\n");
+  process.stderr.write(chalk.red(error)+ "\n");
   process.exit(1);
 });

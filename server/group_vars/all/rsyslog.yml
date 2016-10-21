@@ -13,6 +13,14 @@ rsyslog_rsyslog_d_files:
      rules:
        - rule: ':msg,contains,"[UFW "'
          logpath: '/var/log/ufw.log'
+   30-collectd:
+     rules:
+       - rule: 'if ($programname startswith "collectd") then'
+         logpath: '/var/log/collectd.log'
+   31-influxd:
+     rules:
+       - rule: 'if ($programname startswith "influxd") then'
+         logpath: '/var/log/influxd.log'
    49-haproxy:
      settings:
        # Create an additional socket in haproxy's chroot in order to allow logging via
@@ -30,6 +38,8 @@ rsyslog_rsyslog_d_files:
          logpath: '/var/log/haproxy-error.log'
        - rule: 'if ($programname startswith "haproxy" and $syslogfacility-text == "local1" and $syslogseverity == 5) then'
          logpath: '/var/log/haproxy.log'
+       - rule: 'if ($programname startswith "haproxy-systemd-wrapper") then'
+         logpath: '/var/log/haproxy-systemd.log'
      directives:
        - '&~'
    #postfix: "{{ rsyslog_rsyslog_d_presets_postfix }}"

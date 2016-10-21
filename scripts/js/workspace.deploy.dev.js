@@ -7,7 +7,7 @@ var emoji = require('node-emoji');
 var node_ssh = require('node-ssh');
 var ssh = new node_ssh();
 
-process.stdout.write(chalk.gray(emoji.emojify("[  ] Deploy workspace on ("+ enviroment +").\n")));
+process.stdout.write(chalk.gray(emoji.emojify("[  ] Deploy workspace on ("+ enviroment +")."))+ "\n");
 
 var enviroment = process.env.npm_package_config_enviroment;
 var server_name = process.env.npm_package_config_server;
@@ -25,7 +25,7 @@ ssh.connect({
     ssh.exec('rm', ['-rf', 'public'], { cwd: '/var/www/workspace.local', stream: 'both' }).then( function(both){
       ssh.exec('ln', ['-s','web','public'], { cwd: '/var/www/workspace.local', stream: 'both' }).then( function(both){
           ssh.dispose();
-          process.stdout.write(chalk.gray(emoji.emojify("Prepare dir remote completed.\n")));
+          process.stdout.write(chalk.gray(emoji.emojify("Prepare dir remote completed."))+ "\n");
 
           process.stdout.write(chalk.gray(emoji.emojify("Start rsync src.\n")));
 
@@ -40,7 +40,7 @@ ssh.connect({
               deleteAll: false //senno elimina log!
           },function (error,stdout,stderr,cmd) {
               if ( error ) {
-                process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] "+'CMD: '+cmd+"\n")));
+                process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] "+'CMD: '+cmd))+ "\n");
                 process.stderr.write(chalk.red(error.message+"\n"));
                 process.exit(1);
               }
@@ -59,11 +59,11 @@ ssh.connect({
               if ( both.code === 0 ){
                 process.stdout.write(chalk.gray(emoji.emojify(both.stderr+"\n")));
               } else {
-                process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore composer\n")));
+                process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore composer"))+ "\n");
                 process.stderr.write(chalk.red(both.stderr+"\n"));
                 process.exit(1);
               }
-              process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] Deploy COMPLETED.' + "\n")));
+              process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] Deploy COMPLETED.'))+ "\n");
               ssh.dispose();
             });
           });

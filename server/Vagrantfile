@@ -35,7 +35,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 9090,  host: 9090,   id: "http-php-jail"
   config.vm.network "forwarded_port", guest: 9081,  host: 9081,   id: "http-workspace"
   config.vm.network "forwarded_port", guest: 9082,  host: 9082,   id: "http-auth"
-  config.vm.network "forwarded_port", guest: 3000,  host: 9000,   id: "ntop"
+  config.vm.network "forwarded_port", guest: 3000,  host: 3000,   id: "ntop"
+  config.vm.network "forwarded_port", guest: 8083,  host: 8083,   id: "influxdb gui"
+  config.vm.network "forwarded_port", guest: 8086,  host: 8086,   id: "influxdb gui web"
   # MONITORING
   config.vm.network "forwarded_port", guest: 4000,   host: 4000,   id: "grafana"
 

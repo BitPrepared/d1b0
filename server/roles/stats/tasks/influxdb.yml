@@ -27,7 +27,7 @@
 - name: Reload the InfluxDB service
   service: name=influxdb state=restarted
 
-- name: enable auth
+- name: enable require user auth
   lineinfile: dest=/etc/influxdb/influxdb.conf regexp="^auth-enabled" line="auth-enabled = true"
 
 - name: Reload the InfluxDB service
@@ -50,3 +50,11 @@
     body: "random_ints,host=server_{{ 10 | random }} value={{ 100 | random }}"
     status_code: 204
   with_sequence: start=1 end=10
+
+- name: Drop sample database (SelfSigned SSL)
+  command: /usr/bin/influx -host "{{ influxdb_ip }}" -ssl -unsafeSsl -execute 'DROP DATABASE sample_database'
+  when: influxdb_selfsigned
+
+- name: Drop sample database (SSL)
+  command: /usr/bin/influx -host "{{ influxdb_ip }}" -ssl -execute 'DROP DATABASE sample_database'
+  when: not influxdb_selfsigned

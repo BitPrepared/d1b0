@@ -1,0 +1,15 @@
+{
+    "root": "./wiki",
+    "output": null,
+    "generator": "site",
+    "title": "Wiki D1B0",
+    "description": "null",
+    "plugins": [],
+    "pluginsConfig": {
+        "fontSettings": {
+            "theme": "sepia",
+            "family": "sans",
+            "size": 1
+        }
+    }
+}
