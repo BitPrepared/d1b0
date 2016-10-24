@@ -1,4 +1,3 @@
-var program = require('commander');
 var shell = require('shelljs');
 var fs = require('fs');
 var chalk = require('chalk');

@@ -18,7 +18,6 @@
     "chalk": "^1.1.3",
     "co": "^4.6.0",
     "co-prompt": "^1.0.0",
-    "commander": "^2.9.0",
     "favicons": "^4.8.2",
     "gitbook-cli": "^2.3.0",
     "hostile": "^1.0.3",
@@ -34,7 +33,8 @@
     "raml2html": "^3.0.1",
     "rimraf": "^2.5.4",
     "rsyncwrapper": "^2.0.0",
-    "tidy-html5": "^0.1.1"
+    "tidy-html5": "^0.1.1",
+    "shelljs": "^0.7.4"
   },
   "config": {
     "reporter": "xunit",
