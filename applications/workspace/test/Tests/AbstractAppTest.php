@@ -58,7 +58,7 @@ trait AbstractAppTest
         if ($validator->isValid()) {
             echo "The supplied JSON validates against the schema.\n";
             $assert = true;
-        }else {
+        } else {
             echo "JSON does not validate. Violations:\n";
             foreach ($validator->getErrors() as $error) {
                 echo "[{$error['property']}] {$error['message']}\n";
