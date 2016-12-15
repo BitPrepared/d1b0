@@ -118,3 +118,7 @@ Also, consult the securitylinks.txt file for more information.
     - ELENCO: https://wwphp-fb.github.io/faq/security/php-security-issues/
 
     - https://github.com/koalaman/shellcheck
+
+[ ] letsencrypt
+
+apt install letsencrypt=0.9.3-1~bpo8+1 certbot=0.9.3-1~bpo8+1 python-certbot=0.9.3-1~bpo8+1 python-acme=0.9.3-1~bpo8+1 python-cryptography=1.3.4-1~bpo8+2 python-pyasn1=0.1.9-1~bpo8+1 python-setuptools=20.10.1-1.1~bpo8+1 python-openssl=16.0.0-1~bpo8+1 python-pkg-resources=20.10.1-1.1~bpo8+1

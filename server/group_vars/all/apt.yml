@@ -15,7 +15,7 @@ apt_default_packages:
   - unattended-upgrades
   - unzip
   - python-selinux
-  - apt-transport-https=1.0.9.8.3
+  - apt-transport-https=1.0.9.8.4
 
 ##: rimane il problema di usare security!
 

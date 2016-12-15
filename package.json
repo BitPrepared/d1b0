@@ -71,6 +71,7 @@
     "test:workspace": "cd applications/workspace/ ; ./vendor/phpunit/phpunit/phpunit",
     "test:carico": "artillery run simulatore/fullscenario.json -e $npm_package_config_enviroment -o report_carico.json ; artillery report report_carico.json  -o carico.html ; rimraf report_carico.json",
     "check:security": "cd server && ansible-playbook -i $npm_package_config_enviroment.hosts security.check.yml",
+    "check:build-dep": "npm-check",
     "dist": "mkdirp dist/ && npm-run-all --silent --parallel dist:server dist:applications",
     "dist:server": "vagrant package --base d1b0server --output dist/d1b0-server-$npm_package_version.box",
     "dist:applications": "node scripts/js/workspace.package.js",

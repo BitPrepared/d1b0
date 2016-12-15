@@ -16,7 +16,7 @@ haproxy_bind_stat_ip: "{{ ansible_default_ipv4.address }}"
 # FIXME: da sistemare l'url!
 ocsp_report_uri: https://miodominio.com/csp-report.php
 
-haproxy_version: 1.6.9-2~bpo8+1
+haproxy_version: 1.6.10-1~bpo8+1
 haproxy_pakage_to_install:
  - "haproxy={{ haproxy_version }}"
  - liblua5.3-0=5.3.1-1~bpo8+1

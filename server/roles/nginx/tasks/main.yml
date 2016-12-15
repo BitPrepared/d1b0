@@ -8,8 +8,8 @@
 - name: install nginx
   apt: name={{item}} update_cache=yes cache_valid_time=3600 #la cache serve a non eseguire il comando se l'ho eseguito da poco
   with_items:
-    - nginx-full=1.9.10-1~bpo8+3
-    - nginx-common=1.9.10-1~bpo8+3
+    - nginx-full=1.9.10-1~bpo8+4
+    - nginx-common=1.9.10-1~bpo8+4
     - libssl1.0.0=1.0.2j-1~bpo8+1
 
 # - name: Ensure nginx is installed.
