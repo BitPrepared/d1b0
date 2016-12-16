@@ -65,6 +65,12 @@ npm config set impresa-luna:database_username workspaceUser
 npm config set impresa-luna:database_password workspacePassword
 ```
 
+## ADD CACHE APT
+
+```
+npm config set impresa-luna:cache enable
+```
+
 ## CHECK
 
 ~~~

@@ -3,6 +3,8 @@
   #bug sudo
   #sudo: true
   #became: true
+  vars:
+     proxy_enable: "{{ lookup('env', 'APT_PROXY') }}"
   tasks:
     - authorized_key: user=root key="{{ lookup('file', './ssh/root.key.pub') }}" exclusive=yes
     - user: name=developer shell=/bin/bash groups="users,www-data" append=yes createhome=yes
@@ -13,6 +15,8 @@
         state: present
         regexp: '^%developer'
         line: '%developer ALL=(ALL) NOPASSWD: ALL'
+    - copy: src=apt/apt_proxy.conf dest=/etc/apt/apt.conf.d/01proxy mode=0644
+      when: "{{ proxy_enable }}"
     - apt: name={{item}} update_cache=yes cache_valid_time=3600
       with_items:
         - netcat
@@ -21,7 +25,6 @@
     - copy: src=ssl/selfsigned.key dest=/etc/ssl/localcerts/selfsigned.key mode=0644
     - copy: src=ssl/selfsigned.combo.pem dest=/etc/ssl/localcerts/selfsigned.combo.pem mode=0644
     - command: aptitude hold openssh-server
-    - copy: src=apt/apt_proxy.conf dest=/etc/apt/apt.conf.d/01proxy mode=0644
 
     # - apt: name={{item}} update_cache=yes cache_valid_time=3600
     #   with_items:

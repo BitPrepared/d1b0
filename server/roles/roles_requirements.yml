@@ -1,5 +1,5 @@
 - src: git+https://github.com/Oefenweb/ansible-sudoers.git
-  version: "v1.0.0"
+  version: "master"
   name: tersmitten.sudoers
 
 - src: git+https://github.com/ANXS/hostname.git
@@ -7,11 +7,11 @@
   name: ansible-hostname
 
 - src: git+https://github.com/dev-sec/ansible-os-hardening.git
-  version: "3.1.0"
+  version: "3.2.0"
   name: dev-sec.os-hardening
 
 - src: git+https://github.com/dev-sec/ansible-ssh-hardening
-  version: "3.1.0"
+  version: "3.2.0"
   name: dev-sec.ssh-hardening
 
 # - src: git+https://github.com/Oefenweb/ansible-apparmor.git
@@ -19,17 +19,18 @@
 #   name: ansible-no-apparmor
 
 - src: git+https://github.com/geerlingguy/ansible-role-mysql.git
-  version: "2.3.2"
+  version: "2.4.2"
   name: geerlingguy.mysql
 
 - src: git+https://github.com/geerlingguy/ansible-role-redis.git
-  version: "1.3.0"
+  version: "1.4.1"
   name: geerlingguy.redis
 
 - src: git+https://github.com/geerlingguy/ansible-role-composer.git
-  version: ""
+  version: "1.5.0"
   name: geerlingguy.composer
 
+# da rifare?? 
 - src: git+https://github.com/geerlingguy/ansible-role-certbot.git
   version: "0.2.1"
   name: geerlingguy.letsencrypt

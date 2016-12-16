@@ -1,13 +1,13 @@
-var shell = require('shelljs');
-var fs = require('fs');
-var chalk = require('chalk');
-var emoji = require('node-emoji');
-var co = require('co');
-var prompt = require('co-prompt');
+const shell = require('shelljs');
+const fs = require('fs');
+const chalk = require('chalk');
+const emoji = require('node-emoji');
+const co = require('co');
+const prompt = require('co-prompt');
 
-var enviroment = process.env.npm_package_config_enviroment;
+const enviroment = process.env.npm_package_config_enviroment;
 
-var servername = process.env.npm_package_config_server;
+const servername = process.env.npm_package_config_server;
 
 shell.mkdir('-p',['applications/assets/icons']);
 
@@ -133,16 +133,41 @@ if ( enviroment === 'dev' ){
 
     shell.cd('server/');
 
+    process.stdout.write(chalk.gray(emoji.emojify("[  ] Evaluate Cache APT."))+ "\n");
+
+    const cache = process.env.npm_package_config_cache;
+
+    process_enviroment = process.env;
+
+    if ( !cache  ){
+      process.stdout.write(chalk.gray(emoji.emojify("[  ] Cache disable."))+ "\n");
+      shell.exec('unset APT_PROXY', {silent:true});
+    } else {
+
+      //docker-compose
+      dockerCacheProc = shell.exec('cd cache/ && docker-compose up -d', {silent:true});
+      if ( dockerCacheProc.code !== 0 ){
+        process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore up cache"))+ "\n");
+        process.stderr.write(chalk.gray(dockerCacheProc.output+"\n"));
+
+        process.exit(1);
+      }
+
+      process_enviroment.APT_PROXY = 'true';
+
+      process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] Cache APT enabled.' + "\n")));
+    }
+
     process.stdout.write(chalk.gray(emoji.emojify("[  ] Vagrant server UP."))+ "\n");
 
-    upVagrant = shell.exec("vagrant up", {silent:true});
+    upVagrant = shell.exec("vagrant up", {silent: true, env: process_enviroment});
     if ( upVagrant.code !== 0 ){
       process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+upVagrant.stderr+ " - "+upVagrant.output)));
       process.exit(1);
     }
 
     process.stdout.write(chalk.gray(emoji.emojify("[  ] Install Server Required Package and Config.")) + "\n");
-    ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent:true});
+    ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent: true, env: process_enviroment});
     if ( ansibleProc.code !== 0 ){
       process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore ansible site.yml"))+ "\n");
       process.stderr.write(chalk.gray(ansibleProc.stdout+"\n"));
