@@ -20,11 +20,13 @@ Progetto Segreto
 
 Base:
 
+  * **npm install --production**: installazione dipendenze
+
   * **npm run initialize**: Prepara l'ambiente per sviluppo, (clean,install)
 
-  * **npm clean**: clean generated/compiled element
+  * **npm run clean**: clean generated/compiled element
 
-  * **npm install**: compile e installazione sul server vagrant di sviluppo
+  * **npm run build**: creazione del server sull'ambiente designato (default: dev)
 
   * **npm deploy**: deploy sull'enviroment configurato (default: dev)
 
@@ -35,6 +37,8 @@ Base:
   * **npm run lint**: Check JS nel progetto
 
   * **npm run ssh:developer|root**: ssh as developer or root
+
+  * **npm-check**: per vedere i package da aggiornae (serve "npm-check" installato globalmente)
 
 Server:
 

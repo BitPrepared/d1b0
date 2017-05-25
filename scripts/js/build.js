@@ -19,10 +19,10 @@ if ( enviroment === 'dev' ){
 
   var vagrantCode;
   if ( vagrantId.code !== 0 ){
-    process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+vagrantId.stderr+ " - "+vagrantId.output)));
+    process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+vagrantId.stderr+ " - "+vagrantId.stdout)));
     process.exit(1);
   } else {
-    vagrantCode = vagrantId.output.trim();
+    vagrantCode = vagrantId.stdout.trim();
   }
 
   if ( !vagrantCode ) {
@@ -148,21 +148,21 @@ if ( enviroment === 'dev' ){
       dockerCacheProc = shell.exec('cd cache/ && docker-compose up -d', {silent:true});
       if ( dockerCacheProc.code !== 0 ){
         process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore up cache"))+ "\n");
-        process.stderr.write(chalk.gray(dockerCacheProc.output+"\n"));
+        process.stderr.write(chalk.gray(dockerCacheProc.stdout+"\n"));
 
         process.exit(1);
       }
 
       process_enviroment.APT_PROXY = 'true';
 
-      process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] Cache APT enabled.' + "\n")));
+      process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] Cache APT enabled.')) + "\n");
     }
 
     process.stdout.write(chalk.gray(emoji.emojify("[  ] Vagrant server UP."))+ "\n");
 
     upVagrant = shell.exec("vagrant up", {silent: true, env: process_enviroment});
     if ( upVagrant.code !== 0 ){
-      process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+upVagrant.stderr+ " - "+upVagrant.output)));
+      process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+upVagrant.stderr+ " - "+upVagrant.stdout)));
       process.exit(1);
     }
 
@@ -206,7 +206,7 @@ if ( enviroment === 'dev' ){
 
     ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent:true});
     if ( ansibleProc.code !== 0 ){
-      process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+ansibleProc.stderr+ " - "+ansibleProc.output))+ "\n");
+      process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+ansibleProc.stderr+ " - "+ansibleProc.stdout))+ "\n");
       process.exit(1);
     }
 

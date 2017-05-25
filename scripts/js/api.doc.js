@@ -45,7 +45,7 @@ raml2html.render(ramlFile, configWithCustomTemplates).then(function(result) {
 
   fs.writeFile(ramlHtml, result, function(err) {
       if(err) {
-        process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione documentazione API (raml)\n")));
+        process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione documentazione API (raml)"))+ "\n");
         process.stderr.write(chalk.red(err)+ "\n");
         process.exit(1);
       }
@@ -63,7 +63,7 @@ raml2html.render(ramlFile, configWithCustomTemplates).then(function(result) {
         statusCode = `${res.statusCode}`;
         process.stdout.write(chalk.gray(emoji.emojify('[  ] Response '+ statusCode +"\n")));
 
-        process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] API Documentation created!' + "\n")));
+        process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] API Documentation created!'))+ "\n");
       });
 
       reqCloseServer.on('error', (e) => {

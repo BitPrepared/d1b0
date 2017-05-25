@@ -5,6 +5,8 @@ services:
       image: sameersbn/apt-cacher-ng:latest
       volumes:
         - ./data/apt-cacher-ng:/var/cache/apt-cacher-ng
+        - ./data/acng.conf:/etc/apt-cacher-ng/acng.conf
+        - ./data/backedns_docker:/etc/apt-cacher-ng/backedns_docker/
       ports:
         - "3142:3142"
       restart: always

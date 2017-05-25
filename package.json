@@ -1,6 +1,6 @@
 {
   "name": "impresa-luna",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/BitPrepared/d1b0#readme",
   "private": true,
   "url": "https://github.com/BitPrepared/d1b0/issues",
@@ -11,30 +11,31 @@
   },
   "author": "",
   "main": "index.js",
-  "dependencies": {},
-  "devDependencies": {
-    "ajv": "^4.7.5",
-    "artillery": "^1.5.0-16",
-    "chalk": "^1.1.3",
+  "dependencies": {
+    "rimraf": "^2.6.1",
+    "node-ssh": "^4.2.2",
     "co": "^4.6.0",
     "co-prompt": "^1.0.0",
-    "favicons": "^4.8.2",
-    "gitbook-cli": "^2.3.0",
-    "hostile": "^1.0.3",
-    "jshint": "^2.9.3",
-    "jszip": "^3.1.3",
-    "mermaid": "^6.0.0",
+    "npm-run-all": "^4.0.2",
+    "process-env": "^1.1.0",
     "mkdirp": "^0.5.1",
-    "node-emoji": "^1.4.1",
-    "node-ssh": "^3.0.1",
-    "npm-check": "^5.2.3",
-    "npm-run-all": "^3.1.0",
-    "opener": "^1.4.2",
-    "raml2html": "^3.0.1",
-    "rimraf": "^2.5.4",
-    "rsyncwrapper": "^2.0.0",
-    "tidy-html5": "^0.1.1",
-    "shelljs": "^0.7.4"
+    "node-emoji": "^1.5.1",
+    "shelljs": "^0.7.7",
+    "hostile": "^1.3.0",
+    "chalk": "^1.1.3",
+    "favicons": "^4.8.6",
+    "opener": "^1.4.3",
+    "jshint": "^2.9.4",
+    "raml2html": "^3.0.1"
+  },
+  "devDependencies": {
+    "ajv": "^4.7.5",
+    "artillery": "^1.5.6",
+    "gitbook-cli": "^2.3.0",
+    "jszip": "^3.1.3",
+    "mermaid": "^7.0.0",
+    "rsyncwrapper": "^2.0.1",
+    "tidy-html5": "^0.1.1"
   },
   "config": {
     "reporter": "xunit",
@@ -42,7 +43,7 @@
     "server": "dev.d1b0.local"
   },
   "scripts": {
-    "initialize": "npm-run-all --silent check clean install",
+    "initialize": "npm-run-all --silent check clean",
     "check": "npm-run-all --silent --parallel lint check:hostfile",
     "check:hostfile": "node scripts/js/check.hostfile.js",
     "lint": "jshint scripts/js/*.js",
@@ -54,9 +55,6 @@
     "build:doc": "node scripts/js/api.doc.js",
     "build:workspace": "node scripts/js/workspace.build.js",
     "build:server": "node scripts/js/build.js",
-    "preinstall": "npm-run-all --silent build",
-    "install": "echo install",
-    "postinstall": "echo postinstall",
     "clean": "npm-run-all --silent --parallel clean:dist clean:applications clean:wiki",
     "clean:applications": "rimraf applications/assets/icons/*",
     "clean:dist": "rimraf ./dist",
@@ -82,9 +80,9 @@
     "deploy:stage": "s3-cli sync ./dist/ s3://example-com/stage-site/",
     "open:dev": "opener https://$npm_package_config_server:8443/workspace/"
   },
-  "devEngines": {
-    "node": "6.x",
-    "npm": "3.x"
+  "engines": {
+    "node": "7.x",
+    "npm": "4.x"
   },
   "description": "Progetto Segreto",
   "bugs": {

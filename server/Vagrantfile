@@ -12,7 +12,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "debian/jessie64"
 
-  config.vm.box_version = "= 8.6.1"
+  config.vm.box_version = "= 8.8.0"
+
+  # config.vm.box_version = "= 8.6.1"
 
   # bug chiave ssh
   # config.vm.box_version = "= 8.6.0"

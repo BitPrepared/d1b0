@@ -39,9 +39,9 @@ if ( enviroment === 'dev' ){
 
   shell.cd('..');
 
-  process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] Clean server COMPLETED.' + "\n")));
+  process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] Clean server COMPLETED.')) + "\n");
 
 } else {
 
-    process.stdout.write(chalk.yellow(emoji.emojify("[:raised_hand: ] Ambiente non gestito ("+ enviroment +").\n")));
+    process.stdout.write(chalk.yellow(emoji.emojify("[:raised_hand: ] Ambiente non gestito ("+ enviroment +")")) + "\n");
 }

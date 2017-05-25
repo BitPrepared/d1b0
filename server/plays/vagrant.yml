@@ -2,7 +2,6 @@
   remote_user: vagrant
   #bug sudo
   #sudo: true
-  #became: true
   vars:
      proxy_enable: "{{ lookup('env', 'APT_PROXY') }}"
   tasks:
@@ -18,6 +17,7 @@
     - copy: src=apt/apt_proxy.conf dest=/etc/apt/apt.conf.d/01proxy mode=0644
       when: "{{ proxy_enable }}"
     - apt: name={{item}} update_cache=yes cache_valid_time=3600
+      become: true
       with_items:
         - netcat
     - file: path=/etc/ssl/localcerts state=directory mode=755

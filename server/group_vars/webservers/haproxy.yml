@@ -30,3 +30,7 @@ haproxy:
      - { domain: "{{ inventory_hostname }}",  path_beg: "workspace",  backend: { name: "www-workspace" , reqirep: '^([^\ :]*)\ /workspace/(.*) \1\ /\2', array: [ { ip: "127.0.0.1", port: 9081} ] } }
      - { domain: "{{ inventory_hostname }}", path_beg: "auth", backend: { name: "www-auth" , reqirep: '^([^\ :]*)\ /auth/(.*) \1\ /\2', array: [ { ip: "127.0.0.1", port: 9082} ] } }
      - { domain: "{{ inventory_hostname }}", path_beg: "stream", backend: { name: "www-upload" , array: [ { ip: "127.0.0.1", port: 9090} ] } }
+
+haproxy_version: 1.7.5-1~bpo8+1
+liblua5_version: 5.3.1-1~bpo8+1
+libssl1_version: 1.0.2k-1~bpo8+1

@@ -40,6 +40,6 @@ hostile.get(preserveFormatting, function (err, lines) {
       }
     });
   } else {
-    process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] /etc/hosts correct!' + "\n")));
+    process.stdout.write(chalk.bgGreen.black(emoji.emojify('[:heavy_check_mark: ] /etc/hosts correct!'))+ "\n");
   }
 });
