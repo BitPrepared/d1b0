@@ -2,13 +2,11 @@
 
 namespace Tests;
 
-
-
 class PartTest extends WorkspaceTest
 {
-
     /*verifico che una parte si possa scaricare correttamente*/
-    public function testGetWorkspacePart() {
+    public function testGetWorkspacePart()
+    {
         $schema = __DIR__.'/../../../../api/schemas/part.json';
 
         $client = $this->createClient();
@@ -29,8 +27,8 @@ class PartTest extends WorkspaceTest
         $this->assertTrue($assert);
     }
 
-
-    public function testPostWorkspacePart() {
+    public function testPostWorkspacePart()
+    {
         //$schema = __DIR__.'/../../../../api/schemas/part.json';
 
         $client = $this->createClient();
@@ -41,33 +39,27 @@ class PartTest extends WorkspaceTest
                 {
                     "type": "image",
                     "ref": "afaifnanabnawnfawba",
-                    "hash":"'.hash("md5", $id."prova0").'"
+                    "hash":"'.hash('md5', $id.'prova0').'"
                 },
                 {
                     "type": "image",
                     "ref": "awfaowapaegbgepng",
-                    "hash":"'.hash("md5", $id."prova1").'"
+                    "hash":"'.hash('md5', $id.'prova1').'"
                 },
                 {
                     "type": "text",
                     "ref": "afaafaafafafifnanabnawnfawba",
-                    "hash":"'.hash("md5", $id."prova2").'"
+                    "hash":"'.hash('md5', $id.'prova2').'"
                 },
                 {
                     "type": "video",
                     "ref": "aaafawafaggagaagegaa",
-                    "hash":"'.hash("md5", $id."prova3").'"
+                    "hash":"'.hash('md5', $id.'prova3').'"
                 }
             ],
             "badges":[13,28]}';
 
-        $client->request(
-            'POST',
-            '/api/v1/workspace/'.$id.'/part',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $part);
+        $client->request('POST', '/api/v1/workspace/'.$id.'/part', [], [], ['CONTENT_TYPE' => 'application/json'], $part);
 
         $response = $client->getResponse();
 
@@ -77,13 +69,14 @@ class PartTest extends WorkspaceTest
         $part_id = $part_id->id;
 
         $this->assertTrue(is_numeric($id));
+
         return [$id, $part_id];
     }
 
-    public function testPutWorkspacePart() {
+    public function testPutWorkspacePart()
+    {
         $client = $this->createClient();
         $client = $this->logIn($client);
-
 
         $blob = $this->testPostWorkspacePart();
         $id = $blob[0];
@@ -94,28 +87,22 @@ class PartTest extends WorkspaceTest
                 {
                     "type": "image",
                     "ref": "afaifnanabnawnfawba",
-                    "hash":"'.hash("md5", $id."prova0").'"
+                    "hash":"'.hash('md5', $id.'prova0').'"
                 },
                 {
                     "type": "image",
                     "ref": "awfaowapaegbgepng",
-                    "hash":"'.hash("md5", $id."prova1").'"
+                    "hash":"'.hash('md5', $id.'prova1').'"
                 },
                 {
                     "type": "text",
                     "ref": "blablablablabla",
-                    "hash":"'.hash("md5", $id."prova2").'"
+                    "hash":"'.hash('md5', $id.'prova2').'"
                 }
             ],
             "badges":[13,30]}';
 
-        $client->request(
-            'PUT',
-            '/api/v1/workspace/'.$id.'/part/'.$part_id.'',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $part);
+        $client->request('PUT', '/api/v1/workspace/'.$id.'/part/'.$part_id.'', [], [], ['CONTENT_TYPE' => 'application/json'], $part);
 
         $response = $client->getResponse();
         $data = $client->getResponse()->getContent();
@@ -126,7 +113,8 @@ class PartTest extends WorkspaceTest
         $this->assertEquals($part_id, $res_id);
     }
 
-    public function testDeleteWorkspacePart() {
+    public function testDeleteWorkspacePart()
+    {
         $client = $this->createClient();
         $client = $this->logIn($client);
 
@@ -134,13 +122,7 @@ class PartTest extends WorkspaceTest
         $id = $blob[0];
         $part_id = $blob[1];
 
-        $client->request(
-            'DELETE',
-            '/api/v1/workspace/'.$id.'/part/'.$part_id.'',
-            [],
-            [],
-            [],
-            '');
+        $client->request('DELETE', '/api/v1/workspace/'.$id.'/part/'.$part_id.'', [], [], [], '');
 
         $response = $client->getResponse();
         $this->assertTrue($response->isOk());
@@ -152,7 +134,7 @@ class PartTest extends WorkspaceTest
 
         $js = json_decode($data);
 
-        var_dump($data);
+        //var_dump($data);
         $trovato = false;
 
         foreach ($js->parts as $w) {
@@ -161,6 +143,5 @@ class PartTest extends WorkspaceTest
             }
         }
         $this->assertTrue(!$trovato);
-
     }
 }
