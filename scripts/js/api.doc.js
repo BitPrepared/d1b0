@@ -7,7 +7,7 @@ var http = require('http');
 var url = require('url');
 var childProcess = require('child_process');
 
-scriptPath = 'scripts/js/api.server.js';
+let scriptPath = 'scripts/js/api.server.js';
 
 var options = {
   env: process.env
@@ -28,9 +28,9 @@ var enviroment = process.env.npm_package_config_enviroment;
 
 var apiDir = path.join(__dirname, '../../api/');
 
-process.stdout.write(chalk.gray(emoji.emojify('[  ] Generazione Documentazione API (' + enviroment + ") from "+ ramlFile))+ "\n");
-
 var ramlFile = path.join(__dirname, '../../api/api.raml');
+
+process.stdout.write(chalk.gray(emoji.emojify('[  ] Generazione Documentazione API (' + enviroment + ") from "+ ramlFile))+ "\n");
 
 var ramlHtml = path.join(__dirname, '../../api/api-generated.html');
 
@@ -41,7 +41,6 @@ raml2html.render(ramlFile, configWithCustomTemplates).then(function(result) {
   // Save the result to a file or do something else with the result
   // api-generated.html
   //
-  // console.log(result);
 
   fs.writeFile(ramlHtml, result, function(err) {
       if(err) {
@@ -78,7 +77,6 @@ raml2html.render(ramlFile, configWithCustomTemplates).then(function(result) {
   });
 
 }, function(error) {
-  console.log(error);
   process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione documentazione API (raml)"))+ "\n");
   process.stderr.write(chalk.red(error)+ "\n");
   process.exit(1);

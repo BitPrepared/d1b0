@@ -28,8 +28,7 @@ var server = http.createServer(function (req, res) {
     '.html': 'text/html',
     '.json': 'application/json'
   };
-  pathnameFull = path.normalize(apiDir + pathname);
-  // console.log(pathnameFull);
+  let pathnameFull = path.normalize(apiDir + pathname);
 
   if ( pathname == '/end' ) {
     // console.log('/end');

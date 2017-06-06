@@ -2,8 +2,6 @@ const shell = require('shelljs');
 const fs = require('fs');
 const chalk = require('chalk');
 const emoji = require('node-emoji');
-const co = require('co');
-const prompt = require('co-prompt');
 
 const enviroment = process.env.npm_package_config_enviroment;
 
@@ -15,7 +13,7 @@ process.stdout.write(chalk.gray(emoji.emojify('[  ] Build Server Vagrant (' + en
 
 if ( enviroment === 'dev' ){
 
-  vagrantId = shell.exec("vagrant global-status | grep d1b0server | awk '{ print $1}'", {silent:true});
+  let vagrantId = shell.exec("vagrant global-status | grep d1b0server | awk '{ print $1}'", {silent:true});
 
   var vagrantCode;
   if ( vagrantId.code !== 0 ){
@@ -31,7 +29,7 @@ if ( enviroment === 'dev' ){
     //gKey = shell.exec('./scripts/generatekey.sh', {silent:true});
     if (!fs.existsSync('./server/plays/ssh/root.key')) {
       process.stdout.write(chalk.gray(emoji.emojify('[  ] ssh-keygen root key')) + "\n");
-      gKey = shell.exec('ssh-keygen -t rsa -b 4096 -N "" -f ./server/plays/ssh/root.key', {silent:true});
+      let gKey = shell.exec('ssh-keygen -t rsa -b 4096 -N "" -f ./server/plays/ssh/root.key', {silent:true});
       if ( gKey.code !== 0 ){
         process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione ssh root key per vagrant"))+ "\n");
         process.stderr.write(chalk.gray(gKey.stdout+"\n"));
@@ -44,7 +42,7 @@ if ( enviroment === 'dev' ){
 
     if (!fs.existsSync('./server/plays/ssh/developer.key')) {
       process.stdout.write(chalk.gray(emoji.emojify('[  ] ssh-keygen developer key')) + "\n");
-      dKey = shell.exec('ssh-keygen -t rsa -b 4096 -N "" -f ./server/plays/ssh/developer.key', {silent:true});
+      let dKey = shell.exec('ssh-keygen -t rsa -b 4096 -N "" -f ./server/plays/ssh/developer.key', {silent:true});
       if ( dKey.code !== 0 ){
         process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione ssh developer key per vagrant")) + "\n");
         process.stderr.write(chalk.gray(dKey.stdout+"\n"));
@@ -58,7 +56,7 @@ if ( enviroment === 'dev' ){
     //gSSL = shell.exec('./scripts/generateSSL.sh', {silent:true});
     if (!fs.existsSync('./server/plays/ssl/selfsigned.crt')) {
       process.stdout.write(chalk.gray(emoji.emojify('[  ] openssl generate self certificate')) + "\n");
-      gSSL = shell.exec('openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=' + servername + '" -keyout ./server/plays/ssl/selfsigned.key -out ./server/plays/ssl/selfsigned.crt', {silent:true});
+      let gSSL = shell.exec('openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=' + servername + '" -keyout ./server/plays/ssl/selfsigned.key -out ./server/plays/ssl/selfsigned.crt', {silent:true});
       if ( gSSL.code !== 0 ){
         process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione certificati SSL per vagrant"))+ "\n");
         process.stderr.write(chalk.gray(gSSL.stdout+"\n"));
@@ -67,7 +65,7 @@ if ( enviroment === 'dev' ){
       }
 
       process.stdout.write(chalk.gray(emoji.emojify('[  ] assemble combo pem certificate with certificate'))+ "\n");
-      contentsScrt = fs.readFileSync('./server/plays/ssl/selfsigned.crt','utf8');
+      let contentsScrt = fs.readFileSync('./server/plays/ssl/selfsigned.crt','utf8');
       fs.writeFileSync('./server/plays/ssl/selfsigned.combo.pem', contentsScrt);
 
 
@@ -81,7 +79,7 @@ if ( enviroment === 'dev' ){
 
       process.stdout.write(chalk.gray(emoji.emojify('[  ] assemble combo pem certificate with key'))+ "\n");
 
-      contentsSkey = fs.readFileSync('./server/plays/ssl/selfsigned.key','utf8');
+      let contentsSkey = fs.readFileSync('./server/plays/ssl/selfsigned.key','utf8');
       fs.appendFileSync('./server/plays/ssl/selfsigned.combo.pem', contentsSkey);
 
       // gSSLcrt2 = shell.exec('cat  >> ', {silent:false});
@@ -93,12 +91,12 @@ if ( enviroment === 'dev' ){
       // }
 
       //# RICHIEDE MOLTO TEMPO!
-      dhparamLength = 4096;
+      var dhparamLength = 4096;
       if ( enviroment === 'dev' || enviroment === 'vagrant' ){
         dhparamLength = 1024;
       }
       process.stdout.write(chalk.gray(emoji.emojify('[  ] generate '+ dhparamLength +' dhparam key'))+ "\n");
-      gSSLcrt3 = shell.exec('openssl dhparam -out ./server/plays/ssl/dhparam.pem ' + dhparamLength, {silent:true});
+      let gSSLcrt3 = shell.exec('openssl dhparam -out ./server/plays/ssl/dhparam.pem ' + dhparamLength, {silent:true});
       if ( gSSLcrt3.code !== 0 ){
         process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore generazione dhparam SSL random key per vagrant"))+ "\n");
         process.stderr.write(chalk.gray(gSSLcrt3.stdout+"\n"));
@@ -107,7 +105,7 @@ if ( enviroment === 'dev' ){
       }
 
       process.stdout.write(chalk.gray(emoji.emojify('[  ] assemble combo pem with dhparam'))+ "\n");
-      contentsDparam = fs.readFileSync('./server/plays/ssl/dhparam.pem','utf8');
+      let contentsDparam = fs.readFileSync('./server/plays/ssl/dhparam.pem','utf8');
       fs.appendFileSync('./server/plays/ssl/selfsigned.combo.pem', contentsDparam);
 
       // gSSLcrt4 = shell.exec('cat ./server/plays/ssl/dhparam.pem >> ./server/plays/ssl/selfsigned.combo.pem', {silent:false});
@@ -123,7 +121,7 @@ if ( enviroment === 'dev' ){
     }
 
     process.stdout.write(chalk.gray(emoji.emojify('[  ] update ansible external role'))+ "\n");
-    rUpdate = shell.exec('./scripts/roles_update.sh', {silent:true});
+    let rUpdate = shell.exec('./scripts/roles_update.sh', {silent:true});
     if ( rUpdate.code !== 0 ){
       process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore download role ansible esterni"))+ "\n");
       process.stderr.write(chalk.gray(rUpdate.stdout+"\n"));
@@ -145,7 +143,7 @@ if ( enviroment === 'dev' ){
     } else {
 
       //docker-compose
-      dockerCacheProc = shell.exec('cd cache/ && docker-compose up -d', {silent:true});
+      let dockerCacheProc = shell.exec('cd cache/ && docker-compose up -d', {silent:true});
       if ( dockerCacheProc.code !== 0 ){
         process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore up cache"))+ "\n");
         process.stderr.write(chalk.gray(dockerCacheProc.stdout+"\n"));
@@ -160,14 +158,14 @@ if ( enviroment === 'dev' ){
 
     process.stdout.write(chalk.gray(emoji.emojify("[  ] Vagrant server UP."))+ "\n");
 
-    upVagrant = shell.exec("vagrant up", {silent: true, env: process_enviroment});
+    let upVagrant = shell.exec("vagrant up", {silent: true, env: process_enviroment});
     if ( upVagrant.code !== 0 ){
       process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+upVagrant.stderr+ " - "+upVagrant.stdout)));
       process.exit(1);
     }
 
     process.stdout.write(chalk.gray(emoji.emojify("[  ] Install Server Required Package and Config.")) + "\n");
-    ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent: true, env: process_enviroment});
+    let ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent: true, env: process_enviroment});
     if ( ansibleProc.code !== 0 ){
       process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore ansible site.yml"))+ "\n");
       process.stderr.write(chalk.gray(ansibleProc.stdout+"\n"));
@@ -187,11 +185,11 @@ if ( enviroment === 'dev' ){
 
     shell.cd('server/');
 
-    upVagrant = shell.exec("vagrant up", {silent:true});
+    let upVagrant = shell.exec("vagrant up", {silent:true});
     if ( upVagrant.code !== 0 ){
-      process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore ansible site.yml")) + "\n");
-      process.stderr.write(chalk.gray(ansibleProc.stdout+"\n"));
-      process.stderr.write(chalk.red(ansibleProc.stderr+"\n"));
+      process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore during vagrant - check ansible plays/vagrant.yml")) + "\n");
+      process.stderr.write(chalk.gray(upVagrant.stdout+"\n"));
+      process.stderr.write(chalk.red(upVagrant.stderr+"\n"));
       process.exit(1);
     }
 
@@ -204,7 +202,7 @@ if ( enviroment === 'dev' ){
 
     process.stdout.write(chalk.gray(emoji.emojify("[  ] Install Server Required Package and Config."))+ "\n");
 
-    ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent:true});
+    let ansibleProc = shell.exec('ansible-playbook -i '+enviroment+'.hosts site.yml', {silent:true});
     if ( ansibleProc.code !== 0 ){
       process.stderr.write(chalk.bgRed.white(emoji.emojify("[:heavy_multiplication_x: ] Errore: "+ansibleProc.stderr+ " - "+ansibleProc.stdout))+ "\n");
       process.exit(1);
